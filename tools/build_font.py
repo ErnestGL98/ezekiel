@@ -20,8 +20,11 @@ HOW IT WORKS, IN PLAIN TERMS
     2. Straighten the page, then find every blob of ink
     3. Group the blobs into 4 text rows, then into 52 individual letters
     4. Work out where each row's baseline sits, so letters line up properly
-    5. Thicken each letter slightly, then trace its outline into vectors
-    6. Write those outlines into a real font file
+    5. Convert each letter to a signed distance field, which is what gives
+       smooth outlines instead of the pixel staircase you'd get from
+       tracing a hard black-and-white mask
+    6. Trace the outline at a chosen offset (that's the "bolder" control)
+    7. Fit curves through the traced points and write out a font file
 """
 import json
 import sys
@@ -42,14 +45,18 @@ SRC = ROOT / "fonts" / "source-handwriting.jpg"
 FONTS = ROOT / "fonts"
 
 # --- knobs you might reasonably want to touch ---
-BOLDEN_PX = 2        # stroke thickening; higher = bolder letters
+BOLDEN_PX = 0.5      # how far to push the outline outward, in source pixels.
+                     # Higher = bolder. 0.5 adds ~35% to a 2.8px pen stroke.
+SMOOTH = 2.2         # edge smoothing. Higher = softer, rounder letterforms;
+                     # lower = crisper but starts showing the photo's pixels.
 CAP_TARGET = 700     # cap height in font units (out of 1000)
 SIDE_BEARING = 0.055  # breathing room each side of a letter, as a fraction of em
 
 # --- knobs you probably shouldn't ---
 UPM = 1000
-SS = 4               # supersampling, for sub-pixel control of the thickening
-RDP_TOL = 2.0        # outline simplification tolerance
+SS = 6               # supersampling; sub-pixel accuracy for the outline
+RDP_TOL = 3.0        # outline simplification tolerance, in font units
+CORNER_DEG = 62      # turn sharper than this stays a corner, not a curve
 CROP = (0.30, 0.72)  # vertical slice of the photo holding the writing
 
 LETTERS = {0: "AaBbCcDdEeFf", 1: "GgHhIiJjKkLlMm",
@@ -150,6 +157,63 @@ def signed_area(p):
     return 0.5 * float(np.sum(x * np.roll(y, -1) - np.roll(x, -1) * y))
 
 
+def trace_smooth(mask):
+    """Outline a letter with smooth edges instead of a pixel staircase.
+
+    Tracing a hard black/white mask directly follows the square edge of
+    every pixel, which is what made the first version look painted. So
+    instead we build a signed distance field - for each point, how far
+    inside or outside the stroke it is - blur THAT, and take the outline
+    at a chosen distance. Blurring a distance field rounds off the
+    staircase without dissolving the letter, and picking a negative
+    distance pushes the outline outward, which is the boldness control.
+    """
+    pad = 4
+    m = np.pad(mask, pad)
+    big = np.repeat(np.repeat(m, SS, axis=0), SS, axis=1)
+    inside = ndimage.distance_transform_edt(big)
+    outside = ndimage.distance_transform_edt(~big)
+    sdf = inside - outside                       # positive inside the stroke
+    sdf = ndimage.gaussian_filter(sdf, SMOOTH * SS)
+    return measure.find_contours(sdf, -BOLDEN_PX * SS), pad
+
+
+def emit_contour(pen, p):
+    """Write one outline, keeping sharp corners sharp and curves curved.
+
+    In TrueType, a run of off-curve points renders as a smooth spline,
+    while an on-curve point pins the outline to an exact spot. So we mark
+    genuine corners (a sharp change of direction) as on-curve and let
+    everything else be off-curve, which smooths the strokes without
+    rounding off the corners of letters like A, K, W and Z.
+    """
+    v1 = p - np.roll(p, 1, axis=0)
+    v2 = np.roll(p, -1, axis=0) - p
+    a1 = np.arctan2(v1[:, 1], v1[:, 0])
+    a2 = np.arctan2(v2[:, 1], v2[:, 0])
+    turn = np.abs(np.degrees(np.arctan2(np.sin(a2 - a1), np.cos(a2 - a1))))
+    on = turn > CORNER_DEG
+
+    if not on.any():                     # a fully smooth loop, e.g. O
+        pen.qCurveTo(*[(float(x), float(y)) for x, y in p], None)
+        pen.closePath()
+        return
+    k = int(np.argmax(on))
+    p, on = np.roll(p, -k, axis=0), np.roll(on, -k)
+    pen.moveTo((float(p[0][0]), float(p[0][1])))
+    offs = []
+    for i in range(1, len(p)):
+        pt = (float(p[i][0]), float(p[i][1]))
+        if on[i]:
+            pen.qCurveTo(*offs, pt) if offs else pen.lineTo(pt)
+            offs = []
+        else:
+            offs.append(pt)
+    if offs:
+        pen.qCurveTo(*offs, (float(p[0][0]), float(p[0][1])))
+    pen.closePath()
+
+
 def main():
     ink = find_ink()
     rows = find_rows_and_glyphs(ink)
@@ -197,18 +261,15 @@ def main():
         drop = (y1 - baseline) / cap
         base = baseline if (ch in DESCENDERS and drop > 0.08) else float(y1)
 
-        sub = m[y0:y1, x0:x1]
-        big = np.repeat(np.repeat(sub, SS, axis=0), SS, axis=1)
-        big = ndimage.binary_dilation(
-            big, ndimage.generate_binary_structure(2, 2), iterations=BOLDEN_PX)
+        contours, pad = trace_smooth(m[y0:y1, x0:x1])
 
         polys = []
-        for c in measure.find_contours(np.pad(big.astype(float), 2), 0.5):
-            px = ((c[:, 1] - 2) / SS + x0) * scale
-            py = (base - ((c[:, 0] - 2) / SS + y0)) * scale
+        for c in contours:
+            px = (x0 - pad + c[:, 1] / SS) * scale
+            py = (base - (y0 - pad + c[:, 0] / SS)) * scale
             p = rdp(np.column_stack([px, py]), RDP_TOL)
             if len(p) >= 4:
-                polys.append(p)
+                polys.append(p[:-1])          # drop the duplicated closing point
         if not polys:
             print("  !! no outline for", ch)
             continue
@@ -219,10 +280,7 @@ def main():
         for i, p in enumerate(polys):
             if np.sign(signed_area(p)) != (outer if i == 0 else -outer):
                 p = p[::-1]
-            pen.moveTo((float(p[0][0]), float(p[0][1])))
-            for pt in p[1:-1]:
-                pen.lineTo((float(pt[0]), float(pt[1])))
-            pen.closePath()
+            emit_contour(pen, p)
         glyphs[ch] = pen.glyph()
         allx = np.concatenate([p[:, 0] for p in polys])
         widths[ch] = int(round(allx.max() - allx.min() + 2 * SIDE_BEARING * UPM))

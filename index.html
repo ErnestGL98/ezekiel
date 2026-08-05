@@ -15,12 +15,11 @@
   <!-- Colors the phone's browser chrome (address bar) to match the site -->
   <meta name="theme-color" content="#F2EEE7">
 
-  <!-- Google Fonts. preconnect just makes the font download start sooner. -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <!-- Start downloading the handwriting font immediately, in parallel with
+       the stylesheet, instead of waiting for the CSS to be parsed first. -->
+  <link rel="preload" href="fonts/EzekielHand.woff2" as="font" type="font/woff2" crossorigin>
 
-  <!-- Our own stylesheet. Loaded last so it wins over anything above. -->
+  <!-- Our own stylesheet. -->
   <link rel="stylesheet" href="css/style.css">
 </head>
 

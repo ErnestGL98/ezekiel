@@ -6,6 +6,27 @@
 
 
 /* ------------------------------------------------------------
+   0. THE HANDWRITING FONT
+   Built from the photo of Ezekiel's handwritten alphabet. Every
+   letter is a traced outline of the real pen strokes, thickened
+   ~35% so it reads a little bolder on screen.
+   Source photo kept at fonts/source-handwriting.jpg if it ever
+   needs rebuilding.
+   ------------------------------------------------------------ */
+@font-face {
+  font-family: 'Ezekiel Hand';
+  /* woff2 first (8KB, every modern browser); ttf is the fallback */
+  src: url('../fonts/EzekielHand.woff2') format('woff2'),
+       url('../fonts/EzekielHand.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  /* swap = show fallback text immediately, then swap the handwriting
+     in when it arrives. Stops the "invisible text" flash. */
+  font-display: swap;
+}
+
+
+/* ------------------------------------------------------------
    1. DESIGN TOKENS
    Variables so you change a color/size in ONE place, not 20.
    Use them anywhere with  var(--name)
@@ -17,9 +38,8 @@
   --ink-soft:     #6B655C;   /* muted grey-brown text */
   --white:        #FFFFFF;
 
-  /* Font stacks. The names after Archivo are fallbacks used if
-     Google Fonts fails to load (e.g. you're offline). */
-  --font-display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+  /* The handwriting, with plain fallbacks if the font file fails. */
+  --font-display: 'Ezekiel Hand', 'Helvetica Neue', Arial, sans-serif;
 
   /* Consistent page side-padding, used by every section */
   --gutter: 1.5rem;
@@ -94,8 +114,11 @@ a {
 
 .nav a {
   color: var(--white);
-  font-size: 0.7rem;
-  font-weight: 500;
+  font-size: 0.78rem;
+  /* 400 everywhere: the font ships one weight, and the extra boldness
+     is already baked into the letter outlines. Asking for 500/700 here
+     would make the browser fake it, which smears handwriting badly. */
+  font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 0.18em;      /* the wide, editorial spacing */
   /* Generous tap target — Apple/Google both recommend ~44px minimum */
@@ -192,13 +215,15 @@ a {
      or larger than 7rem. This one function replaces a pile of
      font-size overrides at different breakpoints. */
   font-size: clamp(2.6rem, 15vw, 7rem);
-  font-weight: 800;
+  font-weight: 400;            /* see the note on .nav a */
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  /* Handwriting already carries its own rhythm, so it needs far less
+     added tracking than the geometric sans this replaced. */
+  letter-spacing: 0.05em;
   line-height: 0.95;
   /* letter-spacing adds space AFTER the last letter too, which
      makes centered text look shifted left. This nudges it back. */
-  text-indent: 0.1em;
+  text-indent: 0.05em;
   text-shadow: 0 2px 30px rgba(0, 0, 0, 0.5);
 }
 
@@ -219,8 +244,8 @@ a {
   padding: 0.9rem 2.4rem;
   border: 1px solid rgba(255, 255, 255, 0.75);
   color: var(--white);
-  font-size: 0.72rem;
-  font-weight: 500;
+  font-size: 0.8rem;
+  font-weight: 400;            /* see the note on .nav a */
   text-transform: uppercase;
   letter-spacing: 0.22em;
   text-indent: 0.22em;
@@ -260,8 +285,8 @@ a {
 .site-footer__mark {
   margin: 0;
   color: var(--ink);
-  font-size: 0.72rem;
-  font-weight: 700;
+  font-size: 0.8rem;
+  font-weight: 400;            /* see the note on .nav a */
   text-transform: uppercase;
   letter-spacing: 0.4em;
   text-indent: 0.4em;
@@ -297,8 +322,8 @@ a {
   .hero__logo {
     /* Desktop is wider, so 15vw would be enormous — dial it back */
     font-size: clamp(4.5rem, 9vw, 9rem);
-    letter-spacing: 0.14em;
-    text-indent: 0.14em;
+    letter-spacing: 0.07em;
+    text-indent: 0.07em;
   }
 
   /* A desktop window is landscape but the photo is portrait, so the

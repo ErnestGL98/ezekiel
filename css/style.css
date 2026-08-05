@@ -114,7 +114,7 @@ a {
 
 .nav a {
   color: var(--white);
-  font-size: 0.78rem;
+  font-size: 0.95rem;
   /* 400 everywhere: the font ships one weight, and the extra boldness
      is already baked into the letter outlines. Asking for 500/700 here
      would make the browser fake it, which smears handwriting badly. */
@@ -122,7 +122,7 @@ a {
   text-transform: uppercase;
   letter-spacing: 0.18em;      /* the wide, editorial spacing */
   /* Generous tap target — Apple/Google both recommend ~44px minimum */
-  padding: 0.6rem 0.2rem;
+  padding: 0.75rem 0.3rem;
   /* Faint shadow so white text survives the light part of the photo */
   text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
   transition: opacity 0.25s ease;
@@ -227,6 +227,27 @@ a {
   text-shadow: 0 2px 30px rgba(0, 0, 0, 0.5);
 }
 
+/* The clickable part of the logo. It carries no styling of its own —
+   it inherits the size, colour and tracking from the <h1> above, so
+   the two stay in sync if you restyle the heading. */
+.hero__logo-link {
+  display: inline-block;
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+
+.hero__logo-link:hover,
+.hero__logo-link:focus-visible {
+  opacity: 0.78;
+}
+
+.hero__logo-link:focus-visible {
+  outline: 2px solid var(--white);
+  /* em rather than px so the ring scales with the huge heading */
+  outline-offset: 0.08em;
+}
+
 
 /* ------------------------------------------------------------
    5. BUTTON
@@ -272,29 +293,7 @@ a {
 
 
 /* ------------------------------------------------------------
-   6. FOOTER
-   ------------------------------------------------------------ */
-.site-footer {
-  background-color: var(--cream);
-  border-top: 1px solid var(--cream-deep);
-  padding: 2.25rem var(--gutter);
-  padding-bottom: max(2.25rem, calc(1.5rem + env(safe-area-inset-bottom)));
-  text-align: center;
-}
-
-.site-footer__mark {
-  margin: 0;
-  color: var(--ink);
-  font-size: 0.8rem;
-  font-weight: 400;            /* see the note on .nav a */
-  text-transform: uppercase;
-  letter-spacing: 0.4em;
-  text-indent: 0.4em;
-}
-
-
-/* ------------------------------------------------------------
-   7. LARGER SCREENS
+   6. LARGER SCREENS
    Everything above was the phone layout. This block only applies
    from 48em (768px) wide and up — tablets and desktops.
    ------------------------------------------------------------ */
@@ -338,7 +337,7 @@ a {
 
 
 /* ------------------------------------------------------------
-   8. REDUCED MOTION
+   7. REDUCED MOTION
    Some people set "reduce motion" in their OS for motion sickness.
    Respect it by switching animations off.
    ------------------------------------------------------------ */

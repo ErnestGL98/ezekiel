@@ -61,7 +61,12 @@
          the logo, then another empty stretchy row. The two equal
          stretchy rows are what pin the logo to the exact centre. -->
     <div class="hero__content">
-      <h1 class="hero__logo">Ezekiel</h1>
+      <!-- The name doubles as the logo and as the home link. A real <a>
+           rather than a JavaScript click handler, so it still works with
+           the keyboard, with middle-click, and with open-in-new-tab.
+           "./" means "this folder's index page" — so on the home page it
+           reloads, and from any future page it comes back here. -->
+      <h1 class="hero__logo"><a class="hero__logo-link" href="./">Ezekiel</a></h1>
 
       <!-- The button. Change href to portfolio.html when that page exists.
            It lives in the row BELOW the logo, so it hangs off the centre
@@ -70,13 +75,6 @@
     </div>
 
   </section>
-
-  <!-- ============================================================
-       FOOTER — the small wordmark strip, like the reference site.
-       ============================================================ -->
-  <footer class="site-footer">
-    <p class="site-footer__mark">Ezekiel</p>
-  </footer>
 
 </body>
 </html>

@@ -241,25 +241,41 @@ a {
                                   under the centre line */
   margin-top: 2.25rem;         /* the gap under the logo */
   min-height: 3rem;            /* 48px — comfortable to tap */
-  padding: 0.9rem 2.4rem;
-  border: 1px solid rgba(255, 255, 255, 0.75);
+  /* Roomy padding so the glow below has space to fade out before it
+     reaches the edge of the box */
+  padding: 1.35rem 3.6rem;
+  border: none;
   color: var(--white);
   font-size: 0.8rem;
   font-weight: 400;            /* see the note on .nav a */
   text-transform: uppercase;
   letter-spacing: 0.22em;
   text-indent: 0.22em;
-  /* A frosted-glass tint. backdrop-filter blurs whatever is behind. */
-  background-color: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);   /* Safari still wants the prefix */
-  transition: background-color 0.3s ease, color 0.3s ease;
+  /* No outline and no frosted panel — both of those draw a hard
+     rectangle. Instead a soft pool of shade sits behind the label and
+     dissolves into the photo.
+
+     The 50% 50% radii matter: a gradient is clipped to the element's
+     box, so if its radius reaches past the edge it gets cut off
+     mid-fade and you see a rectangle again. At 50%/50% the ellipse is
+     inscribed in the box, so it hits fully transparent just as it
+     meets the edge — and the corners fall outside the ellipse
+     entirely. No edge anywhere. */
+  background: radial-gradient(ellipse 50% 50% at 50% 50%,
+    rgba(0, 0, 0, 0.62) 0%,
+    rgba(0, 0, 0, 0.46) 38%,
+    rgba(0, 0, 0, 0.20) 68%,
+    rgba(0, 0, 0, 0.00) 100%);
+  transition: letter-spacing 0.35s ease, text-indent 0.35s ease;
 }
 
+/* Without a border the button needs some other sign it's interactive,
+   so the letters open up on hover. Deliberately not fading the whole
+   button on hover — that would dim the label too. */
 .button:hover,
 .button:focus-visible {
-  background-color: var(--white);
-  color: var(--ink);
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
 }
 
 /* A clear keyboard focus ring — important for accessibility.

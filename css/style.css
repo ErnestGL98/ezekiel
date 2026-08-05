@@ -1,0 +1,330 @@
+/* ============================================================
+   EZEKIEL — Home page styles
+   Written mobile-first: the plain rules are the PHONE layout,
+   and the @media block near the bottom adds the bigger-screen tweaks.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   1. DESIGN TOKENS
+   Variables so you change a color/size in ONE place, not 20.
+   Use them anywhere with  var(--name)
+   ------------------------------------------------------------ */
+:root {
+  --cream:        #F2EEE7;   /* the off-white page background */
+  --cream-deep:   #E8E2D8;   /* slightly darker cream, for edges */
+  --ink:          #1A1815;   /* near-black text */
+  --ink-soft:     #6B655C;   /* muted grey-brown text */
+  --white:        #FFFFFF;
+
+  /* Font stacks. The names after Archivo are fallbacks used if
+     Google Fonts fails to load (e.g. you're offline). */
+  --font-display: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+
+  /* Consistent page side-padding, used by every section */
+  --gutter: 1.5rem;
+}
+
+
+/* ------------------------------------------------------------
+   2. RESET / BASE
+   Browsers add default margins and sizing quirks. Clear them.
+   ------------------------------------------------------------ */
+
+/* border-box = padding no longer makes elements wider than you asked.
+   This one line prevents most "why is my layout overflowing?" bugs. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* Anchor links glide instead of jumping */
+  scroll-behavior: smooth;
+  /* Stops iOS Safari from auto-enlarging text in landscape */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 1.5;
+  /* Smoother letterforms on Mac/iOS */
+  -webkit-font-smoothing: antialiased;
+  /* Belt-and-braces: nothing may cause a sideways scrollbar on mobile */
+  overflow-x: hidden;
+}
+
+img {
+  display: block;      /* removes the mysterious gap under images */
+  max-width: 100%;     /* images never overflow their container */
+}
+
+a {
+  color: inherit;          /* links use the surrounding text color */
+  text-decoration: none;   /* no default underline */
+}
+
+
+/* ------------------------------------------------------------
+   3. HEADER / NAV
+   position:absolute lifts it OUT of the normal flow so it floats
+   on top of the hero photo instead of pushing it down.
+   ------------------------------------------------------------ */
+.site-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;                  /* above the photo and the scrim */
+  padding: 1.25rem var(--gutter);
+  /* Keeps the nav clear of the iPhone notch / dynamic island */
+  padding-top: max(1.25rem, env(safe-area-inset-top));
+}
+
+.nav {
+  display: flex;
+  justify-content: center;     /* centered on phones */
+  gap: 1.75rem;
+}
+
+.nav a {
+  color: var(--white);
+  font-size: 0.7rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;      /* the wide, editorial spacing */
+  /* Generous tap target — Apple/Google both recommend ~44px minimum */
+  padding: 0.6rem 0.2rem;
+  /* Faint shadow so white text survives the light part of the photo */
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
+  transition: opacity 0.25s ease;
+}
+
+.nav a:hover,
+.nav a:focus-visible {
+  opacity: 0.6;
+}
+
+
+/* ------------------------------------------------------------
+   4. HERO
+   A "stacking box": the photo, a dark scrim, and the text are all
+   layered inside it. position:relative on the parent is what lets
+   the children position themselves against it.
+   ------------------------------------------------------------ */
+.hero {
+  position: relative;
+  /* 100vh is buggy on mobile (the address bar makes it too tall).
+     100svh = "small viewport height" and behaves correctly.
+     The 100vh line above it is the fallback for older browsers. */
+  height: 100vh;
+  height: 100svh;
+  min-height: 34rem;           /* never squashes flat in landscape */
+  overflow: hidden;
+}
+
+.hero__image {
+  position: absolute;
+  inset: 0;                    /* shorthand for top/right/bottom/left: 0 */
+  width: 100%;
+  height: 100%;
+  /* cover = fill the box completely, cropping the overflow.
+     Without this the photo would stretch and distort. */
+  object-fit: cover;
+  /* Which part to keep when cropping. 50% across, 30% down keeps
+     his face in frame on tall phone screens. Tune this number if
+     the crop looks off on your device. */
+  object-position: 50% 30%;
+}
+
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;                  /* between the photo and the text */
+  /* Two layers. The radial one is an oval of shade sitting in the
+     middle of the photo, so the centred name stays readable against
+     the bright wall behind him. The linear one darkens the very top
+     and bottom edges for the nav and the button. */
+  background:
+    radial-gradient(ellipse 90% 55% at 50% 50%,
+      rgba(0, 0, 0, 0.42) 0%,
+      rgba(0, 0, 0, 0.18) 55%,
+      rgba(0, 0, 0, 0.00) 100%),
+    linear-gradient(to bottom,
+      rgba(0, 0, 0, 0.34) 0%,
+      rgba(0, 0, 0, 0.10) 20%,
+      rgba(0, 0, 0, 0.10) 78%,
+      rgba(0, 0, 0, 0.42) 100%);
+}
+
+.hero__content {
+  position: absolute;
+  inset: 0;                    /* fills the whole hero box */
+  z-index: 2;                  /* on top of the scrim */
+
+  /* THIS is what centres the name exactly.
+     Three rows: [stretchy] [logo] [stretchy].
+     The two 1fr rows always take an equal share of the leftover
+     space, so the logo lands on the exact vertical midpoint —
+     and it stays there no matter what sits underneath it. */
+  display: grid;
+  grid-template-rows: 1fr auto 1fr;
+  justify-items: center;       /* centres each row horizontally */
+
+  /* Equal top and bottom padding, or the midpoint would shift.
+     4.5rem keeps the logo clear of the nav on short screens. */
+  padding: 4.5rem var(--gutter);
+  text-align: center;
+  color: var(--white);
+}
+
+/* The name — this <h1> doubles as the logo */
+.hero__logo {
+  grid-row: 2;                 /* the middle, perfectly centred row */
+  margin: 0;
+  /* clamp(min, preferred, max) = fluid type.
+     It grows with the screen but never smaller than 2.6rem
+     or larger than 7rem. This one function replaces a pile of
+     font-size overrides at different breakpoints. */
+  font-size: clamp(2.6rem, 15vw, 7rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  line-height: 0.95;
+  /* letter-spacing adds space AFTER the last letter too, which
+     makes centered text look shifted left. This nudges it back. */
+  text-indent: 0.1em;
+  text-shadow: 0 2px 30px rgba(0, 0, 0, 0.5);
+}
+
+
+/* ------------------------------------------------------------
+   5. BUTTON
+   inline-flex lets us center the label and still control the size.
+   ------------------------------------------------------------ */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  grid-row: 3;                 /* the stretchy row below the logo */
+  align-self: start;           /* hug the top of it, i.e. sit just
+                                  under the centre line */
+  margin-top: 2.25rem;         /* the gap under the logo */
+  min-height: 3rem;            /* 48px — comfortable to tap */
+  padding: 0.9rem 2.4rem;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  color: var(--white);
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  text-indent: 0.22em;
+  /* A frosted-glass tint. backdrop-filter blurs whatever is behind. */
+  background-color: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);   /* Safari still wants the prefix */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.button:hover,
+.button:focus-visible {
+  background-color: var(--white);
+  color: var(--ink);
+}
+
+/* A clear keyboard focus ring — important for accessibility.
+   :focus-visible only shows it for keyboard users, not mouse clicks. */
+.nav a:focus-visible,
+.button:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 3px;
+}
+
+
+/* ------------------------------------------------------------
+   6. FOOTER
+   ------------------------------------------------------------ */
+.site-footer {
+  background-color: var(--cream);
+  border-top: 1px solid var(--cream-deep);
+  padding: 2.25rem var(--gutter);
+  padding-bottom: max(2.25rem, calc(1.5rem + env(safe-area-inset-bottom)));
+  text-align: center;
+}
+
+.site-footer__mark {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4em;
+  text-indent: 0.4em;
+}
+
+
+/* ------------------------------------------------------------
+   7. LARGER SCREENS
+   Everything above was the phone layout. This block only applies
+   from 48em (768px) wide and up — tablets and desktops.
+   ------------------------------------------------------------ */
+@media (min-width: 48em) {
+
+  :root {
+    --gutter: 3rem;
+  }
+
+  /* On desktop the nav moves to the right, like the reference site */
+  .nav {
+    justify-content: flex-end;
+    gap: 2.5rem;
+  }
+
+  .site-header {
+    padding-top: 2rem;
+  }
+
+  .hero__content {
+    /* Still equal top and bottom, so the logo stays dead-centre */
+    padding: 6rem var(--gutter);
+  }
+
+  .hero__logo {
+    /* Desktop is wider, so 15vw would be enormous — dial it back */
+    font-size: clamp(4.5rem, 9vw, 9rem);
+    letter-spacing: 0.14em;
+    text-indent: 0.14em;
+  }
+
+  /* A desktop window is landscape but the photo is portrait, so the
+     browser has to crop it to a horizontal band. 0% anchors that band
+     to the TOP of the photo, which is the only way to guarantee his
+     full head stays in frame at every window height.
+     Smaller number = crop higher up. 0% is as high as it goes. */
+  .hero__image {
+    object-position: 50% 0%;
+  }
+}
+
+
+/* ------------------------------------------------------------
+   8. REDUCED MOTION
+   Some people set "reduce motion" in their OS for motion sickness.
+   Respect it by switching animations off.
+   ------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

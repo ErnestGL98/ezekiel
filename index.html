@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Tells the browser the file is UTF-8 (so accents/symbols render right) -->
+  <meta charset="UTF-8">
+
+  <!-- THE most important line for a mobile-ready site.
+       It tells phones: "use the real device width, don't pretend to be a desktop." -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Text that shows in Google results / when the link is shared -->
+  <title>EZEKIEL — Model Portfolio</title>
+  <meta name="description" content="Portfolio and experience of model Ezekiel.">
+
+  <!-- Colors the phone's browser chrome (address bar) to match the site -->
+  <meta name="theme-color" content="#F2EEE7">
+
+  <!-- Google Fonts. preconnect just makes the font download start sooner. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <!-- Our own stylesheet. Loaded last so it wins over anything above. -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+  <!-- ============================================================
+       HEADER — small nav that floats on top of the hero image.
+       The link points to "#" for now; swap it for the real filename
+       (contact.html) once that page exists.
+       ============================================================ -->
+  <header class="site-header">
+    <nav class="nav" aria-label="Main navigation">
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+
+  <!-- ============================================================
+       HERO — full-screen photo with the name centered on top.
+       The <h1> IS the logo, exactly as requested.
+       ============================================================ -->
+  <section class="hero">
+
+    <!-- The photo. object-fit:cover (in the CSS) makes it fill the box
+         without stretching. fetchpriority="high" tells the browser this
+         is the most important image on the page, load it first. -->
+    <img
+      class="hero__image"
+      src="images/Home_page_compressed.jpg"
+      alt="Ezekiel wearing an embroidered tan workwear jacket and trousers"
+      fetchpriority="high"
+      decoding="async">
+
+    <!-- A see-through dark layer over the photo.
+         Purely so the white text stays readable on the light parts. -->
+    <div class="hero__scrim" aria-hidden="true"></div>
+
+    <!-- The content that sits ON TOP of the photo.
+         This is a 3-row grid (see the CSS): an empty stretchy row,
+         the logo, then another empty stretchy row. The two equal
+         stretchy rows are what pin the logo to the exact centre. -->
+    <div class="hero__content">
+      <h1 class="hero__logo">Ezekiel</h1>
+
+      <!-- The button. Change href to portfolio.html when that page exists.
+           It lives in the row BELOW the logo, so it hangs off the centre
+           line without pushing the logo off-centre. -->
+      <a class="button" href="#">View Portfolio</a>
+    </div>
+
+  </section>
+
+  <!-- ============================================================
+       FOOTER — the small wordmark strip, like the reference site.
+       ============================================================ -->
+  <footer class="site-footer">
+    <p class="site-footer__mark">Ezekiel</p>
+  </footer>
+
+</body>
+</html>

@@ -32,111 +32,88 @@
     <h1 class="page-title">Portfolio</h1>
 
     <!-- ============================================================
-         THE GRID — 15 slots, one per shoot or event.
+         THE GRID — one tile per shoot or event, in alphabetical order.
 
-         HOW TO FILL ONE IN, when you have the photos:
+         TO ADD ANOTHER SHOOT:
+         1. Put the photo in the "portfolio covers" folder in Downloads
+         2. Run:  python tools/build_covers.py
+            That shrinks it for the web. The originals are camera files
+            — one was 90MB — and would take minutes to load on a phone.
+         3. Copy any block below and point its src= at the new file
 
-         1. Put the cover photo in the images/ folder
-         2. Replace the whole <span class="tile__num">01</span> line with:
-              <img src="images/your-photo.jpg" alt="Short description">
-         3. Change "Shoot 01" (the line above the frame) to the
-            real name of the shoot
-         4. Change href="#" to the gallery page for that shoot,
-            e.g. href="gallery-subway.html"
+         TO LINK A TILE TO ITS GALLERY:
+         change href="#" to that shoot's page, e.g. href="gallery-essx.html"
 
-         The layout is 2 across on a phone and 3 across on anything
-         wider, so 15 fills exactly 5 rows with no gaps.
+         The first three load straight away because they're on screen;
+         the rest use loading="lazy" so they only download once you
+         scroll near them.
          ============================================================ -->
     <div class="grid">
 
       <!-- ---- 01 ---- -->
       <a class="tile" href="#">
-        <span class="tile__name">Shoot 01</span>
-        <span class="tile__frame"><span class="tile__num">01</span></span>
+        <span class="tile__name">APOTTS AW22 - Skinfolk</span>
+        <span class="tile__frame"><img src="images/covers/apotts-aw22-skinfolk.jpg" alt="APOTTS AW22 for Skinfolk" decoding="async"></span>
       </a>
 
       <!-- ---- 02 ---- -->
       <a class="tile" href="#">
-        <span class="tile__name">Shoot 02</span>
-        <span class="tile__frame"><span class="tile__num">02</span></span>
+        <span class="tile__name">APOTTS Ecomm 25</span>
+        <span class="tile__frame"><img src="images/covers/apotts-ecomm-25.jpg" alt="APOTTS ecommerce shoot 25" decoding="async"></span>
       </a>
 
       <!-- ---- 03 ---- -->
       <a class="tile" href="#">
-        <span class="tile__name">Shoot 03</span>
-        <span class="tile__frame"><span class="tile__num">03</span></span>
+        <span class="tile__name">APOTTS SS24 - Urbanearth</span>
+        <span class="tile__frame"><img src="images/covers/apotts-ss24-urbanearth.jpg" alt="APOTTS SS24 for Urbanearth" decoding="async"></span>
       </a>
 
       <!-- ---- 04 ---- -->
       <a class="tile" href="#">
-        <span class="tile__name">Shoot 04</span>
-        <span class="tile__frame"><span class="tile__num">04</span></span>
+        <span class="tile__name">Bstroy Mohawk x Busby</span>
+        <span class="tile__frame"><img src="images/covers/b-stroy-mohawk-b-usby.jpg" alt="Bstroy Mohawk with Busby" loading="lazy" decoding="async"></span>
       </a>
 
       <!-- ---- 05 ---- -->
       <a class="tile" href="#">
-        <span class="tile__name">Shoot 05</span>
-        <span class="tile__frame"><span class="tile__num">05</span></span>
+        <span class="tile__name">Daveed Baptist - Soaring High SS26</span>
+        <span class="tile__frame"><img src="images/covers/daveed-baptist-soaring-high-ss26.jpg" alt="Daveed Baptist, Soaring High SS26" loading="lazy" decoding="async"></span>
       </a>
 
       <!-- ---- 06 ---- -->
       <a class="tile" href="#">
-        <span class="tile__name">Shoot 06</span>
-        <span class="tile__frame"><span class="tile__num">06</span></span>
+        <span class="tile__name">Essx Spring Summer</span>
+        <span class="tile__frame"><img src="images/covers/essx-spring-summer.jpg" alt="Essx Spring Summer" loading="lazy" decoding="async"></span>
       </a>
 
       <!-- ---- 07 ---- -->
       <a class="tile" href="#">
-        <span class="tile__name">Shoot 07</span>
-        <span class="tile__frame"><span class="tile__num">07</span></span>
+        <span class="tile__name">Essx x Troubled Waters</span>
+        <span class="tile__frame"><img src="images/covers/essx-x-troubled-waters.jpg" alt="Essx with Troubled Waters" loading="lazy" decoding="async"></span>
       </a>
 
       <!-- ---- 08 ---- -->
       <a class="tile" href="#">
-        <span class="tile__name">Shoot 08</span>
-        <span class="tile__frame"><span class="tile__num">08</span></span>
+        <span class="tile__name">Noid Collision FW 23</span>
+        <span class="tile__frame"><img src="images/covers/noid-collision-fw-23.jpg" alt="Noid Collision FW 23" loading="lazy" decoding="async"></span>
       </a>
 
       <!-- ---- 09 ---- -->
       <a class="tile" href="#">
-        <span class="tile__name">Shoot 09</span>
-        <span class="tile__frame"><span class="tile__num">09</span></span>
+        <span class="tile__name">Office Mag x Heron Preston</span>
+        <span class="tile__frame"><img src="images/covers/office-mag-x-heron-preston.jpg" alt="Office Magazine with Heron Preston" loading="lazy" decoding="async"></span>
       </a>
 
       <!-- ---- 10 ---- -->
       <a class="tile" href="#">
-        <span class="tile__name">Shoot 10</span>
-        <span class="tile__frame"><span class="tile__num">10</span></span>
+        <span class="tile__name">S Rousseau</span>
+        <span class="tile__frame"><img src="images/covers/s-rousseau.jpg" alt="S Rousseau" loading="lazy" decoding="async"></span>
       </a>
 
       <!-- ---- 11 ---- -->
       <a class="tile" href="#">
-        <span class="tile__name">Shoot 11</span>
-        <span class="tile__frame"><span class="tile__num">11</span></span>
-      </a>
-
-      <!-- ---- 12 ---- -->
-      <a class="tile" href="#">
-        <span class="tile__name">Shoot 12</span>
-        <span class="tile__frame"><span class="tile__num">12</span></span>
-      </a>
-
-      <!-- ---- 13 ---- -->
-      <a class="tile" href="#">
-        <span class="tile__name">Shoot 13</span>
-        <span class="tile__frame"><span class="tile__num">13</span></span>
-      </a>
-
-      <!-- ---- 14 ---- -->
-      <a class="tile" href="#">
-        <span class="tile__name">Shoot 14</span>
-        <span class="tile__frame"><span class="tile__num">14</span></span>
-      </a>
-
-      <!-- ---- 15 ---- -->
-      <a class="tile" href="#">
-        <span class="tile__name">Shoot 15</span>
-        <span class="tile__frame"><span class="tile__num">15</span></span>
+        <span class="tile__name">While It Lasted - Flanelle Magazine</span>
+        <span class="tile__frame"><img src="images/covers/while-it-lasted-flanelle-magazine.jpg" alt="While It Lasted, Flanelle Magazine" loading="lazy" decoding="async"></span>
       </a>
 
     </div>

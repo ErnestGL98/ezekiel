@@ -337,7 +337,194 @@ a {
 
 
 /* ------------------------------------------------------------
-   7. REDUCED MOTION
+   7. PORTFOLIO PAGE
+   Only portfolio.html uses any of this. The home page has none of
+   these classes on it, so all of it is simply ignored there.
+   ------------------------------------------------------------ */
+
+/* --- header for interior pages ---
+   The home page's header floats in white on top of the photo. This one
+   sits in the normal flow on the cream background, so it needs dark
+   text and its own class rather than a tweak to the other one. */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.5rem var(--gutter);
+  padding-top: max(1.5rem, env(safe-area-inset-top));
+}
+
+/* The small wordmark, which doubles as the link home */
+.page-header__mark {
+  color: var(--ink);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
+  padding: 0.5rem 0;
+  transition: opacity 0.25s ease;
+}
+
+.page-header__mark:hover,
+.page-header__mark:focus-visible {
+  opacity: 0.55;
+}
+
+/* Nav links are white with a drop shadow on the home page because they
+   sit on a photo. On cream they'd be invisible, so override both. */
+.page-header .nav {
+  justify-content: flex-end;
+  gap: 1.75rem;
+}
+
+.page-header .nav a {
+  color: var(--ink);
+  text-shadow: none;
+}
+
+/* Same reason: the white focus ring from section 5 can't be seen on
+   a cream background. */
+.page-header__mark:focus-visible,
+.page-header .nav a:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+
+/* --- page body --- */
+.page-main {
+  /* Caps the line length on big monitors so the grid doesn't sprawl */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--gutter) 5rem;
+  padding-bottom: max(5rem, calc(4rem + env(safe-area-inset-bottom)));
+}
+
+.page-title {
+  margin: 1rem 0 2.5rem;
+  font-size: clamp(2.4rem, 11vw, 4.5rem);
+  font-weight: 400;            /* see the note on .nav a */
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-indent: 0.06em;         /* re-centres it, as on the hero logo */
+  line-height: 1;
+  text-align: center;
+}
+
+
+/* --- the grid of shoots ---
+   2 across on a phone, 3 from tablet up. 15 divides evenly by both,
+   so there's never a stranded half-empty last row.
+
+   The row gap is deliberately much larger than the column gap. That
+   band of empty space under each photo is where a date, location or
+   short description can go later without the rows starting to crowd
+   each other. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2.75rem 0.9rem;
+}
+
+.tile {
+  display: block;
+  color: inherit;
+}
+
+.tile__frame {
+  display: block;
+  position: relative;
+  /* Portrait, the usual shape for fashion work. aspect-ratio reserves
+     the right amount of space before the photo loads, so the page
+     doesn't jump around as images arrive. */
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background-color: var(--cream-deep);
+  /* A faint diagonal hatch, so an empty slot reads as "photo goes
+     here" rather than as a broken image */
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(0, 0, 0, 0.035) 0 6px,
+    rgba(0, 0, 0, 0.000) 6px 14px);
+}
+
+/* Kicks in once you swap a number for a real <img>: fills the frame
+   and crops the overflow instead of stretching the photo. */
+.tile__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+/* The placeholder number. Delete these once photos are in. */
+.tile__num {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-soft);
+  font-size: 1.6rem;
+  letter-spacing: 0.1em;
+  opacity: 0.5;
+}
+
+/* Sits ABOVE its photo, so each shoot reads as a caption then an
+   image — and the gap left underneath belongs to that tile, ready for
+   more text. */
+.tile__name {
+  display: block;
+  margin-bottom: 0.65rem;
+  color: var(--ink);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  transition: opacity 0.25s ease;
+}
+
+.tile:hover .tile__frame img,
+.tile:focus-visible .tile__frame img {
+  transform: scale(1.04);      /* slow push-in on the photo */
+}
+
+.tile:hover .tile__name,
+.tile:focus-visible .tile__name {
+  opacity: 0.55;
+}
+
+.tile:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+
+
+@media (min-width: 48em) {
+
+  .page-header {
+    padding: 2rem var(--gutter);
+  }
+
+  .page-title {
+    margin: 2rem 0 3.5rem;
+    font-size: clamp(3.5rem, 7vw, 5.5rem);
+  }
+
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    /* Roomy gutter under each row — see the note on .grid above */
+    gap: 5rem 1.75rem;
+  }
+
+  .tile__num {
+    font-size: 2.2rem;
+  }
+}
+
+
+/* ------------------------------------------------------------
+   8. REDUCED MOTION
    Some people set "reduce motion" in their OS for motion sickness.
    Respect it by switching animations off.
    ------------------------------------------------------------ */

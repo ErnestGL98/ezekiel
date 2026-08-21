@@ -15,13 +15,27 @@
    ------------------------------------------------------------ */
 @font-face {
   font-family: 'Ezekiel Hand';
-  /* woff2 first (8KB, every modern browser); ttf is the fallback */
+  /* woff2 first (6KB, every modern browser); ttf is the fallback */
   src: url('../fonts/EzekielHand.woff2') format('woff2'),
        url('../fonts/EzekielHand.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
      in when it arrives. Stops the "invisible text" flash. */
+  font-display: swap;
+}
+
+/* A real bold cut, traced from the same handwriting with the outlines
+   pushed further out — like writing with a thicker pen. Declaring it at
+   font-weight 700 means the browser uses THESE outlines whenever
+   something asks for bold, instead of smearing the regular ones
+   sideways to fake it (which looks awful on handwriting). */
+@font-face {
+  font-family: 'Ezekiel Hand';
+  src: url('../fonts/EzekielHand-Bold.woff2') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
   font-display: swap;
 }
 
@@ -115,9 +129,9 @@ a {
 .nav a {
   color: var(--white);
   font-size: 0.95rem;
-  /* 400 everywhere: the font ships one weight, and the extra boldness
-     is already baked into the letter outlines. Asking for 500/700 here
-     would make the browser fake it, which smears handwriting badly. */
+  /* The family has exactly two real weights, 400 and 700. Stick to those
+     two — asking for anything else (500, 600, 800) makes the browser
+     fake it by smearing the nearest one, which ruins handwriting. */
   font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 0.18em;      /* the wide, editorial spacing */
@@ -478,9 +492,15 @@ a {
   display: block;
   margin-bottom: 0.65rem;
   color: var(--ink);
-  font-size: 0.8rem;
+  font-size: 0.85rem;
+  /* The real bold cut, not a browser-faked one — see the second
+     @font-face block at the top of this file. */
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
+  /* Slightly tighter than before: bold letters are wider, and at this
+     size wide tracking on heavy caps starts to read as separate
+     letters rather than words. */
+  letter-spacing: 0.13em;
   transition: opacity 0.25s ease;
 }
 

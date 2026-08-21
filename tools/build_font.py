@@ -3,8 +3,13 @@ Rebuild EzekielHand from the photo of the handwritten alphabet.
 
 WHAT THIS DOES
     Reads  fonts/source-handwriting.jpg   (photo of the A-Z / a-z sheet)
-    Writes fonts/EzekielHand.woff2        (what the website actually loads)
-           fonts/EzekielHand.ttf          (fallback + for installing locally)
+    Writes fonts/EzekielHand.woff2        (the normal weight)
+           fonts/EzekielHand-Bold.woff2   (a genuinely heavier cut)
+           plus .ttf versions of both
+
+    Both weights are traced from the SAME handwriting. The bold one
+    isn't the browser smearing the normal one — it's the real letter
+    outlines pushed further outward, the way a thicker pen would.
 
 HOW TO RUN IT (from the project folder, in PowerShell)
     python -m pip install pillow numpy scipy scikit-image fonttools brotli
@@ -12,8 +17,8 @@ HOW TO RUN IT (from the project folder, in PowerShell)
 
 WHEN YOU'D NEED THIS
     - You reshoot the alphabet and want the font rebuilt from the new photo
-    - You want the letters thicker or thinner: change BOLDEN_PX below
-      (higher = bolder). Everything else can stay as-is.
+    - You want either weight thicker or thinner: change the numbers in
+      WEIGHTS below (higher = bolder). Everything else can stay as-is.
 
 HOW IT WORKS, IN PLAIN TERMS
     1. Flatten the photo's uneven lighting so ink/paper separate cleanly
@@ -45,8 +50,15 @@ SRC = ROOT / "fonts" / "source-handwriting.jpg"
 FONTS = ROOT / "fonts"
 
 # --- knobs you might reasonably want to touch ---
-BOLDEN_PX = 0.5      # how far to push the outline outward, in source pixels.
-                     # Higher = bolder. 0.5 adds ~35% to a 2.8px pen stroke.
+# The two weights to build. The number is how far each letter's outline is
+# pushed outward, in pixels of the original photo — so it's literally "use
+# a thicker pen". The pen in the photo is about 2.8px wide, and the push
+# applies to both sides, so 0.5 gives a ~3.8px stroke and 1.15 a ~5.1px one.
+WEIGHTS = [
+    # (name suffix, CSS weight, push in source px)
+    ("",      400, 0.50),
+    ("-Bold", 700, 1.15),
+]
 SMOOTH = 2.2         # edge smoothing. Higher = softer, rounder letterforms;
                      # lower = crisper but starts showing the photo's pixels.
 CAP_TARGET = 700     # cap height in font units (out of 1000)
@@ -157,8 +169,13 @@ def signed_area(p):
     return 0.5 * float(np.sum(x * np.roll(y, -1) - np.roll(x, -1) * y))
 
 
-def trace_smooth(mask):
+def trace_smooth(mask, push):
     """Outline a letter with smooth edges instead of a pixel staircase.
+
+    `push` is how far to move the outline outward, in source pixels —
+    the boldness control. Because it comes from the distance field, a
+    heavier weight is a genuinely fatter pen stroke, not the same shape
+    scaled up or the browser's fake-bold smear.
 
     Tracing a hard black/white mask directly follows the square edge of
     every pixel, which is what made the first version look painted. So
@@ -175,7 +192,7 @@ def trace_smooth(mask):
     outside = ndimage.distance_transform_edt(~big)
     sdf = inside - outside                       # positive inside the stroke
     sdf = ndimage.gaussian_filter(sdf, SMOOTH * SS)
-    return measure.find_contours(sdf, -BOLDEN_PX * SS), pad
+    return measure.find_contours(sdf, -push * SS), pad
 
 
 def emit_contour(pen, p):
@@ -251,9 +268,18 @@ def main():
         for ch, b in zip(letters, boxes):
             meta[ch] = (b, baseline, CAP_TARGET / cap, cap)
 
+    # Each letter's ink only needs isolating once; only the tracing below
+    # changes between weights.
+    masks = {ch: only_this_glyph(box) for ch, (box, _, _, _) in meta.items()}
+
+    for suffix, css_weight, push in WEIGHTS:
+        build_weight(meta, masks, suffix, css_weight, push)
+
+
+def build_weight(meta, masks, suffix, css_weight, push):
     glyphs, widths = {}, {}
     for ch, (box, baseline, scale, cap) in sorted(meta.items()):
-        m = only_this_glyph(box)
+        m = masks[ch]
         ys, xs = np.where(m)
         y0, y1, x0, x1 = ys.min(), ys.max() + 1, xs.min(), xs.max() + 1
 
@@ -261,7 +287,7 @@ def main():
         drop = (y1 - baseline) / cap
         base = baseline if (ch in DESCENDERS and drop > 0.08) else float(y1)
 
-        contours, pad = trace_smooth(m[y0:y1, x0:x1])
+        contours, pad = trace_smooth(m[y0:y1, x0:x1], push)
 
         polys = []
         for c in contours:
@@ -285,7 +311,9 @@ def main():
         allx = np.concatenate([p[:, 0] for p in polys])
         widths[ch] = int(round(allx.max() - allx.min() + 2 * SIDE_BEARING * UPM))
 
-    print(f"traced {len(glyphs)} letters")
+    style = "Bold" if css_weight >= 700 else "Regular"
+    print(f"traced {len(glyphs)} letters at weight {css_weight} "
+          f"(pen pushed {push}px)")
 
     names = {c: f"uni{ord(c):04X}" for c in glyphs}
     empty = TTGlyphPen(None).glyph()
@@ -303,18 +331,21 @@ def main():
     fb.setupGlyf(gl)
     fb.setupHorizontalMetrics(mt)
     fb.setupHorizontalHeader(ascent=800, descent=-250)
-    fb.setupNameTable({"familyName": "Ezekiel Hand", "styleName": "Regular",
-                       "psName": "EzekielHand-Regular", "version": "1.0"})
+    fb.setupNameTable({"familyName": "Ezekiel Hand", "styleName": style,
+                       "psName": f"EzekielHand-{style}", "version": "1.0"})
+    # usWeightClass is what tells the browser this file IS the bold one,
+    # so it uses these outlines instead of faking bold from the regular.
     fb.setupOS2(sTypoAscender=800, sTypoDescender=-250, usWinAscent=950,
                 usWinDescent=300, sxHeight=int(CAP_TARGET * 0.52),
-                sCapHeight=CAP_TARGET)
+                sCapHeight=CAP_TARGET, usWeightClass=css_weight)
     fb.setupPost()
-    fb.save(FONTS / "EzekielHand.ttf")
 
-    f = TTFont(FONTS / "EzekielHand.ttf")
+    ttf = FONTS / f"EzekielHand{suffix}.ttf"
+    fb.save(ttf)
+    f = TTFont(ttf)
     f.flavor = "woff2"
-    f.save(FONTS / "EzekielHand.woff2")
-    print("wrote fonts/EzekielHand.ttf and fonts/EzekielHand.woff2")
+    f.save(FONTS / f"EzekielHand{suffix}.woff2")
+    print(f"  wrote fonts/EzekielHand{suffix}.ttf + .woff2")
 
 
 if __name__ == "__main__":

@@ -473,17 +473,55 @@
     window.addEventListener(ev, tryUnlock, { passive: true });
   });
 
+  /* ---------- the sound switch ---------- */
+
+  // Remembered between visits. localStorage throws outright in some
+  // privacy modes, so every use of it is wrapped.
+  var STORE = 'ezekiel-sound';
+  var muted = false;
+  try { muted = localStorage.getItem(STORE) === 'off'; } catch (e) {}
+
+  var toggle = document.querySelector('.sound-toggle');
+
+  function paintToggle() {
+    if (!toggle) return;
+    toggle.setAttribute('aria-pressed', muted ? 'false' : 'true');
+    toggle.setAttribute('aria-label', muted ? 'Turn hover sound on'
+                                            : 'Turn hover sound off');
+  }
+  paintToggle();
+
+  if (toggle) {
+    toggle.addEventListener('click', function () {
+      muted = !muted;
+      try { localStorage.setItem(STORE, muted ? 'off' : 'on'); } catch (e) {}
+      paintToggle();
+
+      // This click is a real gesture, so it's also the moment we're
+      // allowed to create the audio at all.
+      if (!muted) Audio_.unlock();
+
+      // React straight away if a tile is under the pointer right now,
+      // instead of waiting for the next hover.
+      if (active) Audio_.to(muted ? 0 : CONFIG.volume, 0.12);
+      else if (muted) Audio_.to(0, 0.12);
+    });
+  }
+
   // A way to ask the page what the audio is actually doing, since "no
   // sound" has several very different causes that look identical.
   // Run  ezekielAudio()  in the browser console.
   window.ezekielAudio = function () {
     var s = {
+      mutedByToggle: muted,
       audioBuilt: Audio_.ready,
       state: Audio_.ctx ? Audio_.ctx.state : 'not created yet',
       volumeNow: Audio_.gain ? +Audio_.gain.gain.value.toFixed(3) : null,
       configuredVolume: CONFIG.volume
     };
-    s.verdict = !Audio_.ready
+    s.verdict = muted
+      ? 'Muted with the speaker button in the header.'
+      : !Audio_.ready
       ? 'No context yet - click anywhere on the page, then hover a photo.'
       : Audio_.ctx.state !== 'running'
         ? 'Blocked by the browser (' + Audio_.ctx.state + '). Click the page.'
@@ -545,7 +583,7 @@
     // and building the context from one makes it start blocked. The first
     // real click builds it; this only wakes it and rides the fader.
     Audio_.resumeIfBuilt();
-    Audio_.to(CONFIG.volume, 0.06);
+    if (!muted) Audio_.to(CONFIG.volume, 0.06);
     cancelAnimationFrame(raf);
     raf = requestAnimationFrame(frame);
   }

@@ -49,7 +49,12 @@
     crush: 7.0,        // colour levels per channel — lower is more crushed
     blockPx: 3.0,      // horizontal pixelation, in pixels
     aberration: 10.5,  // colour-fringe split, in pixels
-    volume: 0.13       // rumble loudness, 0 to 1
+    volume: 0.20,      // rumble loudness, 0 to 1
+    crushLevels: 5,    // steps the waveform is quantised to. Fewer = harsher.
+    crushHold: 112,    // samples each value is held for. More = coarser.
+    rumbleHz: 240      // lowpass cutoff. This is the one that decides how
+                       // much of the crunch you actually hear: too low and
+                       // the grit is filtered off and it's just a hum.
   };
 
   // Respect the OS "reduce motion" setting — this effect is exactly the
@@ -353,10 +358,11 @@
       var buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * dur), ctx.sampleRate);
       var d = buffer.getChannelData(0);
       var brown = 0, held = 0, countdown = 0;
-      var HOLD = 96;      // reuse each sample this many times => the sample
-                          // rate collapses to a few hundred Hz, which is the
-                          // gritty half of "bit-crushed"
-      var LEVELS = 10;    // and quantising the value is the other half
+      var HOLD = CONFIG.crushHold;    // reuse each sample this many times, so
+                                      // the sample rate collapses to a few
+                                      // hundred Hz — the gritty half of
+                                      // "bit-crushed"
+      var LEVELS = CONFIG.crushLevels; // quantising the value is the other half
       for (var i = 0; i < d.length; i++) {
         if (countdown <= 0) {
           brown = (brown + 0.022 * (Math.random() * 2 - 1)) / 1.022;
@@ -371,10 +377,13 @@
       src.buffer = buffer;
       src.loop = true;
 
-      var lp = ctx.createBiquadFilter();      // keep it a rumble, not a hiss
+      // Keeps it a rumble rather than a hiss — but not so tight that it
+      // filters off the crunch that makes it sound crushed in the first
+      // place. A little resonance at the cutoff gives it some edge.
+      var lp = ctx.createBiquadFilter();
       lp.type = 'lowpass';
-      lp.frequency.value = 130;
-      lp.Q.value = 0.9;
+      lp.frequency.value = CONFIG.rumbleHz;
+      lp.Q.value = 1.3;
 
       var hp = ctx.createBiquadFilter();      // clear the inaudible sub
       hp.type = 'highpass';

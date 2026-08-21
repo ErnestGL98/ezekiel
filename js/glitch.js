@@ -38,8 +38,9 @@
     shear: 0.20,       // how far bands slide sideways (fraction of width)
     keyLow: 0.10,      // luminance at/below this = full effect (blacks)
     keyHigh: 0.34,     // luminance at/above this = only the floor below
-    keyFloor: 0.10,    // how much the highlights still contribute, 0 to 1.
-                       // 0 = highlights never glitch at all.
+    keyFloor: 0.0,     // how much the highlights still contribute, 0 to 1.
+                       // 0 = they don't, which is what keeps the effect
+                       // reading as coming out of the shadows only.
     crush: 7.0,        // colour levels per channel — lower is more crushed
     blockPx: 3.0,      // horizontal pixelation, in pixels
     aberration: 10.5,  // colour-fringe split, in pixels
@@ -112,13 +113,36 @@
     '  float dr = hash(vec2(row, slow * 1.7 + uSeed + 5.0));',
     '  float shear = (dr - 0.35) * uShear * (0.35 + 0.65 * flick);',
     '',
+    '  // --- where the tear starts ---------------------------------------',
+    '  // The trail has to BEGIN in shadow. Picking the start point at',
+    '  // random meant plenty of trails started on white backdrop and',
+    '  // streaked out of nowhere, which is what made it look untidy.',
+    '  //',
+    '  // So probe several points across this row and tear from the darkest',
+    '  // one. Costs a few extra texture reads, but it is what makes the',
+    '  // effect look like it is being dragged out of the blacks rather',
+    '  // than sprayed across the picture.',
+    '  float bestX = 0.5;',
+    '  float bestL = 2.0;',
+    '  for (int i = 0; i < 6; i++) {',
+    '    float cx = hash(vec2(row, uSeed + 31.0 + float(i) * 7.3));',
+    '    float cl = luma(texture2D(uTex, vec2(cx, uv.y)).rgb);',
+    '    if (cl < bestL) { bestL = cl; bestX = cx; }',
+    '  }',
+    '',
+    '  // If even the darkest point in this row is bright, the row has no',
+    '  // shadow to tear from — so it gets nothing at all rather than a',
+    '  // faint streak out of a highlight.',
+    '  float originKey = 1.0 - smoothstep(uKeyLow, uKeyHigh, bestL);',
+    '',
+    '  // nudge off the exact darkest pixel so the starts do not line up',
+    '  float x0 = clamp(bestX + (hash(vec2(row, uSeed + 3.0)) - 0.5) * 0.03, 0.0, 0.92);',
+    '',
     '  // --- the trail ---------------------------------------------------',
-    '  // Each band tears at a point INSIDE the picture and streaks to the',
-    '  // right from there, carrying on past the edge in one continuous run.',
-    '  // Drawing strands only in the strip outside the frame was what made',
-    '  // them look like they were crawling out from underneath it — they',
-    '  // had nothing on the picture to be attached to.',
-    '  float x0 = pow(hash(vec2(row, slow * 0.53 + uSeed + 21.0)), 1.5) * 0.85;',
+    '  // From that tear point the band streaks right, carrying on past the',
+    '  // edge in one continuous run. Drawing strands only in the strip',
+    '  // outside the frame was what made them look like they were crawling',
+    '  // out from underneath it — they had nothing to be attached to.',
     '  float far = (1.0 / uImgFrac) - x0;          // distance to the far right',
     '  // most trails are short, a few run the whole way: that spread is',
     '  // what reads as fraying rather than as uniform stripes',
@@ -181,7 +205,7 @@
     '  col *= scan;',
     '',
     '  // --- final strength ----------------------------------------------',
-    '  float a = key * active * onTrail * fall;',
+    '  float a = key * originKey * active * onTrail * fall;',
     '  a *= 0.66 + 0.42 * flick;                 // flicker the whole thing',
     '  a *= step(0.001, uImgFrac);',
     '',

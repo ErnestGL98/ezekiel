@@ -37,10 +37,15 @@
                        // paints along its own trail rather than the full row.
     shear: 0.20,       // how far bands slide sideways (fraction of width)
     keyLow: 0.10,      // luminance at/below this = full effect (blacks)
-    keyHigh: 0.34,     // luminance at/above this = only the floor below
+    keyHigh: 0.40,     // luminance at/above this = only the floor below
     keyFloor: 0.0,     // how much the highlights still contribute, 0 to 1.
                        // 0 = they don't, which is what keeps the effect
                        // reading as coming out of the shadows only.
+    vividFrom: 0.45,   // saturation where a colour starts counting as
+    vividTo: 0.72,     // "intense" and becomes eligible regardless of
+                       // how bright it is
+    vividAmt: 0.85,    // how strongly intense colours qualify, 0 to 1
+    skinGuard: 0.95,   // how hard skin tones are protected, 0 to 1
     crush: 7.0,        // colour levels per channel — lower is more crushed
     blockPx: 3.0,      // horizontal pixelation, in pixels
     aberration: 10.5,  // colour-fringe split, in pixels
@@ -85,11 +90,51 @@
     'uniform float uBlockPx;',
     'uniform float uKeyFloor;',
     'uniform float uAberr;',
+    'uniform float uVividFrom;',
+    'uniform float uVividTo;',
+    'uniform float uVividAmt;',
+    'uniform float uSkinGuard;',
     '',
     'float hash(vec2 p) {',
     '  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);',
     '}',
     'float luma(vec3 c) { return dot(c, vec3(0.2126, 0.7152, 0.0722)); }',
+    '',
+    '// hue / saturation / value, so the effect can tell a vivid colour',
+    '// apart from a muted one of the same brightness',
+    'vec3 rgb2hsv(vec3 c) {',
+    '  vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);',
+    '  vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));',
+    '  vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));',
+    '  float d = q.x - min(q.w, q.y);',
+    '  return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + 1e-10)),',
+    '              d / (q.x + 1e-10), q.x);',
+    '}',
+    '',
+    '// HOW MUCH A GIVEN COLOUR IS ALLOWED TO GLITCH.',
+    '// One function, used both to choose where a band tears from and to',
+    '// shade it, so the two can never disagree about what qualifies.',
+    'float eligibility(vec3 c) {',
+    '  vec3 hsv = rgb2hsv(c);',
+    '  float hue = hsv.x, sat = hsv.y, val = hsv.z;',
+    '',
+    '  // shadows and blacks: the main source',
+    '  float k = 1.0 - smoothstep(uKeyLow, uKeyHigh, luma(c));',
+    '',
+    '  // intense colour also qualifies, however bright it is — the orange',
+    '  // coat, the green mohawk, the tie-dye',
+    '  k = max(k, smoothstep(uVividFrom, uVividTo, sat) * uVividAmt);',
+    '',
+    '  // ...but not skin. Skin sits in a narrow orange-red hue band at only',
+    '  // moderate saturation. Vivid oranges share the hue but are far more',
+    '  // saturated, and that gap is what separates a jacket from a face.',
+    '  float sHue = smoothstep(0.005, 0.02, hue) * (1.0 - smoothstep(0.10, 0.14, hue));',
+    '  float sSat = smoothstep(0.08, 0.18, sat) * (1.0 - smoothstep(0.52, 0.70, sat));',
+    '  float skin = sHue * sSat * smoothstep(0.12, 0.22, val);',
+    '  k *= 1.0 - skin * uSkinGuard;',
+    '',
+    '  return max(k, uKeyFloor);',
+    '}',
     '',
     'void main() {',
     '  vec2 uv = vUv;',
@@ -118,22 +163,23 @@
     '  // random meant plenty of trails started on white backdrop and',
     '  // streaked out of nowhere, which is what made it look untidy.',
     '  //',
-    '  // So probe several points across this row and tear from the darkest',
-    '  // one. Costs a few extra texture reads, but it is what makes the',
-    '  // effect look like it is being dragged out of the blacks rather',
-    '  // than sprayed across the picture.',
+    '  // So probe several points across this row and tear from whichever',
+    '  // one most qualifies (see eligibility above — deep shadow, or strong',
+    '  // colour, but never skin). Costs a few extra texture reads, and it',
+    '  // is what makes the effect look dragged out of the picture rather',
+    '  // than sprayed across it.',
     '  float bestX = 0.5;',
-    '  float bestL = 2.0;',
+    '  float bestE = 0.0;',
     '  for (int i = 0; i < 6; i++) {',
     '    float cx = hash(vec2(row, uSeed + 31.0 + float(i) * 7.3));',
-    '    float cl = luma(texture2D(uTex, vec2(cx, uv.y)).rgb);',
-    '    if (cl < bestL) { bestL = cl; bestX = cx; }',
+    '    float ce = eligibility(texture2D(uTex, vec2(cx, uv.y)).rgb);',
+    '    if (ce > bestE) { bestE = ce; bestX = cx; }',
     '  }',
     '',
-    '  // If even the darkest point in this row is bright, the row has no',
-    '  // shadow to tear from — so it gets nothing at all rather than a',
-    '  // faint streak out of a highlight.',
-    '  float originKey = 1.0 - smoothstep(uKeyLow, uKeyHigh, bestL);',
+    '  // If nothing in this row qualifies — no shadow, no strong colour,',
+    '  // just skin or backdrop — the row produces nothing at all, rather',
+    '  // than a faint streak out of a highlight.',
+    '  float originKey = bestE;',
     '',
     '  // nudge off the exact darkest pixel so the starts do not line up',
     '  float x0 = clamp(bestX + (hash(vec2(row, uSeed + 3.0)) - 0.5) * 0.03, 0.0, 0.92);',
@@ -174,13 +220,7 @@
     '  // picture: the effect is chosen by where its content came from, so',
     '  // it can overlay highlights instead of being blocked by them.',
     '  vec3 pulled = texture2D(uTex, srcUv).rgb;',
-    '  float L = luma(pulled);',
-    '',
-    '  // Strongest in the blacks, falling away through the mids. The floor',
-    '  // keeps highlights contributing faintly rather than not at all, so',
-    '  // bright areas still feed the effect instead of leaving holes.',
-    '  float key = 1.0 - smoothstep(uKeyLow, uKeyHigh, L);',
-    '  key = max(key, uKeyFloor);',
+    '  float key = eligibility(pulled);',
     '',
     '  // --- colour ------------------------------------------------------',
     '  // Channel split — red and blue read from either side of green, the',
@@ -262,7 +302,8 @@
   var U = {};
   ['uTex', 'uRes', 'uTime', 'uImgFrac', 'uSeed', 'uRowPx', 'uDensity',
    'uShear', 'uKeyLow', 'uKeyHigh', 'uCrush', 'uBlockPx',
-   'uKeyFloor', 'uAberr'].forEach(function (n) {
+   'uKeyFloor', 'uAberr', 'uVividFrom', 'uVividTo', 'uVividAmt',
+   'uSkinGuard'].forEach(function (n) {
     U[n] = gl.getUniformLocation(prog, n);
   });
 
@@ -287,6 +328,10 @@
   gl.uniform1f(U.uBlockPx, CONFIG.blockPx);
   gl.uniform1f(U.uKeyFloor, CONFIG.keyFloor);
   gl.uniform1f(U.uAberr, CONFIG.aberration);
+  gl.uniform1f(U.uVividFrom, CONFIG.vividFrom);
+  gl.uniform1f(U.uVividTo, CONFIG.vividTo);
+  gl.uniform1f(U.uVividAmt, CONFIG.vividAmt);
+  gl.uniform1f(U.uSkinGuard, CONFIG.skinGuard);
 
   document.body.appendChild(canvas);
   document.documentElement.classList.add('js-glitch');

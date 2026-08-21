@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=8 ON EVERY FONT URL
+/* NOTE ON THE ?v=9 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=8') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=8') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=9') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=9') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=8') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=8') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=9') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=9') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;

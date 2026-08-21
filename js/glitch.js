@@ -35,9 +35,12 @@
     density: 0.40,     // fraction of bands glitching at any moment
     shear: 0.16,       // how far bands slide sideways (fraction of width)
     keyLow: 0.10,      // luminance at/below this = full effect (blacks)
-    keyHigh: 0.34,     // luminance at/above this = no effect (highlights)
+    keyHigh: 0.50,     // luminance at/above this = only the floor below
+    keyFloor: 0.10,    // how much the highlights still contribute, 0 to 1.
+                       // 0 = highlights never glitch at all.
     crush: 7.0,        // colour levels per channel — lower is more crushed
     blockPx: 3.0,      // horizontal pixelation, in pixels
+    aberration: 7.0,   // colour-fringe split, in pixels
     volume: 0.13       // rumble loudness, 0 to 1
   };
 
@@ -77,6 +80,8 @@
     'uniform float uKeyHigh;',
     'uniform float uCrush;',
     'uniform float uBlockPx;',
+    'uniform float uKeyFloor;',
+    'uniform float uAberr;',
     '',
     'float hash(vec2 p) {',
     '  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);',
@@ -134,19 +139,11 @@
     '    srcX = ix - shear;',
     '  } else {',
     '    // Out past the edge there is no photo to read, so each band tears',
-    '    // a slice out of its own row and drags it outward.',
-    '    //',
-    '    // It picks the DARKEST of three candidate slices. Grabbing at',
-    '    // random mostly lands on bright areas, whose key is zero, so the',
-    '    // strands never appear. Biasing towards the dark part of the row',
-    '    // is what makes them tear out of the shadows the way they should.',
-    '    float g1 = hash(vec2(row, uSeed + 3.0));',
-    '    float g2 = hash(vec2(row, uSeed + 7.0));',
-    '    float g3 = hash(vec2(row, uSeed + 13.0));',
-    '    float l1 = luma(texture2D(uTex, vec2(g1, uv.y)).rgb);',
-    '    float l2 = luma(texture2D(uTex, vec2(g2, uv.y)).rgb);',
-    '    float l3 = luma(texture2D(uTex, vec2(g3, uv.y)).rgb);',
-    '    float grab = (l1 < l2) ? ((l1 < l3) ? g1 : g3) : ((l2 < l3) ? g2 : g3);',
+    '    // a slice out of its own row and drags it outward. The grab point',
+    '    // is unbiased, so strands can tear from anywhere in the row —',
+    '    // highlights included — and the key below decides how strongly',
+    '    // each one shows.',
+    '    float grab = hash(vec2(row, uSeed + 3.0));',
     '    // drift the grab point as it travels so the strand has texture',
     '    // rather than being one flat bar of colour',
     '    srcX = grab + tailX * 0.22 - shear;',
@@ -158,20 +155,24 @@
     '  vec2 srcUv = clamp(vec2(srcX, uv.y), 0.0, 1.0);',
     '',
     '  // --- the luminance key -----------------------------------------',
-    '  // Read the ORIGINAL pixel at this spot (not the displaced one) so',
-    '  // the decision "is this area dark enough to glitch" follows the',
-    '  // picture as composed. Inside the tail there is no original, so',
-    '  // fall back to whatever got dragged out there.',
-    '  vec3 here = texture2D(uTex, clamp(vec2(ix, uv.y), 0.0, 1.0)).rgb;',
+    '  // Keyed on the pixel being TORN, not on the pixel it lands on. That',
+    '  // is what lets a band of shadow fly across a bright part of the',
+    '  // picture: the effect is chosen by where its content came from, so',
+    '  // it can overlay highlights instead of being blocked by them.',
     '  vec3 pulled = texture2D(uTex, srcUv).rgb;',
-    '  float L = (ix <= 1.0) ? luma(here) : luma(pulled);',
+    '  float L = luma(pulled);',
     '',
-    '  // 1 in the blacks, 0 in the highlights, steep through the mids',
+    '  // Strongest in the blacks, falling away through the mids. The floor',
+    '  // keeps highlights contributing faintly rather than not at all, so',
+    '  // bright areas still feed the effect instead of leaving holes.',
     '  float key = 1.0 - smoothstep(uKeyLow, uKeyHigh, L);',
+    '  key = max(key, uKeyFloor);',
     '',
     '  // --- colour ------------------------------------------------------',
-    '  // slight channel split, the giveaway of knackered analogue video',
-    '  float ca = 2.5 / uRes.x;',
+    '  // Channel split — red and blue read from either side of green, the',
+    '  // giveaway of knackered analogue video. The width breathes with the',
+    '  // flicker so the fringing never sits still.',
+    '  float ca = (uAberr * (0.45 + 0.85 * flick)) / uRes.x;',
     '  vec3 col = vec3(',
     '    texture2D(uTex, clamp(srcUv + vec2(ca, 0.0), 0.0, 1.0)).r,',
     '    pulled.g,',
@@ -247,7 +248,8 @@
 
   var U = {};
   ['uTex', 'uRes', 'uTime', 'uImgFrac', 'uSeed', 'uRowPx', 'uDensity',
-   'uShear', 'uKeyLow', 'uKeyHigh', 'uCrush', 'uBlockPx'].forEach(function (n) {
+   'uShear', 'uKeyLow', 'uKeyHigh', 'uCrush', 'uBlockPx',
+   'uKeyFloor', 'uAberr'].forEach(function (n) {
     U[n] = gl.getUniformLocation(prog, n);
   });
 
@@ -270,6 +272,8 @@
   gl.uniform1f(U.uKeyHigh, CONFIG.keyHigh);
   gl.uniform1f(U.uCrush, CONFIG.crush);
   gl.uniform1f(U.uBlockPx, CONFIG.blockPx);
+  gl.uniform1f(U.uKeyFloor, CONFIG.keyFloor);
+  gl.uniform1f(U.uAberr, CONFIG.aberration);
 
   document.body.appendChild(canvas);
   document.documentElement.classList.add('js-glitch');

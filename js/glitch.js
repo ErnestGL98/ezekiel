@@ -31,18 +31,18 @@
   var CONFIG = {
     tail: 0.42,        // how far past the right edge strands reach,
                        // as a fraction of the image's width
-    rowPx: 4.0,        // height of one torn band, in pixels
-    density: 0.55,     // fraction of bands glitching at any moment. Higher
+    rowPx: 2.5,        // height of one torn band, in canvas pixels
+    density: 0.62,     // fraction of bands glitching at any moment. Higher
                        // than it used to be because each band now only
                        // paints along its own trail rather than the full row.
-    shear: 0.16,       // how far bands slide sideways (fraction of width)
+    shear: 0.20,       // how far bands slide sideways (fraction of width)
     keyLow: 0.10,      // luminance at/below this = full effect (blacks)
     keyHigh: 0.34,     // luminance at/above this = only the floor below
     keyFloor: 0.10,    // how much the highlights still contribute, 0 to 1.
                        // 0 = highlights never glitch at all.
     crush: 7.0,        // colour levels per channel — lower is more crushed
     blockPx: 3.0,      // horizontal pixelation, in pixels
-    aberration: 7.0,   // colour-fringe split, in pixels
+    aberration: 10.5,  // colour-fringe split, in pixels
     volume: 0.13       // rumble loudness, 0 to 1
   };
 
@@ -177,12 +177,12 @@
     '  col = col * 1.35 + vec3(0.02, 0.03, 0.05);',
     '',
     '  // CRT scanline within each band',
-    '  float scan = 0.82 + 0.18 * step(0.5, fract((uv.y * uRes.y) / (uRowPx * 0.5)));',
+    '  float scan = 0.82 + 0.18 * step(0.5, fract((uv.y * uRes.y) / 3.0));',
     '  col *= scan;',
     '',
     '  // --- final strength ----------------------------------------------',
     '  float a = key * active * onTrail * fall;',
-    '  a *= 0.55 + 0.45 * flick;                 // flicker the whole thing',
+    '  a *= 0.66 + 0.42 * flick;                 // flicker the whole thing',
     '  a *= step(0.001, uImgFrac);',
     '',
     '  gl_FragColor = vec4(col, clamp(a, 0.0, 1.0));',

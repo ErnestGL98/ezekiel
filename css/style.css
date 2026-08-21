@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=3 ON EVERY FONT URL
+/* NOTE ON THE ?v=4 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=3') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=3') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=4') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=4') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=3') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=3') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=4') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=4') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -586,6 +586,34 @@ a {
 .tile:hover .tile__frame img,
 .tile:focus-visible .tile__frame img {
   transform: scale(1.04);      /* slow push-in on the photo */
+}
+
+/* When the glitch script is running it becomes the hover effect, and the
+   zoom has to go: the glitch canvas is aligned to the photo's normal
+   size, so a scaling photo underneath would drift out from under it.
+   The class is only added by the script, so with JS off the zoom stays. */
+.js-glitch .tile:hover .tile__frame img,
+.js-glitch .tile:focus-visible .tile__frame img {
+  transform: none;
+}
+
+/* The shared canvas the glitch is drawn into. One of these for the whole
+   page; it gets moved over whichever tile is hovered.
+
+   It deliberately sits OUTSIDE .tile__frame (which clips its contents) so
+   the frayed strands can run past the right edge of the photo. */
+.glitch-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 40;
+  pointer-events: none;        /* never swallow a click or a hover */
+  opacity: 0;
+  transition: opacity 0.12s linear;
+}
+
+.glitch-layer.is-on {
+  opacity: 1;
 }
 
 .tile:hover .tile__name,

@@ -49,21 +49,27 @@
     crush: 7.0,        // colour levels per channel — lower is more crushed
     blockPx: 3.0,      // horizontal pixelation, in pixels
     aberration: 10.5,  // colour-fringe split, in pixels
-    volume: 0.36,      // rumble loudness, 0 to 1
-    crushLevels: 9,    // steps the waveform is quantised to. Fewer = harsher,
+    volume: 0.30,      // rumble loudness, 0 to 1
+    crushLevels: 20,   // steps the waveform is quantised to. Fewer = harsher,
                        // but too few and it lurches rather than rumbles.
-    crushHold: 64,     // samples each value is held for. More = coarser.
+    crushHold: 12,     // samples each value is held for. More = coarser.
                        // Together with crushLevels this sets how big a jump
                        // the waveform makes each step: keep it well under
                        // about a third of the signal's own size or it stops
                        // sounding like a rumble and starts sounding broken.
-    rumbleHz: 290,     // lowpass cutoff. This is the one that decides how
+    rumbleHz: 230,     // lowpass cutoff. This is the one that decides how
                        // much of the crunch you actually hear: too low and
                        // the grit is filtered off and it's just a hum.
-    drive: 2.4         // saturation. Generates harmonics of the low rumble
+    drive: 2.8,        // saturation. Generates harmonics of the low rumble
                        // higher up, so small speakers - which cannot
                        // reproduce anything under ~200Hz - still play
                        // something and your ear fills in the rest.
+    wander: 0.012      // how fast the noise drifts. THIS is the knob that
+                       // decides how low the rumble sits - smaller drifts
+                       // more slowly and sits lower. Counter-intuitively,
+                       // reducing the bit-crushing alone makes it brighter
+                       // rather than deeper, because a coarser hold is
+                       // also a slower-moving source.
   };
 
   // Respect the OS "reduce motion" setting — this effect is exactly the
@@ -374,7 +380,8 @@
       var LEVELS = CONFIG.crushLevels; // quantising the value is the other half
       for (var i = 0; i < d.length; i++) {
         if (countdown <= 0) {
-          brown = (brown + 0.022 * (Math.random() * 2 - 1)) / 1.022;
+          brown = (brown + CONFIG.wander * (Math.random() * 2 - 1))
+                  / (1 + CONFIG.wander);
           held = Math.round(brown * 9.0 * LEVELS) / LEVELS;
           countdown = HOLD;
         }
@@ -482,6 +489,24 @@
   try { muted = localStorage.getItem(STORE) === 'off'; } catch (e) {}
 
   var toggle = document.querySelector('.sound-toggle');
+  var hint = document.querySelector('.sound-hint');
+  var hintTimer = 0;
+
+  function showHint(text, ms) {
+    if (!hint) return;
+    clearTimeout(hintTimer);
+    // Drop the class, force the browser to lay out, then add it back. That
+    // restarts the fade even if a hint is already on screen. Done
+    // synchronously rather than in requestAnimationFrame, which doesn't
+    // run at all in a background tab — the hint would simply never appear.
+    hint.classList.remove('is-visible');
+    void hint.offsetWidth;
+    hint.textContent = text;
+    hint.classList.add('is-visible');
+    hintTimer = setTimeout(function () {
+      hint.classList.remove('is-visible');
+    }, ms);
+  }
 
   function paintToggle() {
     if (!toggle) return;
@@ -497,6 +522,8 @@
       try { localStorage.setItem(STORE, muted ? 'off' : 'on'); } catch (e) {}
       paintToggle();
 
+      showHint(muted ? 'Sound off' : 'Sound on', 1800);
+
       // This click is a real gesture, so it's also the moment we're
       // allowed to create the audio at all.
       if (!muted) Audio_.unlock();
@@ -506,6 +533,15 @@
       if (active) Audio_.to(muted ? 0 : CONFIG.volume, 0.12);
       else if (muted) Audio_.to(0, 0.12);
     });
+  }
+
+  // On arrival, say so once if sound is switched on but the browser hasn't
+  // let us start it yet. That's the one moment the page looks broken
+  // otherwise: the switch reads "on" and hovering is still silent.
+  if (!muted) {
+    setTimeout(function () {
+      if (!Audio_.ready) showHint('Click for sound', 4200);
+    }, 900);
   }
 
   // A way to ask the page what the audio is actually doing, since "no

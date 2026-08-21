@@ -11,10 +11,10 @@
   <!-- Both weights are used above the fold on this page (the title is
        regular, the shoot names are bold), so start both downloading
        immediately rather than waiting for the CSS to be parsed. -->
-  <!-- The ?v=18 must match the one in style.css — see the note there. -->
-  <link rel="preload" href="fonts/EzekielHand.woff2?v=18" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=18" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=18">
+  <!-- The ?v=19 must match the one in style.css — see the note there. -->
+  <link rel="preload" href="fonts/EzekielHand.woff2?v=19" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=19" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/style.css?v=19">
 </head>
 
 <body>
@@ -52,6 +52,12 @@
           </g>
         </svg>
       </button>
+
+      <!-- Fading hint beside the switch. aria-hidden because the button's
+           own aria-pressed already announces the state — a second spoken
+           copy would just be noise. Positioned absolutely so it can't
+           shove the header around as it appears and disappears. -->
+      <span class="sound-hint" aria-hidden="true"></span>
     </div>
 
     <nav class="nav" aria-label="Main navigation">
@@ -169,7 +175,7 @@
   <!-- Hover glitch. "defer" means it runs after the page is parsed, so it
        never holds up the photos. If it fails or JavaScript is off, the
        page simply behaves as it did before. -->
-  <script src="js/glitch.js?v=18" defer></script>
+  <script src="js/glitch.js?v=19" defer></script>
 
 </body>
 </html>

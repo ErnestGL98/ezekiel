@@ -53,11 +53,15 @@ FONTS = ROOT / "fonts"
 # The two weights to build. The number is how far each letter's outline is
 # pushed outward, in pixels of the original photo — so it's literally "use
 # a thicker pen". The pen in the photo is about 2.8px wide, and the push
-# applies to both sides, so 0.5 gives a ~3.8px stroke and 1.15 a ~5.1px one.
+# applies to both sides, so 0.5 gives a ~3.8px stroke and 1.5 a ~5.8px one.
+#
+# Pushing the bold much past 1.5 starts closing up the inside of letters
+# like e, a and o at the small sizes the shoot names use — check a
+# specimen at 13px before going further.
 WEIGHTS = [
     # (name suffix, CSS weight, push in source px)
     ("",      400, 0.50),
-    ("-Bold", 700, 1.15),
+    ("-Bold", 700, 1.50),
 ]
 SMOOTH = 2.2         # edge smoothing. Higher = softer, rounder letterforms;
                      # lower = crisper but starts showing the photo's pixels.

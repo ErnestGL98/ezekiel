@@ -49,7 +49,7 @@
     crush: 7.0,        // colour levels per channel — lower is more crushed
     blockPx: 3.0,      // horizontal pixelation, in pixels
     aberration: 10.5,  // colour-fringe split, in pixels
-    volume: 0.30,      // rumble loudness, 0 to 1
+    volume: 0.24,      // rumble loudness, 0 to 1
     crushLevels: 20,   // steps the waveform is quantised to. Fewer = harsher,
                        // but too few and it lurches rather than rumbles.
     crushHold: 12,     // samples each value is held for. More = coarser.

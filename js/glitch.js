@@ -37,7 +37,7 @@
                        // paints along its own trail rather than the full row.
     shear: 0.20,       // how far bands slide sideways (fraction of width)
     keyLow: 0.10,      // luminance at/below this = full effect (blacks)
-    keyHigh: 0.40,     // luminance at/above this = only the floor below
+    keyHigh: 0.46,     // luminance at/above this = only the floor below
     keyFloor: 0.0,     // how much the highlights still contribute, 0 to 1.
                        // 0 = they don't, which is what keeps the effect
                        // reading as coming out of the shadows only.

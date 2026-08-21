@@ -11,10 +11,10 @@
   <!-- Both weights are used above the fold on this page (the title is
        regular, the shoot names are bold), so start both downloading
        immediately rather than waiting for the CSS to be parsed. -->
-  <!-- The ?v=2 must match the one in style.css — see the note there. -->
-  <link rel="preload" href="fonts/EzekielHand.woff2?v=2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=2">
+  <!-- The ?v=3 must match the one in style.css — see the note there. -->
+  <link rel="preload" href="fonts/EzekielHand.woff2?v=3" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=3" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/style.css?v=3">
 </head>
 
 <body>
@@ -32,9 +32,24 @@
     </nav>
   </header>
 
-  <main class="page-main">
+  <!-- ============================================================
+       BANNER — full-bleed strip, so it sits OUTSIDE <main> (which is
+       capped at 1200px). The word PORTFOLIO is a separate layer
+       stacked on top of the photo, not baked into the image, so it
+       stays crisp at any size and is real selectable text.
+       ============================================================ -->
+  <section class="banner">
+    <img
+      class="banner__image"
+      src="images/portfolio-banner.jpg"
+      alt="Ezekiel in an orange seersucker coat and jumpsuit"
+      fetchpriority="high"
+      decoding="async">
+    <div class="banner__scrim" aria-hidden="true"></div>
+    <h1 class="banner__title">Portfolio</h1>
+  </section>
 
-    <h1 class="page-title">Portfolio</h1>
+  <main class="page-main">
 
     <!-- ============================================================
          THE GRID — one tile per shoot or event, in alphabetical order.

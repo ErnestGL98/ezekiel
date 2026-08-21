@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=2 ON EVERY FONT URL
+/* NOTE ON THE ?v=3 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=2') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=2') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=3') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=3') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=2') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=2') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=3') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=3') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -424,6 +424,76 @@ a {
   padding-bottom: max(5rem, calc(4rem + env(safe-area-inset-bottom)));
 }
 
+/* --- the portfolio banner strip --- */
+.banner {
+  position: relative;
+  overflow: hidden;
+  /* Grows with the window but stops before it eats the screen. The
+     photo is a 2.65:1 strip; this box is wider than that on desktop,
+     so the sides show and the top/bottom crop slightly. */
+  height: clamp(190px, 26vw, 400px);
+  margin-bottom: 2.5rem;
+  background-color: var(--cream-deep);   /* holds the space while loading */
+}
+
+.banner__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Anchored high on purpose: whatever the window shape, the crop is
+     taken off the BOTTOM of the strip rather than the top, so the top
+     of his head is never clipped. */
+  object-position: 50% 8%;
+}
+
+/* Shade rising from the bottom so the white title stays readable over
+   the coat, balanced against not draining the orange.
+
+   Picked by measuring rather than by eye. The title is large bold
+   text, so it needs a 3:1 contrast ratio, and this setting lands at
+   3.52:1 against the lightest part of the coat behind it. A heavier
+   wash bought more contrast but crushed the coat from RGB 119,56,31
+   down to 90,43,24, which wasn't worth it. The title also carries its
+   own tight shadow, which lifts contrast right at the letters without
+   touching the rest of the picture. */
+.banner__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top,
+    rgba(0, 0, 0, 0.54) 0%,
+    rgba(0, 0, 0, 0.25) 32%,
+    rgba(0, 0, 0, 0.00) 62%);
+}
+
+.banner__title {
+  position: absolute;
+  inset: 0;
+  z-index: 2;                  /* the "top layer" — above photo and scrim */
+  margin: 0;
+  /* Bottom-aligned rather than centred: it keeps the word clear of his
+     face at every window size, instead of drifting onto it as the
+     crop changes. */
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 var(--gutter) clamp(0.9rem, 2.2vw, 1.9rem);
+  color: var(--white);
+  font-size: clamp(2rem, 7vw, 4.5rem);
+  font-weight: 700;            /* the real bold cut */
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  text-indent: 0.1em;          /* re-centres it, as on the hero logo */
+  /* Two shadows: a tight one hugging the letters for local contrast,
+     and a wide soft one to separate the word from a busy background. */
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.65),
+               0 2px 22px rgba(0, 0, 0, 0.5);
+}
+
+
+/* Kept for the About / Contact pages, which don't have a banner photo */
 .page-title {
   margin: 1rem 0 2.5rem;
   font-size: clamp(2.4rem, 11vw, 4.5rem);

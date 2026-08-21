@@ -50,12 +50,17 @@
     blockPx: 3.0,      // horizontal pixelation, in pixels
     aberration: 10.5,  // colour-fringe split, in pixels
     volume: 0.36,      // rumble loudness, 0 to 1
-    crushLevels: 5,    // steps the waveform is quantised to. Fewer = harsher.
-    crushHold: 112,    // samples each value is held for. More = coarser.
-    rumbleHz: 300,     // lowpass cutoff. This is the one that decides how
+    crushLevels: 9,    // steps the waveform is quantised to. Fewer = harsher,
+                       // but too few and it lurches rather than rumbles.
+    crushHold: 64,     // samples each value is held for. More = coarser.
+                       // Together with crushLevels this sets how big a jump
+                       // the waveform makes each step: keep it well under
+                       // about a third of the signal's own size or it stops
+                       // sounding like a rumble and starts sounding broken.
+    rumbleHz: 290,     // lowpass cutoff. This is the one that decides how
                        // much of the crunch you actually hear: too low and
                        // the grit is filtered off and it's just a hum.
-    drive: 2.8         // saturation. Generates harmonics of the low rumble
+    drive: 2.4         // saturation. Generates harmonics of the low rumble
                        // higher up, so small speakers - which cannot
                        // reproduce anything under ~200Hz - still play
                        // something and your ear fills in the rest.

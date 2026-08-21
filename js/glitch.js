@@ -49,12 +49,16 @@
     crush: 7.0,        // colour levels per channel — lower is more crushed
     blockPx: 3.0,      // horizontal pixelation, in pixels
     aberration: 10.5,  // colour-fringe split, in pixels
-    volume: 0.20,      // rumble loudness, 0 to 1
+    volume: 0.36,      // rumble loudness, 0 to 1
     crushLevels: 5,    // steps the waveform is quantised to. Fewer = harsher.
     crushHold: 112,    // samples each value is held for. More = coarser.
-    rumbleHz: 240      // lowpass cutoff. This is the one that decides how
+    rumbleHz: 300,     // lowpass cutoff. This is the one that decides how
                        // much of the crunch you actually hear: too low and
                        // the grit is filtered off and it's just a hum.
+    drive: 2.8         // saturation. Generates harmonics of the low rumble
+                       // higher up, so small speakers - which cannot
+                       // reproduce anything under ~200Hz - still play
+                       // something and your ear fills in the rest.
   };
 
   // Respect the OS "reduce motion" setting — this effect is exactly the
@@ -385,14 +389,31 @@
       lp.frequency.value = CONFIG.rumbleHz;
       lp.Q.value = 1.3;
 
+      // Drive it into soft saturation. 75% of this rumble's energy sits
+      // below 200Hz, which laptop speakers simply cannot move air at, so
+      // without this most of the sound never reaches the listener at all.
+      // Saturating adds harmonics further up that DO play, and the ear
+      // reconstructs the missing fundamental from them.
+      var pre = ctx.createGain();
+      pre.gain.value = 3.2;
+      var shaper = ctx.createWaveShaper();
+      var n = 1024, curve = new Float32Array(n);
+      for (var j = 0; j < n; j++) {
+        var x = (j * 2) / (n - 1) - 1;
+        curve[j] = Math.tanh(x * CONFIG.drive);
+      }
+      shaper.curve = curve;
+      shaper.oversample = '2x';
+
       var hp = ctx.createBiquadFilter();      // clear the inaudible sub
       hp.type = 'highpass';
-      hp.frequency.value = 28;
+      hp.frequency.value = 40;
 
       var gain = ctx.createGain();
       gain.gain.value = 0;
 
-      src.connect(lp); lp.connect(hp); hp.connect(gain); gain.connect(ctx.destination);
+      src.connect(lp); lp.connect(pre); pre.connect(shaper);
+      shaper.connect(hp); hp.connect(gain); gain.connect(ctx.destination);
       src.start();
 
       this.ctx = ctx;
@@ -417,8 +438,19 @@
     }
   };
 
-  ['pointerdown', 'keydown', 'touchstart'].forEach(function (ev) {
-    window.addEventListener(ev, function () { Audio_.unlock(); }, { once: true, passive: true });
+  // Keep trying on every interaction until the audio is genuinely running,
+  // rather than getting one attempt on the first event. A single try can
+  // land at a moment the browser still refuses, and then nothing would ever
+  // retry it and the page would stay silent for good.
+  var unlockOn = ['pointerdown', 'mousedown', 'click', 'keydown', 'touchstart'];
+  function tryUnlock() {
+    Audio_.unlock();
+    if (Audio_.ctx && Audio_.ctx.state === 'running') {
+      unlockOn.forEach(function (ev) { window.removeEventListener(ev, tryUnlock); });
+    }
+  }
+  unlockOn.forEach(function (ev) {
+    window.addEventListener(ev, tryUnlock, { passive: true });
   });
 
   /* ---------- driving it ---------- */

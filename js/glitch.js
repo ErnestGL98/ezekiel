@@ -421,12 +421,27 @@
       this.ready = true;
     },
 
-    // Browsers refuse to start audio until the person has actually
-    // interacted with the page — hovering doesn't count as interaction,
-    // so the first hover before any click stays silent by design.
+    // Only ever called from a real click / key press. Browsers refuse to
+    // start audio until the person has actually interacted with the page,
+    // and hovering does not count — so the context must be BUILT here,
+    // inside a genuine gesture, not on hover. Creating it on hover made
+    // it born suspended, and a context that starts life blocked is far
+    // less reliable to revive afterwards.
     unlock: function () {
       if (!this.ready) this.build();
-      if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+      if (this.ctx && this.ctx.state === 'suspended') {
+        var r = this.ctx.resume();
+        if (r && r.catch) r.catch(function () {});
+      }
+    },
+
+    // Safe to call on hover: nudges an existing context awake, but never
+    // creates one, so no context is ever born outside a user gesture.
+    resumeIfBuilt: function () {
+      if (this.ready && this.ctx.state === 'suspended') {
+        var r = this.ctx.resume();
+        if (r && r.catch) r.catch(function () {});
+      }
     },
 
     to: function (v, time) {
@@ -452,6 +467,25 @@
   unlockOn.forEach(function (ev) {
     window.addEventListener(ev, tryUnlock, { passive: true });
   });
+
+  // A way to ask the page what the audio is actually doing, since "no
+  // sound" has several very different causes that look identical.
+  // Run  ezekielAudio()  in the browser console.
+  window.ezekielAudio = function () {
+    var s = {
+      audioBuilt: Audio_.ready,
+      state: Audio_.ctx ? Audio_.ctx.state : 'not created yet',
+      volumeNow: Audio_.gain ? +Audio_.gain.gain.value.toFixed(3) : null,
+      configuredVolume: CONFIG.volume
+    };
+    s.verdict = !Audio_.ready
+      ? 'No context yet - click anywhere on the page, then hover a photo.'
+      : Audio_.ctx.state !== 'running'
+        ? 'Blocked by the browser (' + Audio_.ctx.state + '). Click the page.'
+        : 'Audio is running. If you still hear nothing, it is the output '
+          + 'device or system volume, not the page.';
+    return s;
+  };
 
   /* ---------- driving it ---------- */
 
@@ -502,7 +536,10 @@
     }
 
     canvas.classList.add('is-on');
-    Audio_.unlock();
+    // Deliberately NOT Audio_.unlock() here — hover is not a user gesture,
+    // and building the context from one makes it start blocked. The first
+    // real click builds it; this only wakes it and rides the fader.
+    Audio_.resumeIfBuilt();
     Audio_.to(CONFIG.volume, 0.06);
     cancelAnimationFrame(raf);
     raf = requestAnimationFrame(frame);

@@ -11,10 +11,10 @@
   <!-- Both weights are used above the fold on this page (the title is
        regular, the shoot names are bold), so start both downloading
        immediately rather than waiting for the CSS to be parsed. -->
-  <!-- The ?v=20 must match the one in style.css — see the note there. -->
-  <link rel="preload" href="fonts/EzekielHand.woff2?v=20" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=20" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=20">
+  <!-- The ?v=21 must match the one in style.css — see the note there. -->
+  <link rel="preload" href="fonts/EzekielHand.woff2?v=21" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=21" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/style.css?v=21">
 </head>
 
 <body>
@@ -139,6 +139,48 @@
         <span class="tile__frame"><img src="images/covers/essx-spring-summer.jpg" alt="Essx Spring Summer" loading="lazy" decoding="async"></span>
       </a>
 
+      <!-- ============================================================
+           (b).STROY PARIS — two media rows, sitting after the second row
+           of tiles.
+
+           These are laid out on the SAME grid as the tiles, just spanning
+           more columns, which is what makes their outer edges line up
+           exactly with the covers above and below.
+
+           The two rows mirror each other — still/clip, then clip/still —
+           so the block reads as a pair rather than a repeat.
+
+           The clips keep their natural 16:9 and the stills their natural
+           square. Forcing both to one shape would either cut the boots off
+           the full-length looks or crop the runway's chandeliers out of
+           frame, so instead the shorter one centres against the taller.
+           ============================================================ -->
+
+      <!-- ---- Paris, row one: still left, clip right ---- -->
+      <figure class="media media--still">
+        <img src="images/looks/bstroy-paris-orange.jpg"
+             alt="(b).stroy Paris FW — orange hooded look" loading="lazy" decoding="async">
+      </figure>
+
+      <figure class="media media--clip">
+        <!-- muted + autoplay together on purpose: browsers only allow a
+             clip to start on its own if it's silent. "controls" is what
+             lets someone unmute it themselves. -->
+        <video src="video/bstroy-paris-1.mp4" poster="video/bstroy-paris-1-poster.jpg"
+               muted autoplay loop playsinline controls preload="metadata"></video>
+      </figure>
+
+      <!-- ---- Paris, row two: clip left, still right ---- -->
+      <figure class="media media--clip">
+        <video src="video/bstroy-paris-2.mp4" poster="video/bstroy-paris-2-poster.jpg"
+               muted autoplay loop playsinline controls preload="metadata"></video>
+      </figure>
+
+      <figure class="media media--still">
+        <img src="images/looks/bstroy-paris-fur.jpg"
+             alt="(b).stroy Paris FW — fur hat and printed hooded look" loading="lazy" decoding="async">
+      </figure>
+
       <!-- ---- 07 ---- -->
       <a class="tile" href="#">
         <span class="tile__name">Essx x Troubled Waters</span>
@@ -175,7 +217,7 @@
   <!-- Hover glitch. "defer" means it runs after the page is parsed, so it
        never holds up the photos. If it fails or JavaScript is off, the
        page simply behaves as it did before. -->
-  <script src="js/glitch.js?v=20" defer></script>
+  <script src="js/glitch.js?v=21" defer></script>
 
 </body>
 </html>

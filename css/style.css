@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=20 ON EVERY FONT URL
+/* NOTE ON THE ?v=21 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=20') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=20') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=21') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=21') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=20') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=20') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=21') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=21') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -611,10 +611,39 @@ a {
    band of empty space under each photo is where a date, location or
    short description can go later without the rows starting to crowd
    each other. */
+/* The grid is 4 columns on a phone and 6 on desktop, but nothing occupies
+   a single column — a cover spans 2. That's what lets the Paris media
+   span 3 of 6 and sit exactly half-width, with its outer edges landing on
+   the same lines as the covers above and below. With a plain 3-column
+   grid a half-width item is impossible, because you can't span 1.5.
+   Cover widths work out identical to the old 3-column maths, so nothing
+   above or below this block moved. */
 .grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 2.75rem 0.9rem;
+}
+
+.tile {
+  grid-column: span 2;         /* 2 across on a phone */
+}
+
+.media {
+  grid-column: span 4;         /* full width on a phone, one per row */
+  margin: 0;
+  /* The clip is 16:9 and the still is nearly square, so the pair can't be
+     the same height without cropping one of them badly. Aligning to the
+     top gives the row a shared edge to read against, which looks
+     deliberate; centring left both edges ragged. */
+  align-self: start;
+}
+
+.media img,
+.media video {
+  display: block;
+  width: 100%;
+  height: auto;                /* keep each one's own shape */
+  background-color: var(--cream-deep);
 }
 
 .tile {
@@ -736,9 +765,20 @@ a {
   }
 
   .grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     /* Roomy gutter under each row — see the note on .grid above */
     gap: 5rem 1.75rem;
+  }
+
+  /* still 2 across of 6 = 3 covers per row, same size as before */
+  .tile {
+    grid-column: span 2;
+  }
+
+  /* 3 of 6 = exactly half the grid, so two sit side by side and their
+     outer edges line up with the covers */
+  .media {
+    grid-column: span 3;
   }
 
   .tile__num {

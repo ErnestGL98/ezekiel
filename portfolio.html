@@ -11,10 +11,10 @@
   <!-- Both weights are used above the fold on this page (the title is
        regular, the shoot names are bold), so start both downloading
        immediately rather than waiting for the CSS to be parsed. -->
-  <!-- The ?v=21 must match the one in style.css — see the note there. -->
-  <link rel="preload" href="fonts/EzekielHand.woff2?v=21" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=21" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=21">
+  <!-- The ?v=22 must match the one in style.css — see the note there. -->
+  <link rel="preload" href="fonts/EzekielHand.woff2?v=22" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=22" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/style.css?v=22">
 </head>
 
 <body>
@@ -157,7 +157,7 @@
            ============================================================ -->
 
       <!-- ---- Paris, row one: still left, clip right ---- -->
-      <figure class="media media--still">
+      <figure class="media media--still media--left">
         <img src="images/looks/bstroy-paris-orange.jpg"
              alt="(b).stroy Paris FW — orange hooded look" loading="lazy" decoding="async">
       </figure>
@@ -176,7 +176,7 @@
                muted autoplay loop playsinline controls preload="metadata"></video>
       </figure>
 
-      <figure class="media media--still">
+      <figure class="media media--still media--right">
         <img src="images/looks/bstroy-paris-fur.jpg"
              alt="(b).stroy Paris FW — fur hat and printed hooded look" loading="lazy" decoding="async">
       </figure>
@@ -217,7 +217,7 @@
   <!-- Hover glitch. "defer" means it runs after the page is parsed, so it
        never holds up the photos. If it fails or JavaScript is off, the
        page simply behaves as it did before. -->
-  <script src="js/glitch.js?v=21" defer></script>
+  <script src="js/glitch.js?v=22" defer></script>
 
 </body>
 </html>

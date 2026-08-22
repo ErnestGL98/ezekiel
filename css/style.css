@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=21 ON EVERY FONT URL
+/* NOTE ON THE ?v=22 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=21') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=21') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=22') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=22') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=21') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=21') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=22') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=22') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -779,7 +779,34 @@ a {
      outer edges line up with the covers */
   .media {
     grid-column: span 3;
+    /* Both halves take the clip's shape, which gives the pair a shared
+       top AND bottom edge. The clip fills its half exactly; the still is
+       nearly square, so matching that height makes it narrower than its
+       half — it hugs the OUTER edge of the grid, leaving the slack on the
+       inside where it reads as breathing room rather than misalignment. */
+    aspect-ratio: 16 / 9;
   }
+
+  .media video,
+  .media--still img {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* The clip is already 16:9 so it fills its half exactly. The still is
+     nearly square: "contain" scales it down until it fits the height,
+     which is what lines its top and bottom up with the clip, and
+     object-position parks it against the outer edge of the grid so the
+     slack falls on the inside.
+
+     Done with object-fit rather than sizing the <img> itself — as a flex
+     child with height:100% and width:auto it collapsed to zero width. */
+  .media--still img {
+    object-fit: contain;
+  }
+
+  .media--left  img { object-position: left center; }
+  .media--right img { object-position: right center; }
 
   .tile__num {
     font-size: 2.2rem;

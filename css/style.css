@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=30 ON EVERY FONT URL
+/* NOTE ON THE ?v=31 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=30') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=30') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=31') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=31') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=30') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=30') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=31') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=31') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -53,8 +53,8 @@
    get the browser's fake bold on top of the 700, which smears. */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Black.woff2?v=30') format('woff2'),
-       url('../fonts/EzekielHand-Black.ttf?v=30') format('truetype');
+  src: url('../fonts/EzekielHand-Black.woff2?v=31') format('woff2'),
+       url('../fonts/EzekielHand-Black.ttf?v=31') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -256,8 +256,11 @@ a {
      added tracking than the geometric sans this replaced. */
   letter-spacing: 0.05em;
   line-height: 0.95;
-  /* letter-spacing adds space AFTER the last letter too, which
-     makes centered text look shifted left. This nudges it back. */
+  /* letter-spacing adds space after the LAST letter too, which nudges
+     centred text off to the left. This pulls it back. It's a partial
+     correction, not an exact one — what's left over comes from the
+     glyphs' own side bearings and varies with the actual words, so it is
+     worth measuring rather than assuming on any given heading. */
   text-indent: 0.05em;
   text-shadow: 0 2px 30px rgba(0, 0, 0, 0.5);
 }
@@ -397,7 +400,6 @@ a {
   font-weight: 700;            /* the real bold cut */
   text-transform: uppercase;
   letter-spacing: 0.3em;
-  text-indent: 0.3em;
   padding: 0.5rem 0;
   transition: opacity 0.25s ease;
 }
@@ -640,6 +642,29 @@ a {
   grid-column: span 2;         /* 2 across on a phone */
 }
 
+/* A heading for a block within the grid. Spanning every column makes it
+   its own full-width row, which is what lets it centre against the whole
+   grid rather than over one column.
+
+   The negative bottom margin eats into the grid's row gap: that gap is
+   sized to separate rows of covers, and left alone it would leave the
+   heading floating equidistant between the section above and the one it
+   belongs to. Pulling it down ties it to its own section. */
+.section-title {
+  grid-column: 1 / -1;
+  margin: 0 0 -1.25rem;
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-transform: none;        /* the brand's own capitalisation */
+  letter-spacing: 0.16em;
+  /* No text-indent here on purpose. The usual trick of adding one to
+     offset the trailing letter-space measured WORSE for this string:
+     centring is dominated by the glyphs' own side bearings, and for
+     "PARIS (b).STROY" those already push it to the right. */
+  color: var(--ink);
+}
+
 .media {
   grid-column: span 4;         /* full width on a phone, one per row */
   margin: 0;
@@ -808,6 +833,12 @@ a {
   /* still 2 across of 6 = 3 covers per row, same size as before */
   .tile {
     grid-column: span 2;
+  }
+
+  /* the row gap is bigger here, so the pull-down has to be bigger too */
+  .section-title {
+    font-size: 1.35rem;
+    margin-bottom: -3rem;
   }
 
   /* 3 of 6 = exactly half the grid, so two sit side by side and their

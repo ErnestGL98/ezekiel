@@ -82,7 +82,8 @@
   // Covers, plus the Paris stills. Deliberately NOT the Paris clips —
   // tearing up a playing video reads as a broken player rather than an
   // effect, and it would fight the controls.
-  var tiles = document.querySelectorAll('.tile__frame, .media--still');
+  var SELECTOR = '.tile__frame, .media--still';
+  var tiles = document.querySelectorAll(SELECTOR);
   if (!tiles.length) return;
 
   /* ---------- the shader ---------- */
@@ -667,8 +668,51 @@
     f.addEventListener('pointerleave', leave);
   });
 
-  // If the page moves under the pointer, drop the effect rather than
-  // leaving the canvas stranded somewhere it doesn't belong.
-  window.addEventListener('scroll', function () { if (active) leave(); }, { passive: true });
+  /* ---------- scrolling a photo under the pointer ---------- */
+
+  // pointerenter only fires when the POINTER moves. Scroll the page and the
+  // pointer stays perfectly still while the photos slide under it, so the
+  // browser considers nothing to have been entered or left — and a photo
+  // you scrolled onto sat there dead until you jiggled the mouse.
+  //
+  // So remember where the pointer is and, whenever the page moves, ask what
+  // is under that point now. Scrolling onto a photo starts the effect and
+  // scrolling off it ends it, exactly as moving the mouse would.
+  var px = -1, py = -1;
+  window.addEventListener('pointermove', function (e) {
+    px = e.clientX;
+    py = e.clientY;
+  }, { passive: true });
+
+  // The topmost thing at that point, walked up to the photo containing it —
+  // the point usually lands on the <img>, whose parent is what we bound.
+  function targetAt(x, y) {
+    if (x < 0) return null;                 // pointer hasn't moved yet
+    var el = document.elementFromPoint(x, y);
+    while (el && el !== document.body) {
+      if (el.matches && el.matches(SELECTOR)) return el;
+      el = el.parentElement;
+    }
+    return null;
+  }
+
+  function recheck() {
+    pending = 0;
+    var el = targetAt(px, py);
+    if (el === active) return;              // still on the same photo
+    if (active) leave();
+    // enter() bails on a photo that hasn't finished loading. Nothing is
+    // stored in that case, so the next scroll event simply tries again.
+    if (el) enter(el);
+  }
+
+  // Scroll fires far faster than the screen refreshes, and elementFromPoint
+  // forces a layout read, so collapse a burst of events into one check per
+  // frame.
+  var pending = 0;
+  window.addEventListener('scroll', function () {
+    if (!pending) pending = requestAnimationFrame(recheck);
+  }, { passive: true });
+
   window.addEventListener('blur', leave);
 })();

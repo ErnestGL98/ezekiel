@@ -486,17 +486,23 @@
 
   /* ---------- the sound switch ---------- */
 
-  // Remembered between visits. localStorage throws outright in some
-  // privacy modes, so every use of it is wrapped.
+  // Sound starts OFF, and only a deliberate "on" in storage changes that.
+  // Written this way round rather than defaulting to on: a page that makes
+  // a noise the moment you touch it is obnoxious, and it also means a
+  // browser where storage throws lands on the quiet option rather than the
+  // loud one. localStorage does throw outright in some privacy modes, so
+  // every use of it is wrapped.
   var STORE = 'ezekiel-sound';
-  var muted = false;
-  try { muted = localStorage.getItem(STORE) === 'off'; } catch (e) {}
+  var muted = true;
+  try { muted = localStorage.getItem(STORE) !== 'on'; } catch (e) {}
 
   var toggle = document.querySelector('.sound-toggle');
   var hint = document.querySelector('.sound-hint');
   var hintTimer = 0;
 
-  function showHint(text, ms) {
+  // "prompt" marks the loud arrival invitation, as opposed to the quiet
+  // confirmation shown after the switch is used.
+  function showHint(text, ms, prompt) {
     if (!hint) return;
     clearTimeout(hintTimer);
     // Drop the class, force the browser to lay out, then add it back. That
@@ -504,6 +510,7 @@
     // synchronously rather than in requestAnimationFrame, which doesn't
     // run at all in a background tab — the hint would simply never appear.
     hint.classList.remove('is-visible');
+    hint.classList.toggle('sound-hint--prompt', !!prompt);
     void hint.offsetWidth;
     hint.textContent = text;
     hint.classList.add('is-visible');
@@ -539,14 +546,14 @@
     });
   }
 
-  // On arrival, say so once if sound is switched on but the browser hasn't
-  // let us start it yet. That's the one moment the page looks broken
-  // otherwise: the switch reads "on" and hovering is still silent.
-  if (!muted) {
-    setTimeout(function () {
-      if (!Audio_.ready) showHint('Click for sound', 4200);
-    }, 900);
-  }
+  // On arrival, invite the click. Two different reasons to, and the same
+  // words cover both: the page now starts muted, and even once it isn't,
+  // browsers refuse to let any page make a sound until you've interacted
+  // with it. Either way hovering is silent until you click, and without
+  // this the page just looks like half the effect is missing.
+  setTimeout(function () {
+    if (muted || !Audio_.ready) showHint('Click for sound', 6500, true);
+  }, 900);
 
   // A way to ask the page what the audio is actually doing, since "no
   // sound" has several very different causes that look identical.

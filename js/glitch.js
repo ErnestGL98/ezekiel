@@ -79,7 +79,10 @@
   // Hover isn't a thing on touch screens; don't build any of this there.
   if (!window.matchMedia('(hover: hover)').matches) return;
 
-  var tiles = document.querySelectorAll('.tile__frame');
+  // Covers, plus the Paris stills. Deliberately NOT the Paris clips —
+  // tearing up a playing video reads as a broken player rather than an
+  // effect, and it would fight the controls.
+  var tiles = document.querySelectorAll('.tile__frame, .media--still');
   if (!tiles.length) return;
 
   /* ---------- the shader ---------- */
@@ -570,8 +573,36 @@
 
   var active = null, raf = 0, t0 = 0, seed = 0;
 
+  // Where the picture is actually PAINTED, which is not always the element's
+  // own box. A cover fills its frame exactly, but the Paris stills are
+  // letterboxed by object-fit: contain inside a box that stays the full
+  // half-width — so the element rect includes empty space beside the photo.
+  // Laying the effect over that rect would smear it across the gap.
+  function paintedRect(el) {
+    var r = el.getBoundingClientRect();
+    var img = el.querySelector('img');
+    if (!img || !img.naturalWidth) return r;
+    var cs = getComputedStyle(img);
+    if (cs.objectFit !== 'contain') return r;      // cover: fills the box
+
+    var ar = img.naturalWidth / img.naturalHeight;
+    var pw = r.width, ph = r.width / ar;
+    if (ph > r.height) { ph = r.height; pw = r.height * ar; }
+
+    // object-position computes to percentages for keywords like
+    // "left center", which is exactly the fraction of the leftover space
+    var pos = cs.objectPosition.split(' ');
+    var fx = (parseFloat(pos[0]) || 0) / 100;
+    var fy = (parseFloat(pos[1]) || 0) / 100;
+    return {
+      left: r.left + (r.width - pw) * fx,
+      top: r.top + (r.height - ph) * fy,
+      width: pw, height: ph
+    };
+  }
+
   function size() {
-    var r = active.getBoundingClientRect();
+    var r = paintedRect(active);
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     var cssW = r.width * (1 + CONFIG.tail);
     var w = Math.round(cssW * dpr), h = Math.round(r.height * dpr);

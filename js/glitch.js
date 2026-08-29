@@ -486,15 +486,20 @@
 
   /* ---------- the sound switch ---------- */
 
-  // Sound starts OFF, and only a deliberate "on" in storage changes that.
-  // Written this way round rather than defaulting to on: a page that makes
-  // a noise the moment you touch it is obnoxious, and it also means a
-  // browser where storage throws lands on the quiet option rather than the
-  // loud one. localStorage does throw outright in some privacy modes, so
-  // every use of it is wrapped.
-  var STORE = 'ezekiel-sound';
+  // Sound starts OFF on every single page load, full stop.
+  //
+  // This used to be remembered between visits, which meant anyone who had
+  // ever switched it on arrived to a page that made a noise because of a
+  // choice they'd forgotten making — including, of course, on the machine
+  // it was being tested on. Being asked again costs one click; being
+  // ambushed by sound costs rather more. So the switch applies to the
+  // visit you're in and nothing else.
   var muted = true;
-  try { muted = localStorage.getItem(STORE) !== 'on'; } catch (e) {}
+
+  // Clear the preference earlier versions saved, so a stale "on" left in
+  // storage can't survive the change. localStorage throws outright in some
+  // privacy modes, hence the wrapper.
+  try { localStorage.removeItem('ezekiel-sound'); } catch (e) {}
 
   var toggle = document.querySelector('.sound-toggle');
   var hint = document.querySelector('.sound-hint');
@@ -530,7 +535,6 @@
   if (toggle) {
     toggle.addEventListener('click', function () {
       muted = !muted;
-      try { localStorage.setItem(STORE, muted ? 'off' : 'on'); } catch (e) {}
       paintToggle();
 
       showHint(muted ? 'Sound off' : 'Sound on', 1800);

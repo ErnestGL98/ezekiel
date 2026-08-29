@@ -60,8 +60,11 @@ FONTS = ROOT / "fonts"
 # specimen at 13px before going further.
 WEIGHTS = [
     # (name suffix, CSS weight, push in source px)
-    ("",      400, 0.50),
-    ("-Bold", 700, 1.50),
+    ("",       400, 0.50),
+    ("-Bold",  700, 1.50),
+    # A third, heavier cut, used only for the odd character that has to sit
+    # heavier than everything around it — the (b) in the brand names.
+    ("-Black", 900, 2.30),
 ]
 SMOOTH = 2.2         # edge smoothing. Higher = softer, rounder letterforms;
                      # lower = crisper but starts showing the photo's pixels.

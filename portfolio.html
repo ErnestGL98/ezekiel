@@ -11,11 +11,11 @@
   <!-- Both weights are used above the fold on this page (the title is
        regular, the shoot names are bold), so start both downloading
        immediately rather than waiting for the CSS to be parsed. -->
-  <!-- The ?v=35 must match the one in style.css — see the note there. -->
-  <link rel="preload" href="fonts/EzekielHand.woff2?v=35" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=35" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/EzekielHand-Black.woff2?v=35" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=35">
+  <!-- The ?v=36 must match the one in style.css — see the note there. -->
+  <link rel="preload" href="fonts/EzekielHand.woff2?v=36" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=36" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/EzekielHand-Black.woff2?v=36" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/style.css?v=36">
 </head>
 
 <body>
@@ -168,6 +168,19 @@
       <figure class="media media--still media--left">
         <img src="images/looks/bstroy-paris-orange.jpg"
              alt="(b).stroy Paris FW — orange hooded look" loading="lazy" decoding="async">
+
+        <!-- The portrait laid over the middle of the block. It lives inside
+             THIS figure so the CSS can position it from this figure's
+             bottom-right corner, which — plus half of each gutter — is
+             exactly the point where all four items meet. Pinning it to the
+             grid instead would mean naming a row number, and that would be
+             wrong the moment another cover is added above.
+             Built by tools/build_portrait.py, which crops it square. -->
+        <span class="paris-portrait">
+          <img src="images/looks/bstroy-paris-portrait.jpg"
+               alt="(b).stroy Paris FW — portrait in a green hooded mask"
+               loading="lazy" decoding="async">
+        </span>
       </figure>
 
       <figure class="media media--clip">
@@ -225,7 +238,7 @@
   <!-- Hover glitch. "defer" means it runs after the page is parsed, so it
        never holds up the photos. If it fails or JavaScript is off, the
        page simply behaves as it did before. -->
-  <script src="js/glitch.js?v=35" defer></script>
+  <script src="js/glitch.js?v=36" defer></script>
 
 </body>
 </html>

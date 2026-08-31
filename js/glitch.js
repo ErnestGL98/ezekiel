@@ -79,10 +79,11 @@
   // Hover isn't a thing on touch screens; don't build any of this there.
   if (!window.matchMedia('(hover: hover)').matches) return;
 
-  // Covers, plus the Paris stills. Deliberately NOT the Paris clips —
-  // tearing up a playing video reads as a broken player rather than an
-  // effect, and it would fight the controls.
-  var SELECTOR = '.tile__frame, .media--still';
+  // Covers, plus the Paris stills and the portrait laid over them — every
+  // photograph in the grid. Deliberately NOT the Paris clips: tearing up a
+  // playing video reads as a broken player rather than an effect, and it
+  // would fight the controls.
+  var SELECTOR = '.tile__frame, .media--still, .paris-portrait';
   var tiles = document.querySelectorAll(SELECTOR);
   if (!tiles.length) return;
 

@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=35 ON EVERY FONT URL
+/* NOTE ON THE ?v=36 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=35') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=35') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=36') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=36') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=35') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=35') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=36') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=36') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -53,8 +53,8 @@
    get the browser's fake bold on top of the 700, which smears. */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Black.woff2?v=35') format('woff2'),
-       url('../fonts/EzekielHand-Black.ttf?v=35') format('truetype');
+  src: url('../fonts/EzekielHand-Black.woff2?v=36') format('woff2'),
+       url('../fonts/EzekielHand-Black.ttf?v=36') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -695,6 +695,8 @@ a {
 .media {
   grid-column: span 4;         /* full width on a phone, one per row */
   margin: 0;
+  /* the containing block for the portrait overlay — see .paris-portrait */
+  position: relative;
   /* The clip is 16:9 and the still is nearly square, so the pair can't be
      the same height without cropping one of them badly. Aligning to the
      top gives the row a shared edge to read against, which looks
@@ -715,6 +717,41 @@ a {
    would paint the empty part and read as a dark panel beside the photo. */
 .media video {
   background-color: var(--cream-deep);
+}
+
+/* --- the portrait over the middle of the Paris block ---
+
+   Anchored to the bottom-right corner of the figure it sits inside, then
+   pushed out by half of each gutter and pulled back by half of itself.
+   That lands its centre on the exact point where all four media items
+   meet, and it keeps landing there at any window width, because every
+   term is either a percentage of the figure or the gap itself.
+
+   On a phone the four items are stacked full-width instead, so there is
+   no such corner — there it straddles the seam between the first two.
+
+   The size is the only judgement call in here: big enough to be the thing
+   you look at, small enough that it only clips the corners of what is
+   behind it. Change the width to trade one against the other. */
+.paris-portrait {
+  position: absolute;
+  z-index: 2;                  /* over the neighbouring items, which are
+                                  positioned but sit at the default depth */
+  display: block;
+  width: 30%;
+  aspect-ratio: 1;             /* square, as the file already is */
+  left: 50%;
+  top: calc(100% + 1.375rem);  /* half the 2.75rem row gap */
+  transform: translate(-50%, -50%);
+}
+
+/* Beats the .media--still img rules, which letterbox the big stills. This
+   one is cropped square by the build script, so cover neither crops nor
+   stretches it — it just fills. */
+.media--still .paris-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .tile {
@@ -900,6 +937,20 @@ a {
 
   .media--left  img { object-position: left center; }
   .media--right img { object-position: right center; }
+
+  /* ...but not the portrait, which is square and fills its own box. The
+     two rules above are written as ".media--still img" and would
+     otherwise letterbox it inside the overlay as well. */
+  .media--still .paris-portrait img { object-fit: cover; }
+  .media--left  .paris-portrait img { object-position: center; }
+
+  /* Here there IS a shared corner: the four items meet at this figure's
+     bottom-right, offset by half of each gutter. */
+  .paris-portrait {
+    width: 34%;
+    left: calc(100% + 0.875rem);   /* half the 1.75rem column gap */
+    top:  calc(100% + 2.5rem);     /* half the 5rem row gap */
+  }
 
   .tile__num {
     font-size: 2.2rem;

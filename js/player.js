@@ -252,6 +252,18 @@
     save();
   });
 
+  // The speaker in the page header, when there is one. Browsers won't let
+  // a page start audio on load, so that click is often the first moment
+  // music is allowed to play at all — which is exactly why it drives it.
+  // Symmetrical on purpose: switching sound off pauses the music too,
+  // rather than leaving it running under a header that says muted.
+  window.addEventListener('ezekiel:sound', function (e) {
+    var on = e.detail && e.detail.on;
+    disarm();
+    userPaused = !on;
+    if (on) start(); else audio.pause();
+  });
+
   audio.addEventListener('timeupdate', function () {
     if (!scrubbing) paintProgress();
   });

@@ -528,8 +528,9 @@
   function paintToggle() {
     if (!toggle) return;
     toggle.setAttribute('aria-pressed', muted ? 'false' : 'true');
-    toggle.setAttribute('aria-label', muted ? 'Turn hover sound on'
-                                            : 'Turn hover sound off');
+    // "sound", not "hover sound": this switch drives the music too now.
+    toggle.setAttribute('aria-label', muted ? 'Turn sound on'
+                                            : 'Turn sound off');
   }
   paintToggle();
 
@@ -548,6 +549,19 @@
       // instead of waiting for the next hover.
       if (active) Audio_.to(muted ? 0 : CONFIG.volume, 0.12);
       else if (muted) Audio_.to(0, 0.12);
+
+      // Tell the rest of the page. The music player listens for this, so
+      // the one speaker in the header switches the whole site's sound
+      // rather than only the hover effect — and because this click is a
+      // real gesture, it's also a moment the browser will let music
+      // start, which it refuses to do on page load.
+      //
+      // An event rather than calling the player directly: these two
+      // scripts don't otherwise know about each other, and the home page
+      // loads the player without this file at all.
+      window.dispatchEvent(new CustomEvent('ezekiel:sound', {
+        detail: { on: !muted }
+      }));
     });
   }
 

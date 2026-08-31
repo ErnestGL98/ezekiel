@@ -44,10 +44,12 @@
   };
 
   // Sits under the page rather than on top of it. This is amplitude, not
-  // decibels, so the scale is not linear to the ear: 0.7 is roughly 3dB
-  // down, a clear step without being timid. Nudge it if it wants to sit
-  // further back — 0.55 is about another 2dB.
-  var VOLUME = 0.7;
+  // decibels, so the scale is not linear to the ear: 0.55 is about 5dB
+  // down from full. Each further step wants to be a RATIO, not a fixed
+  // subtraction — 0.45 is the next ~2dB, 0.35 the one after. Taking off a
+  // flat 0.1 each time makes the steps sound bigger and bigger as the
+  // number gets smaller.
+  var VOLUME = 0.55;
 
   var audio = new Audio();
   audio.preload = 'metadata';   // don't pull down a 5MB track until asked

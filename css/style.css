@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=53 ON EVERY FONT URL
+/* NOTE ON THE ?v=54 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=53') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=53') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=54') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=54') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=53') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=53') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=54') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=54') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -53,8 +53,8 @@
    get the browser's fake bold on top of the 700, which smears. */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Black.woff2?v=53') format('woff2'),
-       url('../fonts/EzekielHand-Black.ttf?v=53') format('truetype');
+  src: url('../fonts/EzekielHand-Black.woff2?v=54') format('woff2'),
+       url('../fonts/EzekielHand-Black.ttf?v=54') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -1305,15 +1305,40 @@ a {
 }
 
 /* Two across on a phone. Every frame is the same 2:3, so they tile with
-   no cropping and no letterboxing — the grid can simply be columns. */
+   no cropping and no letterboxing.
+
+   FOUR columns of half a photo each, rather than two of a whole one, so
+   that a last row with an odd photo in it can be centred — see below.
+   Two spans of 2 plus the gap between them come to exactly the same
+   width as two plain columns, so nothing about the layout changes. */
 .gallery {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem 0.9rem;
 }
 
 .shot {
   margin: 0;
+  grid-column: span 2;
+}
+
+/* A LAST ROW THAT DOESN'T FILL.
+   A grid can't centre a short final row on its own — the items just sit
+   left. Half-columns are what make it possible: an item can start on a
+   half-column and land the leftover space evenly on both sides.
+
+   The selectors say "first in its row AND near the end", which is what
+   identifies a short last row without anyone having to count the photos.
+   Add a ninth and they simply stop matching. */
+/* Scoped to below the breakpoint on purpose. Left unscoped it also fires
+   on the desktop layout — where a ninth photo is an odd child AND the
+   last child, so it got shunted to its own row and the grid came out
+   3/3/2/1 instead of 3/3/3. The desktop rules below can't override it
+   either: they are no more specific than this one. */
+@media (max-width: 47.999em) {
+  .shot:nth-child(2n + 1):last-child {
+    grid-column: 2 / span 2;   /* one on its own, centred */
+  }
 }
 
 .shot img {
@@ -1327,10 +1352,21 @@ a {
   }
 
   /* Three across, matching the covers on the portfolio page so the two
-     pages read as the same grid at different depths. */
+     pages read as the same grid at different depths — six half-columns,
+     for the centring described above. */
   .gallery {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     gap: 3.5rem 1.75rem;
+  }
+
+  /* Two left over: start half a column in, and the pair sits centred. */
+  .shot:nth-child(3n + 1):nth-last-child(2) {
+    grid-column: 2 / span 2;
+  }
+
+  /* One left over: start a full column in. */
+  .shot:nth-child(3n + 1):last-child {
+    grid-column: 3 / span 2;
   }
 
   /* The back link sits beside the title rather than above it, so the

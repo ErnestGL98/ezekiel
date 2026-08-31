@@ -4,11 +4,16 @@ Prepare a shoot's photos for its own gallery page.
 HOW TO RUN IT (from the project folder)
     python tools/build_gallery.py apotts-aw22-skinfolk --newest 6
     python tools/build_gallery.py apotts-aw22-skinfolk IMG_7818.WEBP IMG_7820.WEBP
+    python tools/build_gallery.py apotts-aw22-skinfolk --append --newest 2
 
     --newest N takes the N most recently downloaded images. Naming the
     files explicitly is safer if anything else has landed in Downloads
     since. Either way they are sorted by filename, which for camera
     exports is shoot order.
+
+    --append carries on from the highest number already in the folder
+    instead of starting at 01, so photos added later join the end of the
+    gallery rather than renumbering everything ahead of them.
 
     Writes images/galleries/<slug>/01.webp, 02.webp, ...
 
@@ -49,6 +54,9 @@ def main():
     slug = sys.argv[1]
     rest = sys.argv[2:]
 
+    append = '--append' in rest
+    rest = [a for a in rest if a != '--append']
+
     if rest[0] == '--newest':
         sources = newest(int(rest[1]))
     else:
@@ -62,7 +70,13 @@ def main():
     dest = DEST_ROOT / slug
     dest.mkdir(parents=True, exist_ok=True)
 
-    for i, src in enumerate(sources, 1):
+    first = 1
+    if append:
+        existing = sorted(dest.glob('*.webp'))
+        if existing:
+            first = int(existing[-1].stem) + 1
+
+    for i, src in enumerate(sources, first):
         im = ImageOps.exif_transpose(Image.open(src))
         out = dest / f'{i:02d}.webp'
 

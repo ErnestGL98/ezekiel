@@ -84,6 +84,8 @@
       paused: audio.paused,
       muted: audio.muted,
       volume: audio.volume,
+      unmutedVideos: Array.prototype.filter.call(
+        document.querySelectorAll('video'), audible).length,
       pausedByVisitor: userPaused
     };
   };
@@ -254,6 +256,58 @@
   els.mute.addEventListener('click', function () {
     audio.muted = !audio.muted;
     paintMute();
+  });
+
+  /* ---------- a video being watched wins ---------- */
+
+  // NOT "a video is playing". The clips on this page autoplay muted as
+  // moving stills, so that is true of every one of them from the moment it
+  // scrolls into view — hanging the music off it would silence the site on
+  // load. Being UNMUTED is the real signal: it is the only moment two
+  // pieces of audio would actually fight.
+  function audible(v) {
+    return !v.muted && v.volume > 0;
+  }
+
+  function hush() {
+    if (audio.paused) return;
+    userPaused = true;      // so the first-gesture fallback can't undo it
+    disarm();
+    audio.pause();
+  }
+
+  function checkVideos() {
+    for (var i = 0; i < videos.length; i++) {
+      if (audible(videos[i])) { hush(); return; }
+    }
+  }
+
+  // Going fullscreen means settling in to watch, so the clip unmutes
+  // itself — which then trips the check above and stops the music. Done
+  // here rather than by muting the music, so the clip's own control still
+  // shows the truth about its state.
+  function wentFullscreen(v) {
+    if (v.muted) v.muted = false;   // fires volumechange -> checkVideos
+    else checkVideos();
+  }
+
+  var videos = document.querySelectorAll('video');
+
+  Array.prototype.forEach.call(videos, function (v) {
+    v.addEventListener('volumechange', checkVideos);
+    // iOS Safari doesn't use the Fullscreen API for video at all — it has
+    // its own pair of events on the element instead.
+    v.addEventListener('webkitbeginfullscreen', function () { wentFullscreen(v); });
+  });
+
+  ['fullscreenchange', 'webkitfullscreenchange'].forEach(function (name) {
+    document.addEventListener(name, function () {
+      var el = document.fullscreenElement || document.webkitFullscreenElement;
+      if (!el) return;                        // that was an exit, not an entry
+      var v = el.tagName === 'VIDEO' ? el
+            : (el.querySelector ? el.querySelector('video') : null);
+      if (v) wentFullscreen(v);
+    });
   });
 
   // The speaker in the page header, when there is one. Browsers won't let

@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=44 ON EVERY FONT URL
+/* NOTE ON THE ?v=45 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=44') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=44') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=45') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=45') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=44') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=44') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=45') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=45') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -53,8 +53,8 @@
    get the browser's fake bold on top of the 700, which smears. */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Black.woff2?v=44') format('woff2'),
-       url('../fonts/EzekielHand-Black.ttf?v=44') format('truetype');
+  src: url('../fonts/EzekielHand-Black.woff2?v=45') format('woff2'),
+       url('../fonts/EzekielHand-Black.ttf?v=45') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -1026,13 +1026,16 @@ a {
    ------------------------------------------------------------ */
 .player {
   position: fixed;
-  left: var(--gutter);
+  /* Tucked further in than the page gutter, so it reads as sitting in the
+     corner rather than lining up with the content. Its own number, not
+     var(--gutter), precisely so it can differ from the grid. */
+  left: 1rem;
   /* clear of the iPhone home indicator, which sits over the bottom edge */
-  bottom: max(var(--gutter), env(safe-area-inset-bottom));
+  bottom: max(1rem, env(safe-area-inset-bottom));
   z-index: 60;                 /* over the glitch canvas, which is 40 —
                                   otherwise a tear could paint across the
                                   controls */
-  width: min(19rem, calc(100vw - var(--gutter) * 2));
+  width: min(16.5rem, calc(100vw - 2rem));
   color: var(--ink);
   user-select: none;
   /* No panel behind it — the controls sit straight on the page.
@@ -1055,13 +1058,13 @@ a {
 .player__controls {
   display: flex;
   align-items: center;
-  gap: 0.15rem;
-  margin-bottom: 0.5rem;
+  gap: 0.1rem;
+  margin-bottom: 0.45rem;
 }
 
 .player__btn {
   display: inline-flex;
-  padding: 0.35rem;
+  padding: 0.3rem;
   background: none;
   border: 0;
   color: var(--ink);
@@ -1083,16 +1086,16 @@ a {
 }
 
 .player__btn svg {
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 1rem;
+  height: 1rem;
   fill: currentColor;
 }
 
 /* The play/pause button is the one you reach for most, so it is bigger
    than the others and always at full strength. */
 .player__toggle svg {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.3rem;
+  height: 1.3rem;
 }
 
 .player__toggle {
@@ -1165,11 +1168,11 @@ a {
 .player__fill::after {
   content: '';
   position: absolute;
-  right: -4px;
+  right: -3.5px;
   top: 50%;
-  width: 9px;
-  height: 9px;
-  margin-top: -4.5px;
+  width: 8px;
+  height: 8px;
+  margin-top: -4px;
   border-radius: 50%;
   background: var(--ink);
 }
@@ -1185,9 +1188,9 @@ a {
   align-items: baseline;
   justify-content: space-between;
   gap: 0.6rem;
-  margin-top: 0.4rem;
-  font-size: 0.72rem;
-  letter-spacing: 0.09em;
+  margin-top: 0.35rem;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -1207,11 +1210,13 @@ a {
 
 @media (min-width: 48em) {
   .player {
-    width: 20rem;
+    left: 1.25rem;
+    bottom: max(1.25rem, env(safe-area-inset-bottom));
+    width: 17.5rem;
   }
 
   .player__meta {
-    font-size: 0.78rem;
+    font-size: 0.7rem;
   }
 }
 

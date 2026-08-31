@@ -7,9 +7,13 @@
    five are shuffled fresh on every load. Transport buttons, a scrubbable
    timeline, and the track name underneath it.
 
+   IT RUNS ON THE PORTFOLIO AND ON EVERY GALLERY, and carries its queue
+   and position between them, so opening a shoot does not restart the
+   playlist. A refresh or a direct load DOES start over — see
+   arrivedFromTheSite() for how the two are told apart.
+
    THE HOME PAGE DELIBERATELY HAS NONE OF THIS. No player, no script, no
-   audio — it doesn't even load this file. Everything that makes a sound
-   or an effect lives on the portfolio page and nowhere else.
+   audio — it does not even load this file.
 
    TWO THINGS WORTH KNOWING BEFORE CHANGING ANYTHING
 
@@ -64,6 +68,7 @@
   // belongs to the player, not to the file loaded into it.
   audio.volume = VOLUME;
 
+  var carriedIn = false;        // did this page pick up an existing queue
   var queue = [];               // the shuffled playlist
   var at = 0;                   // index into it
   var scrubbing = false;
@@ -81,6 +86,49 @@
     return list;
   }
 
+  /* ---------- carrying the music between pages ---------- */
+
+  // sessionStorage, not local: it lives as long as the tab, so it can
+  // carry a queue from the portfolio into a gallery and back without
+  // remembering anything about you tomorrow.
+  var STORE = 'ezekiel-music';
+  var pendingSeek = 0;
+
+  function save() {
+    try {
+      sessionStorage.setItem(STORE, JSON.stringify({
+        queue: queue, at: at, time: audio.currentTime,
+        muted: audio.muted, volume: audio.volume, playing: !audio.paused
+      }));
+    } catch (e) {}
+  }
+
+  // Resume ONLY when this page was arrived at from elsewhere on the site.
+  // A refresh or a direct load starts the playlist over — that is what
+  // "the site opens with Empty Childhood" means — while following a link
+  // into a shoot and back is one continuous visit and shouldn't restart
+  // anything. performance's navigation type is what separates a reload
+  // from a real navigation; the referrer is what says it came from here.
+  function arrivedFromTheSite() {
+    try {
+      var nav = performance.getEntriesByType &&
+                performance.getEntriesByType('navigation')[0];
+      if (nav && nav.type === 'reload') return false;
+      if (!document.referrer) return false;
+      return new URL(document.referrer).origin === location.origin;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function restore() {
+    try {
+      var s = JSON.parse(sessionStorage.getItem(STORE));
+      if (s && s.queue && s.queue.length) return s;
+    } catch (e) {}
+    return null;
+  }
+
   // A way to ask the page what the player is doing, in the same spirit as
   // ezekielAudio() in glitch.js. Run  ezekielMusic()  in the console.
   window.ezekielMusic = function () {
@@ -94,6 +142,7 @@
       unmutedVideos: Array.prototype.filter.call(
         document.querySelectorAll('video'), audible).length,
       pausedByVideo: pausedByVideo,
+      carriedFromLastPage: carriedIn,
       pausedByVisitor: userPaused
     };
   };
@@ -150,6 +199,7 @@
     if (frac > 0) lastVolume = frac;
     paintVolume();
     paintMute();
+    save();
   }
 
   function paintMute() {
@@ -168,6 +218,7 @@
     els.title.textContent = track.title;
     paintProgress();
     if (andPlay) start();
+    save();
   }
 
   // play() returns a promise that REJECTS when the browser blocks it.
@@ -311,6 +362,7 @@
     if (!audio.muted && audio.volume === 0) audio.volume = lastVolume || VOLUME;
     paintMute();
     paintVolume();
+    save();
   });
 
   /* ---------- a video being watched wins ---------- */
@@ -375,6 +427,11 @@
     });
   });
 
+  // Written on a timer rather than on every timeupdate, which fires
+  // several times a second, and once more on the way out.
+  setInterval(function () { if (!audio.paused) save(); }, 2000);
+  window.addEventListener('pagehide', save);
+
   // The speaker in the page header, when there is one. Browsers won't let
   // a page start audio on load, so that click is often the first moment
   // music is allowed to play at all — which is exactly why it drives it.
@@ -391,9 +448,18 @@
   audio.addEventListener('timeupdate', function () {
     if (!scrubbing) paintProgress();
   });
-  audio.addEventListener('loadedmetadata', paintProgress);
-  audio.addEventListener('play', paintToggle);
-  audio.addEventListener('pause', paintToggle);
+  audio.addEventListener('loadedmetadata', function () {
+    // Seeking before the metadata arrives does not stick, so a position
+    // carried from the previous page is held until the file knows how
+    // long it is.
+    if (pendingSeek) {
+      audio.currentTime = pendingSeek;
+      pendingSeek = 0;
+    }
+    paintProgress();
+  });
+  audio.addEventListener('play', function () { paintToggle(); save(); });
+  audio.addEventListener('pause', function () { paintToggle(); save(); });
   audio.addEventListener('ended', function () { load(at + 1, true); });
 
   // A track that won't load shouldn't strand the player on it forever.
@@ -408,17 +474,26 @@
     .then(function (tracks) {
       if (!tracks || !tracks.length) return;
 
-      // The first track is pinned by the build script and stays put; only
-      // the tail is shuffled, so every load opens on Empty Childhood and
-      // never repeats the same order after it.
-      //
-      // Nothing is remembered between loads. That was here to carry the
-      // music from the home page to the portfolio, and the home page no
-      // longer has a player — keeping it would have meant the portfolio
-      // sometimes opening mid-track on something else.
-      queue = [tracks[0]].concat(shuffle(tracks.slice(1)));
-      load(0, false);
-      start();
+      var carried = arrivedFromTheSite() ? restore() : null;
+
+      carriedIn = !!carried;
+      if (carried) {
+        // Same visit, another page: pick the needle up where it was.
+        queue = carried.queue;
+        audio.muted = !!carried.muted;
+        if (typeof carried.volume === 'number') audio.volume = carried.volume;
+        if (audio.volume > 0) lastVolume = audio.volume;
+        pendingSeek = carried.time || 0;
+        load(carried.at, false);
+        if (carried.playing) start(); else userPaused = true;
+      } else {
+        // The first track is pinned by the build script and stays put;
+        // only the tail is shuffled, so a fresh visit opens on Empty
+        // Childhood and never repeats the same order after it.
+        queue = [tracks[0]].concat(shuffle(tracks.slice(1)));
+        load(0, false);
+        start();
+      }
 
       paintToggle();
       paintMute();

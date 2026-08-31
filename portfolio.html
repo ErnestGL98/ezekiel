@@ -11,11 +11,11 @@
   <!-- Both weights are used above the fold on this page (the title is
        regular, the shoot names are bold), so start both downloading
        immediately rather than waiting for the CSS to be parsed. -->
-  <!-- The ?v=37 must match the one in style.css — see the note there. -->
-  <link rel="preload" href="fonts/EzekielHand.woff2?v=37" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=37" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/EzekielHand-Black.woff2?v=37" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=37">
+  <!-- The ?v=38 must match the one in style.css — see the note there. -->
+  <link rel="preload" href="fonts/EzekielHand.woff2?v=38" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=38" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/EzekielHand-Black.woff2?v=38" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/style.css?v=38">
 </head>
 
 <body>
@@ -246,6 +246,11 @@
            The box around each one is the exact shape of the file, so
            nothing is letterboxed and nothing is cropped.
            ============================================================ -->
+
+      <!-- Same treatment as the Paris heading: a full-width grid item, so
+           it centres across the whole grid rather than over one column. -->
+      <h2 class="section-title">Famous Nobodys</h2>
+
       <div class="pair">
         <figure class="pair__item pair__still">
           <img src="images/looks/famous-nobodys.jpg"
@@ -268,7 +273,7 @@
   <!-- Hover glitch. "defer" means it runs after the page is parsed, so it
        never holds up the photos. If it fails or JavaScript is off, the
        page simply behaves as it did before. -->
-  <script src="js/glitch.js?v=37" defer></script>
+  <script src="js/glitch.js?v=38" defer></script>
 
 </body>
 </html>

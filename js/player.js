@@ -1,11 +1,15 @@
 /* ============================================================
-   THE MUSIC PLAYER — fixed bottom-left, on every page
+   THE MUSIC PLAYER — fixed bottom-left of the PORTFOLIO page
    ============================================================
 
    WHAT IT DOES
-   Plays Ezekiel's own tracks. "Empty Childhood" always opens the site;
-   the other five are shuffled fresh on each visit. Transport buttons, a
-   scrubbable timeline, and the track name underneath it.
+   Plays Ezekiel's own tracks. "Empty Childhood" always opens; the other
+   five are shuffled fresh on every load. Transport buttons, a scrubbable
+   timeline, and the track name underneath it.
+
+   THE HOME PAGE DELIBERATELY HAS NONE OF THIS. No player, no script, no
+   audio — it doesn't even load this file. Everything that makes a sound
+   or an effect lives on the portfolio page and nowhere else.
 
    TWO THINGS WORTH KNOWING BEFORE CHANGING ANYTHING
 
@@ -15,10 +19,11 @@
 
    2. Browsers refuse to let a page make a sound before the visitor has
       interacted with it. So this tries to play on load, and if it's
-      turned down, it waits and starts on the first click or key press
-      instead. Everything is built up front either way, so the player is
-      on screen and pausable from the very first frame — nobody should
-      hear a sound they can't immediately find the source of.
+      turned down, it waits and starts on the first click or key press —
+      including the speaker in the header, which drives it deliberately.
+      Everything is built up front either way, so the player is on screen
+      and pausable from the very first frame; nobody should hear a sound
+      they can't immediately find the source of.
    ============================================================ */
 
 (function () {
@@ -58,29 +63,18 @@
     return list;
   }
 
-  // Carried between pages so walking from the home page to the portfolio
-  // doesn't drop the needle back on track one. sessionStorage, not local:
-  // it lasts as long as the tab, so a genuinely new visit opens with
-  // Empty Childhood as intended. Throws in some privacy modes, hence the
-  // wrappers.
-  var STORE = 'ezekiel-music';
-
-  function save() {
-    try {
-      sessionStorage.setItem(STORE, JSON.stringify({
-        queue: queue, at: at, time: audio.currentTime,
-        muted: audio.muted, playing: !audio.paused
-      }));
-    } catch (e) {}
-  }
-
-  function restore() {
-    try {
-      var s = JSON.parse(sessionStorage.getItem(STORE));
-      if (s && s.queue && s.queue.length) return s;
-    } catch (e) {}
-    return null;
-  }
+  // A way to ask the page what the player is doing, in the same spirit as
+  // ezekielAudio() in glitch.js. Run  ezekielMusic()  in the console.
+  window.ezekielMusic = function () {
+    return {
+      order: queue.map(function (t) { return t.title; }),
+      playing: queue[at] ? queue[at].title : null,
+      position: Math.round(audio.currentTime) + 's',
+      paused: audio.paused,
+      muted: audio.muted,
+      pausedByVisitor: userPaused
+    };
+  };
 
   /* ---------- painting ---------- */
 
@@ -131,7 +125,6 @@
     els.title.textContent = track.title;
     paintProgress();
     if (andPlay) start();
-    save();
   }
 
   // play() returns a promise that REJECTS when the browser blocks it.
@@ -249,7 +242,6 @@
   els.mute.addEventListener('click', function () {
     audio.muted = !audio.muted;
     paintMute();
-    save();
   });
 
   // The speaker in the page header, when there is one. Browsers won't let
@@ -268,19 +260,14 @@
     if (!scrubbing) paintProgress();
   });
   audio.addEventListener('loadedmetadata', paintProgress);
-  audio.addEventListener('play', function () { paintToggle(); save(); });
-  audio.addEventListener('pause', function () { paintToggle(); save(); });
+  audio.addEventListener('play', paintToggle);
+  audio.addEventListener('pause', paintToggle);
   audio.addEventListener('ended', function () { load(at + 1, true); });
 
   // A track that won't load shouldn't strand the player on it forever.
   audio.addEventListener('error', function () {
     if (queue.length > 1) load(at + 1, !audio.paused);
   });
-
-  // Keep the saved position current without writing on every timeupdate,
-  // which fires several times a second.
-  setInterval(function () { if (!audio.paused) save(); }, 2000);
-  window.addEventListener('pagehide', save);
 
   /* ---------- go ---------- */
 
@@ -289,22 +276,17 @@
     .then(function (tracks) {
       if (!tracks || !tracks.length) return;
 
-      var saved = restore();
-      if (saved) {
-        // same tab, another page: carry on where the last one left off
-        queue = saved.queue;
-        audio.muted = !!saved.muted;
-        load(saved.at, false);
-        audio.currentTime = saved.time || 0;
-        if (saved.playing) start(); else userPaused = true;
-      } else {
-        // The first track is pinned by the build script and stays put;
-        // only the tail is shuffled, so the site always opens on
-        // Empty Childhood and never repeats the same order after it.
-        queue = [tracks[0]].concat(shuffle(tracks.slice(1)));
-        load(0, false);
-        start();
-      }
+      // The first track is pinned by the build script and stays put; only
+      // the tail is shuffled, so every load opens on Empty Childhood and
+      // never repeats the same order after it.
+      //
+      // Nothing is remembered between loads. That was here to carry the
+      // music from the home page to the portfolio, and the home page no
+      // longer has a player — keeping it would have meant the portfolio
+      // sometimes opening mid-track on something else.
+      queue = [tracks[0]].concat(shuffle(tracks.slice(1)));
+      load(0, false);
+      start();
 
       paintToggle();
       paintMute();

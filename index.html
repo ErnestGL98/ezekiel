@@ -17,12 +17,12 @@
 
   <!-- Start downloading the handwriting font immediately, in parallel with
        the stylesheet, instead of waiting for the CSS to be parsed first. -->
-  <!-- The ?v=40 must match the one in style.css — see the note there. -->
-  <link rel="preload" href="fonts/EzekielHand.woff2?v=40" as="font" type="font/woff2" crossorigin>
+  <!-- The ?v=41 must match the one in style.css — see the note there. -->
+  <link rel="preload" href="fonts/EzekielHand.woff2?v=41" as="font" type="font/woff2" crossorigin>
 
   <!-- Our own stylesheet. Versioned too, so a changed stylesheet also
        shows up straight away instead of after the 10-minute cache. -->
-  <link rel="stylesheet" href="css/style.css?v=40">
+  <link rel="stylesheet" href="css/style.css?v=41">
 </head>
 
 <body>
@@ -76,74 +76,6 @@
     </div>
 
   </section>
-
-  <!-- ============================================================
-       MUSIC PLAYER — fixed bottom-left, identical on every page.
-
-       Starts hidden and is revealed by the script once the playlist has
-       actually loaded, so a browser with JavaScript off gets a clean page
-       rather than a dead row of buttons.
-
-       The track list lives in audio/tracks.json, written by
-       tools/build_audio.py. TO ADD A SONG: drop a WAV into the
-       "Zeek Site" folder in Music and re-run that script. Nothing in this
-       file needs to change.
-       ============================================================ -->
-  <div class="player" hidden>
-    <div class="player__controls">
-      <button class="player__btn player__prev" type="button" aria-label="Previous track">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M7 5v14H5V5z"/><path d="M20 5v14l-11-7z"/>
-        </svg>
-      </button>
-
-      <button class="player__btn player__toggle" type="button"
-              aria-pressed="false" aria-label="Play">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <!-- both states live in the DOM; the CSS shows one at a time, so
-               nothing has to be redrawn on every press -->
-          <path class="player__icon-play" d="M7 4v16l13-8z"/>
-          <path class="player__icon-pause" d="M7 4h4v16H7zM14 4h4v16h-4z"/>
-        </svg>
-      </button>
-
-      <button class="player__btn player__next" type="button" aria-label="Next track">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M17 5v14h2V5z"/><path d="M4 5v14l11-7z"/>
-        </svg>
-      </button>
-
-      <button class="player__btn player__mute" type="button"
-              aria-pressed="true" aria-label="Mute music">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M3 9v6h4l5 4V5L7 9H3z"/>
-          <g class="player__icon-waves" fill="none" stroke="currentColor"
-             stroke-width="1.7" stroke-linecap="round">
-            <path d="M15.5 9a4.5 4.5 0 0 1 0 6"/>
-            <path d="M18.2 6.6a8 8 0 0 1 0 10.8"/>
-          </g>
-          <g class="player__icon-cross" fill="none" stroke="currentColor"
-             stroke-width="1.9" stroke-linecap="round">
-            <path d="M15.5 9.5l5 5M20.5 9.5l-5 5"/>
-          </g>
-        </svg>
-      </button>
-    </div>
-
-    <!-- A real slider, not a decorated div: arrows nudge, Home/End jump,
-         and a screen reader announces the position. -->
-    <div class="player__bar" role="slider" tabindex="0" aria-label="Seek"
-         aria-valuemin="0" aria-valuemax="0" aria-valuenow="0">
-      <div class="player__fill"></div>
-    </div>
-
-    <div class="player__meta">
-      <span class="player__title"></span>
-      <span class="player__time">0:00 / 0:00</span>
-    </div>
-  </div>
-
-  <script src="js/player.js?v=40" defer></script>
 
 </body>
 </html>

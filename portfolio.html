@@ -11,11 +11,11 @@
   <!-- Both weights are used above the fold on this page (the title is
        regular, the shoot names are bold), so start both downloading
        immediately rather than waiting for the CSS to be parsed. -->
-  <!-- The ?v=48 must match the one in style.css — see the note there. -->
-  <link rel="preload" href="fonts/EzekielHand.woff2?v=48" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=48" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/EzekielHand-Black.woff2?v=48" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=48">
+  <!-- The ?v=50 must match the one in style.css — see the note there. -->
+  <link rel="preload" href="fonts/EzekielHand.woff2?v=50" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=50" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/EzekielHand-Black.woff2?v=50" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/style.css?v=50">
 
   <!-- Two things that have to happen before the first paint.
 
@@ -54,7 +54,7 @@
        ============================================================ -->
   <header class="page-header">
     <div class="page-header__left">
-      <a class="page-header__mark" href="./">Ezekiel</a>
+      <a class="page-header__mark glitch-text" href="./">Ezekiel</a>
 
       <!-- Sound switch for the hover effect.
            The speaker is Ezekiel's own drawing, traced to vectors by
@@ -89,7 +89,7 @@
     </div>
 
     <nav class="nav" aria-label="Main navigation">
-      <a href="#">Contact</a>
+      <a class="glitch-text" href="#">Contact</a>
     </nav>
   </header>
 
@@ -107,7 +107,7 @@
       fetchpriority="high"
       decoding="async">
     <div class="banner__scrim" aria-hidden="true"></div>
-    <h1 class="banner__title">Portfolio</h1>
+    <h1 class="banner__title glitch-text">Portfolio</h1>
   </section>
 
   <main class="page-main">
@@ -300,8 +300,8 @@
   <!-- Hover glitch. "defer" means it runs after the page is parsed, so it
        never holds up the photos. If it fails or JavaScript is off, the
        page simply behaves as it did before. -->
-  <script src="js/reveal.js?v=48" defer></script>
-  <script src="js/glitch.js?v=48" defer></script>
+  <script src="js/reveal.js?v=50" defer></script>
+  <script src="js/glitch.js?v=50" defer></script>
 
   <!-- ============================================================
        MUSIC PLAYER — fixed bottom-left. This page only: the home
@@ -370,7 +370,7 @@
     </div>
   </div>
 
-  <script src="js/player.js?v=48" defer></script>
+  <script src="js/player.js?v=50" defer></script>
 
 </body>
 </html>

@@ -79,11 +79,14 @@
   // Hover isn't a thing on touch screens; don't build any of this there.
   if (!window.matchMedia('(hover: hover)').matches) return;
 
-  // Covers, plus the Paris stills and the portrait laid over them — every
-  // photograph in the grid. Deliberately NOT the Paris clips: tearing up a
-  // playing video reads as a broken player rather than an effect, and it
-  // would fight the controls.
-  var SELECTOR = '.tile__frame, .media--still, .paris-portrait, .pair__still';
+  // Every photograph in the grid — covers, the Paris stills, the portrait
+  // laid over them — plus the three words that carry the page: the
+  // wordmark, the nav link and the banner title.
+  //
+  // Deliberately NOT the Paris clips: tearing up a playing video reads as
+  // a broken player rather than an effect, and it would fight the controls.
+  var SELECTOR = '.tile__frame, .media--still, .paris-portrait, .pair__still,'
+               + ' .glitch-text';
   var tiles = document.querySelectorAll(SELECTOR);
   if (!tiles.length) return;
 
@@ -119,6 +122,7 @@
     'uniform float uVividTo;',
     'uniform float uVividAmt;',
     'uniform float uSkinGuard;',
+    'uniform float uAlphaKey;   // 1 = key on glyph coverage, 0 = on colour',
     '',
     'float hash(vec2 p) {',
     '  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);',
@@ -139,7 +143,8 @@
     '// HOW MUCH A GIVEN COLOUR IS ALLOWED TO GLITCH.',
     '// One function, used both to choose where a band tears from and to',
     '// shade it, so the two can never disagree about what qualifies.',
-    'float eligibility(vec3 c) {',
+    'float eligibility(vec4 t) {',
+    '  vec3 c = t.rgb;',
     '  vec3 hsv = rgb2hsv(c);',
     '  float hue = hsv.x, sat = hsv.y, val = hsv.z;',
     '',
@@ -158,7 +163,13 @@
     '  float skin = sHue * sSat * smoothstep(0.12, 0.22, val);',
     '  k *= 1.0 - skin * uSkinGuard;',
     '',
-    '  return max(k, uKeyFloor);',
+    '  // Everything above reads a PHOTOGRAPH: tear out of the shadows, spare',
+    '  // the highlights. Words have no shadows to tear out of — two of the',
+    '  // ones here are near-black and one is white — so for text the key is',
+    '  // glyph coverage instead. Wherever there is a letter the effect is at',
+    '  // full strength, whatever colour that letter happens to be, and the',
+    '  // space around it is left alone.',
+    '  return mix(max(k, uKeyFloor), t.a, uAlphaKey);',
     '}',
     '',
     'void main() {',
@@ -197,7 +208,7 @@
     '  float bestE = 0.0;',
     '  for (int i = 0; i < 6; i++) {',
     '    float cx = hash(vec2(row, uSeed + 31.0 + float(i) * 7.3));',
-    '    float ce = eligibility(texture2D(uTex, vec2(cx, uv.y)).rgb);',
+    '    float ce = eligibility(texture2D(uTex, vec2(cx, uv.y)));',
     '    if (ce > bestE) { bestE = ce; bestX = cx; }',
     '  }',
     '',
@@ -232,7 +243,16 @@
     '  // Content is dragged from the tear point and stretched along the',
     '  // trail, so the streak carries the picture with it instead of being',
     '  // invented once it clears the frame.',
-    '  float srcX = x0 + d * 0.20 - shear;',
+    '  // On a photo the sample walks right along the trail and slides with',
+    '  // the shear, so the streak carries the picture with it. Neither',
+    '  // survives contact with TEXT: the walk lands in the gap between two',
+    '  // letters within a few pixels, and the shear alone can throw the',
+    '  // sample a tenth of the width sideways, clean off the glyph the tear',
+    '  // was chosen for. Either way alpha reads zero and the row paints',
+    '  // nothing, which is why the words looked untouched. For text the',
+    '  // sample stays exactly on the tear, and the trail becomes that',
+    '  // letter smeared along the line — which is the look anyway.',
+    '  float srcX = x0 + (d * 0.20 - shear) * (1.0 - uAlphaKey);',
     '',
     '  // bit-crush horizontally: snap to blocks so it reads as pixels',
     '  float blocks = uRes.x / uBlockPx;',
@@ -244,7 +264,7 @@
     '  // is what lets a band of shadow fly across a bright part of the',
     '  // picture: the effect is chosen by where its content came from, so',
     '  // it can overlay highlights instead of being blocked by them.',
-    '  vec3 pulled = texture2D(uTex, srcUv).rgb;',
+    '  vec4 pulled = texture2D(uTex, srcUv);',
     '  float key = eligibility(pulled);',
     '',
     '  // --- colour ------------------------------------------------------',
@@ -328,7 +348,7 @@
   ['uTex', 'uRes', 'uTime', 'uImgFrac', 'uSeed', 'uRowPx', 'uDensity',
    'uShear', 'uKeyLow', 'uKeyHigh', 'uCrush', 'uBlockPx',
    'uKeyFloor', 'uAberr', 'uVividFrom', 'uVividTo', 'uVividAmt',
-   'uSkinGuard'].forEach(function (n) {
+   'uSkinGuard', 'uAlphaKey'].forEach(function (n) {
     U[n] = gl.getUniformLocation(prog, n);
   });
 
@@ -357,6 +377,7 @@
   gl.uniform1f(U.uVividTo, CONFIG.vividTo);
   gl.uniform1f(U.uVividAmt, CONFIG.vividAmt);
   gl.uniform1f(U.uSkinGuard, CONFIG.skinGuard);
+  gl.uniform1f(U.uAlphaKey, 0.0);   // photos unless told otherwise
 
   document.body.appendChild(canvas);
   document.documentElement.classList.add('js-glitch');
@@ -605,7 +626,23 @@
   // letterboxed by object-fit: contain inside a box that stays the full
   // half-width — so the element rect includes empty space beside the photo.
   // Laying the effect over that rect would smear it across the gap.
+  function isText(el) {
+    return el.classList.contains('glitch-text');
+  }
+
+  // Where a WORD's ink actually sits. The element's own box is no use: the
+  // banner title is a full-width flex container and the nav links carry
+  // padding for their tap targets, so both are far wider than the letters.
+  // A Range over the contents measures the run of text itself.
+  function inkRect(el) {
+    var range = document.createRange();
+    range.selectNodeContents(el);
+    var r = range.getBoundingClientRect();
+    return r.width ? r : el.getBoundingClientRect();
+  }
+
   function paintedRect(el) {
+    if (isText(el)) return inkRect(el);
     var r = el.getBoundingClientRect();
     var img = el.querySelector('img');
     if (!img || !img.naturalWidth) return r;
@@ -628,6 +665,69 @@
     };
   }
 
+  /* ---------- turning a word into something the shader can read ---------- */
+
+  // The shader needs a texture. A photo already is one; a word is not, so
+  // it gets drawn into a scratch canvas and THAT is uploaded. Transparent
+  // background, letters in their own colour — the shader keys on coverage
+  // for these, so the letters glitch and the space around them doesn't.
+  var scratch = document.createElement('canvas');
+  var sctx = scratch.getContext('2d');
+
+  function textTexture(el, rect, dpr) {
+    var cs = getComputedStyle(el);
+    var text = el.textContent.trim();
+    if (cs.textTransform === 'uppercase') text = text.toUpperCase();
+    else if (cs.textTransform === 'lowercase') text = text.toLowerCase();
+    if (!text) return null;
+
+    var w = Math.max(1, Math.round(rect.width * dpr));
+    var h = Math.max(1, Math.round(rect.height * dpr));
+    scratch.width = w;
+    scratch.height = h;
+    sctx.clearRect(0, 0, w, h);
+
+    sctx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' +
+                (parseFloat(cs.fontSize) * dpr) + 'px ' + cs.fontFamily;
+    // These words carry a lot of tracking — 0.3em on the wordmark. Without
+    // it the texture would be far narrower than the text on screen.
+    if ('letterSpacing' in sctx) {
+      sctx.letterSpacing = ((parseFloat(cs.letterSpacing) || 0) * dpr) + 'px';
+    }
+    sctx.fillStyle = cs.color;
+
+    var m = sctx.measureText(text);
+
+    // Sit the letters on the same baseline the browser used. A line box
+    // centres the font's own ascent+descent within itself — half-leading —
+    // so that is where the baseline goes, rather than guessing from the
+    // middle of the box.
+    var asc = m.fontBoundingBoxAscent, desc = m.fontBoundingBoxDescent;
+    var baseline = (asc && desc) ? (h - (asc + desc)) / 2 + asc : h * 0.72;
+
+    // Drawn to fill the measured box exactly. Matching canvas metrics to
+    // the DOM glyph-for-glyph is a losing game once tracking and this
+    // font's own side bearings are in play; scaling the drawing to the box
+    // the DOM reported absorbs whatever is left over, and at these sizes
+    // the distortion is invisible.
+    var natural = m.width || w;
+    sctx.save();
+    sctx.scale(w / natural, 1);
+    sctx.fillText(text, 0, baseline);
+    sctx.restore();
+    return scratch;
+  }
+
+  // Bands are a fixed height on a photo, which gives a cover roughly 180 of
+  // them. A word is twenty pixels tall, and the same fixed height would
+  // give it eight — the effect reads as a few stray scratches rather than
+  // as a tear. So on a short target the band height comes down, keeping
+  // the NUMBER of bands roughly constant instead of their size. Anything
+  // as tall as a photo is left exactly as it was.
+  function rowPxFor(h) {
+    return Math.max(1, Math.min(CONFIG.rowPx, h / 40));
+  }
+
   function size() {
     var r = paintedRect(active);
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -641,6 +741,7 @@
     canvas.style.transform = 'translate(' + r.left + 'px,' + r.top + 'px)';
     gl.viewport(0, 0, w, h);
     gl.uniform2f(U.uRes, w, h);
+    gl.uniform1f(U.uRowPx, rowPxFor(h));
     gl.uniform1f(U.uImgFrac, 1 / (1 + CONFIG.tail));
   }
 
@@ -657,8 +758,17 @@
   }
 
   function enter(frameEl) {
-    var img = frameEl.querySelector('img');
-    if (!img || !img.complete || !img.naturalWidth) return;
+    var text = isText(frameEl);
+    var source;
+
+    if (text) {
+      var dpr = Math.min(window.devicePixelRatio || 1, 2);
+      source = textTexture(frameEl, inkRect(frameEl), dpr);
+      if (!source) return;
+    } else {
+      source = frameEl.querySelector('img');
+      if (!source || !source.complete || !source.naturalWidth) return;
+    }
 
     active = frameEl;
     seed = Math.random() * 100;
@@ -666,11 +776,12 @@
 
     gl.bindTexture(gl.TEXTURE_2D, tex);
     try {
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
     } catch (e) {
       active = null;
       return;
     }
+    gl.uniform1f(U.uAlphaKey, text ? 1.0 : 0.0);
 
     canvas.classList.add('is-on');
     // Deliberately NOT Audio_.unlock() here — hover is not a user gesture,

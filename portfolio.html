@@ -11,11 +11,11 @@
   <!-- Both weights are used above the fold on this page (the title is
        regular, the shoot names are bold), so start both downloading
        immediately rather than waiting for the CSS to be parsed. -->
-  <!-- The ?v=36 must match the one in style.css — see the note there. -->
-  <link rel="preload" href="fonts/EzekielHand.woff2?v=36" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=36" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/EzekielHand-Black.woff2?v=36" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=36">
+  <!-- The ?v=37 must match the one in style.css — see the note there. -->
+  <link rel="preload" href="fonts/EzekielHand.woff2?v=37" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=37" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/EzekielHand-Black.woff2?v=37" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/style.css?v=37">
 </head>
 
 <body>
@@ -232,13 +232,43 @@
         <span class="tile__frame"><img src="images/covers/while-it-lasted-flanelle-magazine.jpg" alt="While It Lasted, Flanelle Magazine" loading="lazy" decoding="async"></span>
       </a>
 
+      <!-- ============================================================
+           FAMOUS NOBODYS — a photo and a clip side by side.
+
+           Different from the Paris rows above. Those two are both 16:9 and
+           stretch to the grid's own edges. These two are portrait and not
+           the same shape as each other (3:4 and 9:16), so stretching them
+           to the grid would mean cropping one of them. Instead the pair
+           shares a height, each keeps its own width, and the pair is
+           centred — which is why it has its own .pair rules rather than
+           reusing .media.
+
+           The box around each one is the exact shape of the file, so
+           nothing is letterboxed and nothing is cropped.
+           ============================================================ -->
+      <div class="pair">
+        <figure class="pair__item pair__still">
+          <img src="images/looks/famous-nobodys.jpg"
+               alt="Famous Nobodys — Hall of Fame varsity jacket, Red Hook"
+               loading="lazy" decoding="async">
+        </figure>
+
+        <figure class="pair__item pair__clip">
+          <!-- muted + autoplay together on purpose: browsers only allow a
+               clip to start on its own if it's silent. "controls" is what
+               lets someone unmute it themselves. -->
+          <video src="video/famous-nobodys.mp4" poster="video/famous-nobodys-poster.jpg"
+                 muted autoplay loop playsinline controls preload="metadata"></video>
+        </figure>
+      </div>
+
     </div>
   </main>
 
   <!-- Hover glitch. "defer" means it runs after the page is parsed, so it
        never holds up the photos. If it fails or JavaScript is off, the
        page simply behaves as it did before. -->
-  <script src="js/glitch.js?v=36" defer></script>
+  <script src="js/glitch.js?v=37" defer></script>
 
 </body>
 </html>

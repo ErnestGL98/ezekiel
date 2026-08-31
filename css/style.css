@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=36 ON EVERY FONT URL
+/* NOTE ON THE ?v=37 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=36') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=36') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=37') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=37') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=36') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=36') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=37') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=37') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -53,8 +53,8 @@
    get the browser's fake bold on top of the 700, which smears. */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Black.woff2?v=36') format('woff2'),
-       url('../fonts/EzekielHand-Black.ttf?v=36') format('truetype');
+  src: url('../fonts/EzekielHand-Black.woff2?v=37') format('woff2'),
+       url('../fonts/EzekielHand-Black.ttf?v=37') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -754,6 +754,47 @@ a {
   object-fit: cover;
 }
 
+
+/* --- a photo and a clip side by side, sized to themselves ---
+
+   The Paris rows above stretch to the grid's edges because both halves
+   are 16:9 and a shared shape can be imposed on them. This pair can't be
+   treated that way: the photo is 3:4 and the clip is 9:16, so forcing
+   them to a common box would crop one. They share a HEIGHT instead, each
+   keeps its own width, and the pair is centred as a unit.
+
+   Each box carries the file's exact ratio, so there is no letterboxing
+   and no cropping — the frame is the media's own shape.
+
+   On a phone they stack, because two portrait items side by side on a
+   narrow screen would leave both too small to read. */
+.pair {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.pair__item {
+  margin: 0;
+  width: 100%;
+}
+
+.pair__still { aspect-ratio: 1309 / 1746; }   /* the photo, 3:4 */
+.pair__clip  { aspect-ratio:  720 / 1280; }   /* the clip, 9:16 */
+
+.pair__item img,
+.pair__item video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* The box already IS the file's ratio, so cover has nothing to crop.
+     It's here to absorb the half-pixel rounding that a ratio like
+     1309/1746 leaves behind, which would otherwise show as a hairline. */
+  object-fit: cover;
+}
+
 .tile {
   display: block;
   color: inherit;
@@ -950,6 +991,26 @@ a {
     width: 34%;
     left: calc(100% + 0.875rem);   /* half the 1.75rem column gap */
     top:  calc(100% + 2.5rem);     /* half the 5rem row gap */
+  }
+
+  /* Side by side now, and centred as a pair rather than filling the row.
+     Setting the height on the ROW is what makes the two line up: each item
+     takes that height and derives its own width from its aspect-ratio, so
+     their tops and bottoms match without either being cropped.
+
+     The clamp keeps it in proportion — tall enough to hold a portrait at a
+     comfortable size, capped so the row never runs past a screenful. */
+  .pair {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1.75rem;                  /* the grid's own column gap */
+    height: clamp(24rem, 44vw, 34rem);
+  }
+
+  .pair__item {
+    width: auto;                   /* the aspect-ratio decides it */
+    height: 100%;
   }
 
   .tile__num {

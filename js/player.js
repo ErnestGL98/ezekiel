@@ -86,6 +86,7 @@
       volume: audio.volume,
       unmutedVideos: Array.prototype.filter.call(
         document.querySelectorAll('video'), audible).length,
+      pausedByVideo: pausedByVideo,
       pausedByVisitor: userPaused
     };
   };
@@ -248,6 +249,7 @@
 
   els.toggle.addEventListener('click', function () {
     userPaused = !audio.paused;    // about to pause = they asked for quiet
+    pausedByVideo = false;         // their choice outranks the clip's now
     if (userPaused) disarm();
     toggle();
   });
@@ -269,16 +271,26 @@
     return !v.muted && v.volume > 0;
   }
 
-  function hush() {
-    if (audio.paused) return;
-    userPaused = true;      // so the first-gesture fallback can't undo it
-    disarm();
-    audio.pause();
-  }
+  // Remembers whether the music stopped because of a clip or because the
+  // visitor said so. Without the distinction, re-muting a clip would drag
+  // the music back on top of someone who had deliberately paused it.
+  var pausedByVideo = false;
 
   function checkVideos() {
+    var busy = false;
     for (var i = 0; i < videos.length; i++) {
-      if (audible(videos[i])) { hush(); return; }
+      if (audible(videos[i])) { busy = true; break; }
+    }
+
+    if (busy) {
+      if (!audio.paused) {
+        pausedByVideo = true;
+        disarm();           // the first-gesture fallback must not undo this
+        audio.pause();
+      }
+    } else if (pausedByVideo) {
+      pausedByVideo = false;
+      if (!userPaused) start();
     }
   }
 
@@ -318,6 +330,7 @@
   window.addEventListener('ezekiel:sound', function (e) {
     var on = e.detail && e.detail.on;
     disarm();
+    pausedByVideo = false;
     userPaused = !on;
     if (on) start(); else audio.pause();
   });

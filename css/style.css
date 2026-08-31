@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=38 ON EVERY FONT URL
+/* NOTE ON THE ?v=39 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=38') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=38') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=39') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=39') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=38') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=38') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=39') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=39') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -53,8 +53,8 @@
    get the browser's fake bold on top of the 700, which smears. */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Black.woff2?v=38') format('woff2'),
-       url('../fonts/EzekielHand-Black.ttf?v=38') format('truetype');
+  src: url('../fonts/EzekielHand-Black.woff2?v=39') format('woff2'),
+       url('../fonts/EzekielHand-Black.ttf?v=39') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -1020,7 +1020,205 @@ a {
 
 
 /* ------------------------------------------------------------
-   8. REDUCED MOTION
+   8. THE MUSIC PLAYER
+   Fixed to the bottom-left corner, so it stays put while the page
+   scrolls under it and is reachable from anywhere without hunting.
+   ------------------------------------------------------------ */
+.player {
+  position: fixed;
+  left: var(--gutter);
+  /* clear of the iPhone home indicator, which sits over the bottom edge */
+  bottom: max(var(--gutter), env(safe-area-inset-bottom));
+  z-index: 60;                 /* over the glitch canvas, which is 40 —
+                                  otherwise a tear could paint across the
+                                  controls */
+  width: min(19rem, calc(100vw - var(--gutter) * 2));
+  padding: 0.7rem 0.85rem 0.6rem;
+  border-radius: 0.5rem;
+  /* Tinted rather than solid: the cream reads as part of the page, and
+     the blur keeps the text legible where a photo sits underneath. */
+  background: rgba(242, 238, 231, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 20px rgba(26, 24, 21, 0.13);
+  color: var(--ink);
+  user-select: none;
+}
+
+/* [hidden] alone loses to the display below, so it has to be said again
+   with at least the same weight. The script drops the attribute once the
+   playlist has loaded. */
+.player[hidden] {
+  display: none;
+}
+
+.player__controls {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  margin-bottom: 0.5rem;
+}
+
+.player__btn {
+  display: inline-flex;
+  padding: 0.35rem;
+  background: none;
+  border: 0;
+  color: var(--ink);
+  cursor: pointer;
+  line-height: 0;
+  opacity: 0.72;
+  transition: opacity 0.18s ease;
+}
+
+.player__btn:hover,
+.player__btn:focus-visible {
+  opacity: 1;
+}
+
+.player__btn:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+  border-radius: 3px;
+}
+
+.player__btn svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: currentColor;
+}
+
+/* The play/pause button is the one you reach for most, so it is bigger
+   than the others and always at full strength. */
+.player__toggle svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.player__toggle {
+  opacity: 1;
+}
+
+/* Mute sits apart from the transport, hard right. */
+.player__mute {
+  margin-left: auto;
+}
+
+/* One icon at a time. Both are in the DOM so nothing is redrawn on a
+   press — only which one is displayed changes. */
+.player__icon-pause,
+.player.is-playing .player__icon-play {
+  display: none;
+}
+
+.player.is-playing .player__icon-pause {
+  display: block;
+}
+
+.player__icon-cross {
+  display: none;
+}
+
+.player.is-muted .player__icon-waves {
+  display: none;
+}
+
+.player.is-muted .player__icon-cross {
+  display: block;
+}
+
+.player.is-muted .player__mute {
+  opacity: 1;                  /* muted is a state worth noticing */
+}
+
+/* --- the timeline ---
+   The visible bar is 3px, but the hit area is padded out to 14px so it
+   can actually be grabbed. Background-clip keeps the tint off the
+   padding, so the bar still LOOKS 3px tall. */
+.player__bar {
+  position: relative;
+  /* content-box on purpose, against the border-box default at the top of
+     this file. With border-box the 3px height would INCLUDE the 12px of
+     padding, collapsing the content box to nothing — and since the track
+     is painted with background-clip: content-box, it simply vanished.
+     Here 3px is the line and the padding is added around it. */
+  box-sizing: content-box;
+  height: 3px;
+  padding: 6px 0;
+  background: rgba(26, 24, 21, 0.16);
+  background-clip: content-box;
+  cursor: pointer;
+  touch-action: none;          /* let a drag scrub instead of scrolling */
+}
+
+.player__fill {
+  position: absolute;
+  left: 0;
+  top: 6px;
+  height: 3px;
+  width: 0;
+  background: var(--ink);
+}
+
+/* The playhead itself — drawn on the end of the fill rather than as its
+   own element, so there is nothing to keep in sync. */
+.player__fill::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  margin-top: -4.5px;
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+.player__bar:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+
+/* --- the name, under the timeline --- */
+.player__meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.player__title {
+  font-weight: 700;
+  /* a long title shortens rather than widening the player or wrapping */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.player__time {
+  flex: none;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;   /* stops the digits jittering */
+}
+
+@media (min-width: 48em) {
+  .player {
+    width: 20rem;
+    padding: 0.8rem 1rem 0.7rem;
+  }
+
+  .player__meta {
+    font-size: 0.78rem;
+  }
+}
+
+
+/* ------------------------------------------------------------
+   9. REDUCED MOTION
    Some people set "reduce motion" in their OS for motion sickness.
    Respect it by switching animations off.
    ------------------------------------------------------------ */

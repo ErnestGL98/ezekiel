@@ -1,0 +1,32 @@
+[
+  {
+    "src": "audio/empty-childhood.mp3",
+    "title": "Empty Childhood",
+    "duration": 237.84
+  },
+  {
+    "src": "audio/fight-for-you.mp3",
+    "title": "Fight For You",
+    "duration": 112.11
+  },
+  {
+    "src": "audio/ice-cold-samurai.mp3",
+    "title": "Ice Cold Samurai",
+    "duration": 119.21
+  },
+  {
+    "src": "audio/lake-shimmer.mp3",
+    "title": "Lake Shimmer",
+    "duration": 178.6
+  },
+  {
+    "src": "audio/lost-at-sea.mp3",
+    "title": "Lost at Sea",
+    "duration": 122.76
+  },
+  {
+    "src": "audio/night-walker.mp3",
+    "title": "Night Walker",
+    "duration": 193.0
+  }
+]

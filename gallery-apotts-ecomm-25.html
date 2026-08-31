@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>APOTTS AW22 — Skinfolk | EZEKIEL</title>
-  <meta name="description" content="Ezekiel for APOTTS AW22, shot for Skinfolk.">
+  <title>APOTTS Ecomm 25 | EZEKIEL</title>
+  <meta name="description" content="Ezekiel for the APOTTS 2025 ecommerce shoot.">
   <meta name="theme-color" content="#F2EEE7">
 
   <!-- The ?v=55 must match the one in style.css — see the note there. -->
@@ -68,13 +68,19 @@
       <a class="back-link" href="portfolio.html">
         <span aria-hidden="true">&#8592;</span> Portfolio
       </a>
-      <h1 class="gallery-title">APOTTS AW22 - Skinfolk</h1>
+      <h1 class="gallery-title">APOTTS Ecomm 25</h1>
     </div>
 
     <!-- ============================================================
-         THE SHOOT — eight frames, all 2:3, so they tile without any of
-         them being cropped or letterboxed. Eight across rows of three
-         leaves a short last row; the CSS centres it.
+         THE SHOOT — five frames, and unlike the Skinfolk set these are
+         NOT all one shape: four portraits between 0.58 and 0.71, plus a
+         landscape.
+
+         So: gallery--mixed, and the landscape one gets shot--wide, which
+         gives it two thirds of the row and lands it at the same height
+         as the portrait beside it. Nothing is cropped. If you add a
+         landscape photo to a gallery, give it shot--wide; if you add a
+         portrait, it needs nothing. See the notes in the stylesheet.
 
          TO ADD ANOTHER GALLERY:
          1. python tools/build_gallery.py <slug> --newest N
@@ -85,15 +91,12 @@
          position across a link, so opening a shoot does not restart the
          playlist. See the note at the top of js/player.js.
          ============================================================ -->
-    <div class="gallery">
-      <figure class="shot"><img src="images/galleries/apotts-aw22-skinfolk/01.webp" alt="APOTTS AW22 for Skinfolk, look 1" width="960" height="1440" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/apotts-aw22-skinfolk/02.webp" alt="APOTTS AW22 for Skinfolk, look 2" width="960" height="1440" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/apotts-aw22-skinfolk/03.webp" alt="APOTTS AW22 for Skinfolk, look 3" width="960" height="1440" loading="lazy" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/apotts-aw22-skinfolk/04.webp" alt="APOTTS AW22 for Skinfolk, look 4" width="960" height="1440" loading="lazy" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/apotts-aw22-skinfolk/05.webp" alt="APOTTS AW22 for Skinfolk, look 5" width="960" height="1440" loading="lazy" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/apotts-aw22-skinfolk/06.webp" alt="APOTTS AW22 for Skinfolk, look 6" width="960" height="1440" loading="lazy" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/apotts-aw22-skinfolk/07.webp" alt="APOTTS AW22 for Skinfolk, look 7" width="1130" height="1701" loading="lazy" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/apotts-aw22-skinfolk/08.webp" alt="APOTTS AW22 for Skinfolk, look 8" width="960" height="1440" loading="lazy" decoding="async"></figure>
+    <div class="gallery gallery--mixed">
+      <figure class="shot shot--wide"><img src="images/galleries/apotts-ecomm-25/01.webp" alt="APOTTS Ecomm 25, look 1" loading="lazy" decoding="async"></figure>
+      <figure class="shot"><img src="images/galleries/apotts-ecomm-25/02.webp" alt="APOTTS Ecomm 25, look 2" loading="lazy" decoding="async"></figure>
+      <figure class="shot"><img src="images/galleries/apotts-ecomm-25/03.webp" alt="APOTTS Ecomm 25, look 3" loading="lazy" decoding="async"></figure>
+      <figure class="shot"><img src="images/galleries/apotts-ecomm-25/04.webp" alt="APOTTS Ecomm 25, look 4" loading="lazy" decoding="async"></figure>
+      <figure class="shot"><img src="images/galleries/apotts-ecomm-25/05.webp" alt="APOTTS Ecomm 25, look 5" loading="lazy" decoding="async"></figure>
     </div>
 
   </main>

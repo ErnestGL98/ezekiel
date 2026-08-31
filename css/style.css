@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=54 ON EVERY FONT URL
+/* NOTE ON THE ?v=55 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=54') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=54') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=55') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=55') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=54') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=54') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=55') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=55') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -53,8 +53,8 @@
    get the browser's fake bold on top of the 700, which smears. */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Black.woff2?v=54') format('woff2'),
-       url('../fonts/EzekielHand-Black.ttf?v=54') format('truetype');
+  src: url('../fonts/EzekielHand-Black.woff2?v=55') format('woff2'),
+       url('../fonts/EzekielHand-Black.ttf?v=55') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -1317,9 +1317,16 @@ a {
   gap: 1.5rem 0.9rem;
 }
 
+/* Every frame is the same shape, and the photo is CONTAINED in it rather
+   than cropped to it. The Skinfolk set is all 2:3 and fills its frames
+   exactly; the ecomm set is not, and the alternative was either cropping
+   a reclining pose down to a portrait or leaving the photos top-aligned
+   in equal-height cells — which put 357px of dead air under a landscape
+   shot and read as broken rather than as matting. */
 .shot {
   margin: 0;
   grid-column: span 2;
+  aspect-ratio: 2 / 3;
 }
 
 /* A LAST ROW THAT DOESN'T FILL.
@@ -1329,21 +1336,39 @@ a {
 
    The selectors say "first in its row AND near the end", which is what
    identifies a short last row without anyone having to count the photos.
-   Add a ninth and they simply stop matching. */
+   Add a ninth and they simply stop matching.
+
+   They are off in a .gallery--mixed, where a double-width frame means
+   "every third one starts a row" is no longer true. */
 /* Scoped to below the breakpoint on purpose. Left unscoped it also fires
    on the desktop layout — where a ninth photo is an odd child AND the
    last child, so it got shunted to its own row and the grid came out
    3/3/2/1 instead of 3/3/3. The desktop rules below can't override it
    either: they are no more specific than this one. */
 @media (max-width: 47.999em) {
-  .shot:nth-child(2n + 1):last-child {
+  .gallery:not(.gallery--mixed) .shot:nth-child(2n + 1):last-child {
     grid-column: 2 / span 2;   /* one on its own, centred */
   }
 }
 
 .shot img {
   width: 100%;
-  height: auto;                /* they are all one shape; let it be */
+  height: 100%;
+  object-fit: contain;         /* nothing is ever cropped */
+}
+
+/* A LANDSCAPE FRAME takes two thirds of the row instead of one third,
+   which is about its natural shape and stops it sitting there as a stamp
+   in a tall cell.
+
+   aspect-ratio: auto is doing the work. With no shape of its own the
+   frame just stretches to the row, and the row is however tall the 2:3
+   portraits beside it are — so the two are level exactly, rather than to
+   whatever a hardcoded ratio happened to round to. Pinning it at 1.39
+   left the row two pixels out. */
+.shot--wide {
+  grid-column: span 4;
+  aspect-ratio: auto;
 }
 
 @media (min-width: 48em) {
@@ -1360,12 +1385,12 @@ a {
   }
 
   /* Two left over: start half a column in, and the pair sits centred. */
-  .shot:nth-child(3n + 1):nth-last-child(2) {
+  .gallery:not(.gallery--mixed) .shot:nth-child(3n + 1):nth-last-child(2) {
     grid-column: 2 / span 2;
   }
 
   /* One left over: start a full column in. */
-  .shot:nth-child(3n + 1):last-child {
+  .gallery:not(.gallery--mixed) .shot:nth-child(3n + 1):last-child {
     grid-column: 3 / span 2;
   }
 

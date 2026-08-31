@@ -28,6 +28,7 @@ import shutil
 import sys
 from pathlib import Path
 
+import numpy as np
 from PIL import Image, ImageOps
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -38,6 +39,32 @@ MAX_W = 1200      # displayed around 380px in a three-across grid
 QUALITY = 82
 
 EXTS = {'.webp', '.jpg', '.jpeg', '.png', '.heic', '.tif', '.tiff'}
+
+
+def trim_white_frame(im):
+    """Strip a border that was baked into the export.
+
+    ONLY when it is even on all four sides and genuinely white. These are
+    shot on a white backdrop, so a margin on one or two sides is the
+    studio floor, not a frame, and trimming that would cut into the
+    picture. An even border on all four is somebody's export template.
+    """
+    a = np.asarray(im.convert('RGB')).astype(int)
+
+    def run(vals):
+        for i, v in enumerate(vals):
+            if v < 246:
+                return i
+        return len(vals)
+
+    rows, cols = a.mean(axis=(1, 2)), a.mean(axis=(0, 2))
+    t, b = run(rows), run(rows[::-1])
+    l, r = run(cols), run(cols[::-1])
+
+    even = max(t, b, l, r) - min(t, b, l, r) <= 3
+    if min(t, b, l, r) > 4 and even and a[0, 0].min() >= 250:
+        return im.crop((l, t, im.width - r, im.height - b)), (l, t, r, b)
+    return im, None
 
 
 def newest(n):
@@ -80,7 +107,10 @@ def main():
         im = ImageOps.exif_transpose(Image.open(src))
         out = dest / f'{i:02d}.webp'
 
-        if im.width <= MAX_W and src.suffix.lower() == '.webp':
+        im, trimmed = trim_white_frame(im)
+        note = ''
+
+        if im.width <= MAX_W and src.suffix.lower() == '.webp' and not trimmed:
             shutil.copyfile(src, out)          # already right; don't touch it
             note = 'copied'
         else:
@@ -89,6 +119,9 @@ def main():
                                Image.LANCZOS)
             im.convert('RGB').save(out, 'WEBP', quality=QUALITY, method=6)
             note = 're-encoded'
+
+        if trimmed:
+            note += f' (trimmed a {trimmed[0]}px white frame)'
 
         print(f'{src.name[:24]:26s} -> {slug}/{out.name}  '
               f'{im.size[0]}x{im.size[1]}  {out.stat().st_size / 1000:5.0f}KB  {note}')

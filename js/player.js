@@ -43,8 +43,17 @@
     time:   root.querySelector('.player__time')
   };
 
+  // Sits under the page rather than on top of it. This is amplitude, not
+  // decibels, so the scale is not linear to the ear: 0.7 is roughly 3dB
+  // down, a clear step without being timid. Nudge it if it wants to sit
+  // further back — 0.55 is about another 2dB.
+  var VOLUME = 0.7;
+
   var audio = new Audio();
   audio.preload = 'metadata';   // don't pull down a 5MB track until asked
+  // Set once on the element, so it survives every track change — volume
+  // belongs to the player, not to the file loaded into it.
+  audio.volume = VOLUME;
 
   var queue = [];               // the shuffled playlist
   var at = 0;                   // index into it
@@ -72,6 +81,7 @@
       position: Math.round(audio.currentTime) + 's',
       paused: audio.paused,
       muted: audio.muted,
+      volume: audio.volume,
       pausedByVisitor: userPaused
     };
   };

@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=46 ON EVERY FONT URL
+/* NOTE ON THE ?v=47 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=46') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=46') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=47') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=47') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=46') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=46') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=47') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=47') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -53,8 +53,8 @@
    get the browser's fake bold on top of the 700, which smears. */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Black.woff2?v=46') format('woff2'),
-       url('../fonts/EzekielHand-Black.ttf?v=46') format('truetype');
+  src: url('../fonts/EzekielHand-Black.woff2?v=47') format('woff2'),
+       url('../fonts/EzekielHand-Black.ttf?v=47') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -688,7 +688,7 @@ a {
   /* No text-indent here on purpose. The usual trick of adding one to
      offset the trailing letter-space measured WORSE for this string:
      centring is dominated by the glyphs' own side bearings, and for
-     "PARIS (b).STROY" those already push it to the right. */
+     "(b).STROY PARIS" those already push it to the right. */
   color: var(--ink);
 }
 
@@ -1222,7 +1222,42 @@ a {
 
 
 /* ------------------------------------------------------------
-   9. REDUCED MOTION
+   9. THE SOFT REVEAL
+   Each photo fades up once, as it first comes into view. Driven by
+   js/reveal.js, which hands out .is-in; the .js-reveal class on
+   <html> comes from the inline script in the page head, early
+   enough that nothing is ever painted and then hidden.
+   ------------------------------------------------------------ */
+
+/* Everything is scoped under .js-reveal on purpose. Without JavaScript,
+   without IntersectionObserver, or with reduce-motion set, that class is
+   never added and none of this applies — the page is simply the page,
+   rather than a grid of invisible boxes waiting for a script. */
+.js-reveal .tile,
+.js-reveal .media,
+.js-reveal .pair__item {
+  opacity: 0;
+  /* Small on purpose. Far enough to read as arriving from somewhere,
+     short enough that it never looks like the layout is settling. */
+  transform: translateY(14px);
+}
+
+/* The transition lives on the revealed state, not the hidden one, so it
+   only ever plays on the way IN. Nothing here fades back out. */
+.js-reveal .tile.is-in,
+.js-reveal .media.is-in,
+.js-reveal .pair__item.is-in {
+  opacity: 1;
+  transform: none;
+  /* Decelerating rather than ease-in-out: it arrives quickly and settles
+     slowly, which is what makes it feel soft instead of mechanical. */
+  transition: opacity 0.9s cubic-bezier(0.22, 0.61, 0.36, 1),
+              transform 0.9s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+
+/* ------------------------------------------------------------
+   10. REDUCED MOTION
    Some people set "reduce motion" in their OS for motion sickness.
    Respect it by switching animations off.
    ------------------------------------------------------------ */

@@ -11,11 +11,37 @@
   <!-- Both weights are used above the fold on this page (the title is
        regular, the shoot names are bold), so start both downloading
        immediately rather than waiting for the CSS to be parsed. -->
-  <!-- The ?v=46 must match the one in style.css — see the note there. -->
-  <link rel="preload" href="fonts/EzekielHand.woff2?v=46" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=46" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/EzekielHand-Black.woff2?v=46" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=46">
+  <!-- The ?v=47 must match the one in style.css — see the note there. -->
+  <link rel="preload" href="fonts/EzekielHand.woff2?v=47" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=47" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/EzekielHand-Black.woff2?v=47" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/style.css?v=47">
+
+  <!-- Two things that have to happen before the first paint.
+
+       scrollRestoration: browsers put you back where you were when you
+       refresh. On a page this long that drops you into the middle of the
+       grid — past a reveal that has already run for everything above.
+       "manual" stops the restore happening at all.
+
+       js-reveal: the reveal styles hang off this class. It is added HERE,
+       inline, rather than from js/reveal.js, because a deferred script
+       runs after the first paint — the images would flash into view and
+       then be snatched away again. The timer is the failsafe: if
+       reveal.js never arrives, the class comes off by itself and the page
+       is a normal page rather than a blank one. -->
+  <script>
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    if (window.IntersectionObserver &&
+        !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('js-reveal');
+      setTimeout(function () {
+        if (!window.__revealReady) {
+          document.documentElement.classList.remove('js-reveal');
+        }
+      }, 5000);
+    }
+  </script>
 </head>
 
 <body>
@@ -163,7 +189,7 @@
 
       <!-- Heading for the whole Paris block. A full-width grid item, so
            it centres across the entire grid rather than over one column. -->
-      <h2 class="section-title">PARIS (<span class="brand-b">b</span>).STROY</h2>
+      <h2 class="section-title">(<span class="brand-b">b</span>).STROY PARIS</h2>
 
       <!-- ---- Paris, row one: still left, clip right ---- -->
       <figure class="media media--still media--left">
@@ -274,7 +300,8 @@
   <!-- Hover glitch. "defer" means it runs after the page is parsed, so it
        never holds up the photos. If it fails or JavaScript is off, the
        page simply behaves as it did before. -->
-  <script src="js/glitch.js?v=46" defer></script>
+  <script src="js/reveal.js?v=47" defer></script>
+  <script src="js/glitch.js?v=47" defer></script>
 
   <!-- ============================================================
        MUSIC PLAYER — fixed bottom-left. This page only: the home
@@ -343,7 +370,7 @@
     </div>
   </div>
 
-  <script src="js/player.js?v=46" defer></script>
+  <script src="js/player.js?v=47" defer></script>
 
 </body>
 </html>

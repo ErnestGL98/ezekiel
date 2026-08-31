@@ -86,7 +86,7 @@
   // Deliberately NOT the Paris clips: tearing up a playing video reads as
   // a broken player rather than an effect, and it would fight the controls.
   var SELECTOR = '.tile__frame, .media--still, .paris-portrait, .pair__still,'
-               + ' .glitch-text';
+               + ' .shot, .glitch-text';
   var tiles = document.querySelectorAll(SELECTOR);
   if (!tiles.length) return;
 

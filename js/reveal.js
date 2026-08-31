@@ -31,7 +31,7 @@
   // The banner first, then every photo and clip in the grid. The tile
   // rather than just its frame, so a shoot's name rises with its picture
   // instead of sitting there over an empty space.
-  var targets = document.querySelectorAll('.banner, .tile, .media, .pair__item');
+  var targets = document.querySelectorAll('.banner, .tile, .media, .pair__item, .shot');
   if (!targets.length) {
     document.documentElement.classList.remove('js-reveal');
     return;

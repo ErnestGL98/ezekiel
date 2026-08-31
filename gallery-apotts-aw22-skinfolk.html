@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>APOTTS AW22 — Skinfolk | EZEKIEL</title>
+  <meta name="description" content="Ezekiel for APOTTS AW22, shot for Skinfolk.">
+  <meta name="theme-color" content="#F2EEE7">
+
+  <!-- The ?v=52 must match the one in style.css — see the note there. -->
+  <link rel="preload" href="fonts/EzekielHand.woff2?v=52" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=52" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/EzekielHand-Black.woff2?v=52" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/style.css?v=52">
+
+  <!-- Same two before-first-paint jobs as the portfolio page: land at the
+       top on a refresh, and arm the reveal styles early enough that the
+       photos are never painted and then hidden. See portfolio.html for
+       the long version. -->
+  <script>
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    if (window.IntersectionObserver &&
+        !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('js-reveal');
+      setTimeout(function () {
+        if (!window.__revealReady) {
+          document.documentElement.classList.remove('js-reveal');
+        }
+      }, 5000);
+    }
+  </script>
+</head>
+
+<body>
+
+  <!-- The same header as the portfolio page, so moving between the two
+       doesn't shift anything. The speaker still switches the hover sound;
+       there is no music player on a gallery — see the note by the grid. -->
+  <header class="page-header">
+    <div class="page-header__left">
+      <a class="page-header__mark glitch-text" href="./">Ezekiel</a>
+
+      <button class="sound-toggle" type="button" aria-pressed="true"
+              aria-label="Turn sound off">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path class="sound-toggle__cone" d="M 12.21 20.09 L 11.85 19.94 L 11.67 18.63 L 10.72 17.88 L 9.98 17.66 L 9.32 16.82 L 8.42 16.31 L 7.83 16.48 L 6.48 16.18 L 5.90 16.45 L 2.59 16.75 L 1.22 16.71 L 0.99 16.39 L 1.77 15.93 L 1.70 11.23 L 1.35 10.44 L 1.64 10.17 L 2.12 8.39 L 2.60 8.55 L 2.77 9.88 L 5.90 9.79 L 7.53 9.47 L 10.58 6.01 L 12.93 3.94 L 13.09 4.34 L 11.99 5.66 L 12.26 6.04 L 12.02 6.67 L 12.32 9.82 L 12.14 13.58 L 12.55 15.87 L 12.38 16.71 L 12.92 18.40 L 12.39 18.94 Z"/>
+          <g class="sound-toggle__waves">
+            <path d="M 14.20 15.87 L 13.86 15.81 L 13.84 15.45 L 15.08 13.74 L 15.39 11.93 L 15.07 10.88 L 14.54 10.65 L 13.72 9.70 L 13.65 9.24 L 13.86 9.07 L 16.19 10.37 L 16.96 11.99 L 16.64 14.30 L 15.39 15.43 Z"/>
+            <path d="M 18.36 19.25 L 17.63 19.10 L 17.46 18.50 L 18.60 18.01 L 20.80 15.67 L 21.48 12.05 L 21.11 9.36 L 20.51 7.77 L 19.22 6.53 L 18.68 5.65 L 18.44 5.95 L 18.40 5.48 L 17.41 5.15 L 17.55 4.72 L 17.33 4.32 L 17.54 4.07 L 18.40 4.48 L 19.28 4.56 L 21.34 6.24 L 22.80 9.24 L 23.05 11.99 L 22.08 15.95 L 21.64 16.71 L 21.00 17.60 Z"/>
+          </g>
+        </svg>
+      </button>
+
+      <span class="sound-hint" aria-hidden="true"></span>
+    </div>
+
+    <nav class="nav" aria-label="Main navigation">
+      <a class="glitch-text" href="#">Contact</a>
+    </nav>
+  </header>
+
+  <main class="page-main">
+
+    <div class="gallery-head">
+      <!-- Left of the title rather than above it, so the title stays on the
+           page's centre line the way the section headings do. -->
+      <a class="back-link" href="portfolio.html">
+        <span aria-hidden="true">&#8592;</span> Portfolio
+      </a>
+      <h1 class="gallery-title">APOTTS AW22 - Skinfolk</h1>
+    </div>
+
+    <!-- ============================================================
+         THE SHOOT — six frames, all 2:3, so they tile without any of
+         them being cropped or letterboxed.
+
+         TO ADD ANOTHER GALLERY:
+         1. python tools/build_gallery.py <slug> --newest N
+         2. Copy this file, change the title and the folder in the src
+         3. Point that shoot's tile in portfolio.html at the new file
+
+         No music player here on purpose: the player restarts its
+         playlist on every page load, so carrying it into a gallery would
+         drop the needle back on track one every time you opened a shoot.
+         The hover glitch does come along, since a photograph should
+         behave the same wherever it appears.
+         ============================================================ -->
+    <div class="gallery">
+      <figure class="shot"><img src="images/galleries/apotts-aw22-skinfolk/01.webp" alt="APOTTS AW22 for Skinfolk, look 1" width="960" height="1440" decoding="async"></figure>
+      <figure class="shot"><img src="images/galleries/apotts-aw22-skinfolk/02.webp" alt="APOTTS AW22 for Skinfolk, look 2" width="960" height="1440" decoding="async"></figure>
+      <figure class="shot"><img src="images/galleries/apotts-aw22-skinfolk/03.webp" alt="APOTTS AW22 for Skinfolk, look 3" width="960" height="1440" loading="lazy" decoding="async"></figure>
+      <figure class="shot"><img src="images/galleries/apotts-aw22-skinfolk/04.webp" alt="APOTTS AW22 for Skinfolk, look 4" width="960" height="1440" loading="lazy" decoding="async"></figure>
+      <figure class="shot"><img src="images/galleries/apotts-aw22-skinfolk/05.webp" alt="APOTTS AW22 for Skinfolk, look 5" width="960" height="1440" loading="lazy" decoding="async"></figure>
+      <figure class="shot"><img src="images/galleries/apotts-aw22-skinfolk/06.webp" alt="APOTTS AW22 for Skinfolk, look 6" width="960" height="1440" loading="lazy" decoding="async"></figure>
+    </div>
+
+  </main>
+
+  <script src="js/reveal.js?v=52" defer></script>
+  <script src="js/glitch.js?v=52" defer></script>
+
+</body>
+</html>

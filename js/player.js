@@ -38,6 +38,8 @@
     next:   root.querySelector('.player__next'),
     mute:   root.querySelector('.player__mute'),
     bar:    root.querySelector('.player__bar'),
+    vol:    root.querySelector('.player__volume'),
+    volFill: root.querySelector('.player__volume-fill'),
     fill:   root.querySelector('.player__fill'),
     title:  root.querySelector('.player__title'),
     time:   root.querySelector('.player__time')
@@ -50,6 +52,11 @@
   // flat 0.1 each time makes the steps sound bigger and bigger as the
   // number gets smaller.
   var VOLUME = 0.45;
+
+  // What un-muting returns to, and what dragging the slider to nothing and
+  // back returns to. Without it, mute-then-unmute on a slider left at zero
+  // would come back silent and look broken.
+  var lastVolume = VOLUME;
 
   var audio = new Audio();
   audio.preload = 'metadata';   // don't pull down a 5MB track until asked
@@ -122,6 +129,27 @@
     els.toggle.setAttribute('aria-pressed', String(playing));
     els.toggle.setAttribute('aria-label', playing ? 'Pause' : 'Play');
     root.classList.toggle('is-playing', playing);
+  }
+
+  function paintVolume() {
+    // Muted reads as empty rather than as "still at 45%": the crossed-out
+    // speaker and a half-full slider next to each other would contradict
+    // one another.
+    var pct = audio.muted ? 0 : audio.volume * 100;
+    els.volFill.style.width = pct + '%';
+    els.vol.setAttribute('aria-valuenow', Math.round(pct));
+    els.vol.setAttribute('aria-valuetext', Math.round(pct) + '%');
+  }
+
+  function setVolume(frac) {
+    frac = Math.min(1, Math.max(0, frac));
+    audio.volume = frac;
+    // Dragging it to nothing IS muting, and dragging up from nothing is
+    // unmuting — otherwise the slider and the button would disagree.
+    audio.muted = frac === 0;
+    if (frac > 0) lastVolume = frac;
+    paintVolume();
+    paintMute();
   }
 
   function paintMute() {
@@ -200,9 +228,7 @@
 
   /* ---------- scrubbing ---------- */
 
-  function seekTo(clientX) {
-    var r = els.bar.getBoundingClientRect();
-    var frac = Math.min(1, Math.max(0, (clientX - r.left) / r.width));
+  function seekTo(frac) {
     var track = queue[at];
     var total = isFinite(audio.duration) ? audio.duration
                                          : (track ? track.duration : 0);
@@ -210,27 +236,40 @@
     paintProgress();
   }
 
-  els.bar.addEventListener('pointerdown', function (e) {
-    scrubbing = true;
-    // Capture means the drag keeps working after the pointer leaves the
-    // bar, which it will — the bar is a few pixels tall.
-    els.bar.setPointerCapture(e.pointerId);
-    seekTo(e.clientX);
-  });
-
-  els.bar.addEventListener('pointermove', function (e) {
-    if (scrubbing) seekTo(e.clientX);
-  });
-
-  function endScrub(e) {
-    if (!scrubbing) return;
-    scrubbing = false;
-    if (els.bar.hasPointerCapture(e.pointerId)) {
-      els.bar.releasePointerCapture(e.pointerId);
+  // Both tracks behave identically: press anywhere on one to jump there,
+  // then keep dragging even after the pointer has left it — which it will,
+  // since the track is three pixels tall. Pointer capture is what keeps
+  // the events coming once it has.
+  function dragTrack(el, onFrac, onStart, onEnd) {
+    var down = false;
+    function fracAt(e) {
+      var r = el.getBoundingClientRect();
+      return Math.min(1, Math.max(0, (e.clientX - r.left) / r.width));
     }
+    el.addEventListener('pointerdown', function (e) {
+      down = true;
+      if (onStart) onStart();
+      el.setPointerCapture(e.pointerId);
+      onFrac(fracAt(e));
+    });
+    el.addEventListener('pointermove', function (e) {
+      if (down) onFrac(fracAt(e));
+    });
+    function up(e) {
+      if (!down) return;
+      down = false;
+      if (onEnd) onEnd();
+      if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
+    }
+    el.addEventListener('pointerup', up);
+    el.addEventListener('pointercancel', up);
   }
-  els.bar.addEventListener('pointerup', endScrub);
-  els.bar.addEventListener('pointercancel', endScrub);
+
+  dragTrack(els.bar, seekTo,
+            function () { scrubbing = true; },
+            function () { scrubbing = false; });
+
+  dragTrack(els.vol, setVolume);
 
   // Keyboard: the bar is a real slider, so arrows nudge and Home/End jump.
   els.bar.addEventListener('keydown', function (e) {
@@ -245,6 +284,16 @@
     paintProgress();
   });
 
+  els.vol.addEventListener('keydown', function (e) {
+    var v = audio.muted ? 0 : audio.volume;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowUp')        setVolume(v + 0.05);
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown')  setVolume(v - 0.05);
+    else if (e.key === 'Home')                                setVolume(0);
+    else if (e.key === 'End')                                 setVolume(1);
+    else return;
+    e.preventDefault();
+  });
+
   /* ---------- wiring ---------- */
 
   els.toggle.addEventListener('click', function () {
@@ -257,7 +306,11 @@
   els.next.addEventListener('click', function () { step(1); });
   els.mute.addEventListener('click', function () {
     audio.muted = !audio.muted;
+    // Coming back from a slider dragged to zero would otherwise unmute
+    // into silence, which reads as a broken button.
+    if (!audio.muted && audio.volume === 0) audio.volume = lastVolume || VOLUME;
     paintMute();
+    paintVolume();
   });
 
   /* ---------- a video being watched wins ---------- */
@@ -369,6 +422,7 @@
 
       paintToggle();
       paintMute();
+      paintVolume();
       root.hidden = false;       // only ever shown once it can actually play
     })
     .catch(function () { /* no playlist: the page is simply silent */ });

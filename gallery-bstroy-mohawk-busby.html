@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>APOTTS SS24 — Urbanearth | EZEKIEL</title>
-  <meta name="description" content="Ezekiel for APOTTS SS24, shot for Urbanearth.">
+  <title>MOHAWK (b).STROY x (b).USBY | EZEKIEL</title>
+  <meta name="description" content="Ezekiel for MOHAWK, (b).stroy with (b).usby.">
   <meta name="theme-color" content="#F2EEE7">
 
   <!-- The ?v=57 must match the one in style.css — see the note there. -->
@@ -68,17 +68,22 @@
       <a class="back-link" href="portfolio.html">
         <span aria-hidden="true">&#8592;</span> Portfolio
       </a>
-      <h1 class="gallery-title">APOTTS SS24 - Urbanearth</h1>
+      <h1 class="gallery-title gallery-title--asis">MOHAWK (<span class="brand-b">b</span>).STROY x (<span class="brand-b">b</span>).USBY</h1>
     </div>
 
     <!-- ============================================================
-         THE SHOOT — twelve frames, all 2:3, so they tile without any of
-         them being cropped or letterboxed, and twelve divides evenly
-         across rows of three so there is no short row to centre.
+         THE SHOOT — six frames: three landscapes and three portraits,
+         exactly half and half.
 
-         The sources are full-size camera files, around 200MB the set;
-         build_gallery.py brings them to 1.2MB. Do not put originals in
-         the repo.
+         They are INTERLEAVED on purpose. A landscape takes two thirds of
+         a row and a portrait one third, so alternating them fills every
+         row exactly — three rows of a landscape beside a portrait. Left
+         in filename order the three landscapes would each have sat alone
+         with a third of the row empty beside them.
+
+         Numbering follows the files (01-03 portrait, 04-06 landscape);
+         the interleave is here in the markup, not in the filenames, so
+         re-running build_gallery.py can't undo it.
 
          TO ADD ANOTHER GALLERY:
          1. python tools/build_gallery.py <slug> --newest N
@@ -89,19 +94,13 @@
          position across a link, so opening a shoot does not restart the
          playlist. See the note at the top of js/player.js.
          ============================================================ -->
-    <div class="gallery">
-      <figure class="shot"><img src="images/galleries/apotts-ss24-urbanearth/01.webp" alt="APOTTS SS24 for Urbanearth, look 1" width="1200" height="1800" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/apotts-ss24-urbanearth/02.webp" alt="APOTTS SS24 for Urbanearth, look 2" width="1200" height="1800" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/apotts-ss24-urbanearth/03.webp" alt="APOTTS SS24 for Urbanearth, look 3" width="1200" height="1800" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/apotts-ss24-urbanearth/04.webp" alt="APOTTS SS24 for Urbanearth, look 4" width="1200" height="1800" loading="lazy" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/apotts-ss24-urbanearth/05.webp" alt="APOTTS SS24 for Urbanearth, look 5" width="1200" height="1800" loading="lazy" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/apotts-ss24-urbanearth/06.webp" alt="APOTTS SS24 for Urbanearth, look 6" width="1200" height="1800" loading="lazy" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/apotts-ss24-urbanearth/07.webp" alt="APOTTS SS24 for Urbanearth, look 7" width="1200" height="1800" loading="lazy" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/apotts-ss24-urbanearth/08.webp" alt="APOTTS SS24 for Urbanearth, look 8" width="1200" height="1800" loading="lazy" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/apotts-ss24-urbanearth/09.webp" alt="APOTTS SS24 for Urbanearth, look 9" width="1200" height="1800" loading="lazy" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/apotts-ss24-urbanearth/10.webp" alt="APOTTS SS24 for Urbanearth, look 10" width="1200" height="1800" loading="lazy" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/apotts-ss24-urbanearth/11.webp" alt="APOTTS SS24 for Urbanearth, look 11" width="1200" height="1800" loading="lazy" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/apotts-ss24-urbanearth/12.webp" alt="APOTTS SS24 for Urbanearth, look 12" width="1200" height="1800" loading="lazy" decoding="async"></figure>
+    <div class="gallery gallery--mixed">
+      <figure class="shot shot--wide"><img src="images/galleries/bstroy-mohawk-busby/04.webp" alt="MOHAWK (b).stroy x (b).usby, look 4" width="1200" height="800" decoding="async"></figure>
+      <figure class="shot"><img src="images/galleries/bstroy-mohawk-busby/01.webp" alt="MOHAWK (b).stroy x (b).usby, look 1" width="1200" height="1799" decoding="async"></figure>
+      <figure class="shot shot--wide"><img src="images/galleries/bstroy-mohawk-busby/05.webp" alt="MOHAWK (b).stroy x (b).usby, look 5" width="1200" height="800" loading="lazy" decoding="async"></figure>
+      <figure class="shot"><img src="images/galleries/bstroy-mohawk-busby/02.webp" alt="MOHAWK (b).stroy x (b).usby, look 2" width="1200" height="1799" loading="lazy" decoding="async"></figure>
+      <figure class="shot shot--wide"><img src="images/galleries/bstroy-mohawk-busby/06.webp" alt="MOHAWK (b).stroy x (b).usby, look 6" width="1200" height="800" loading="lazy" decoding="async"></figure>
+      <figure class="shot"><img src="images/galleries/bstroy-mohawk-busby/03.webp" alt="MOHAWK (b).stroy x (b).usby, look 3" width="1200" height="1799" loading="lazy" decoding="async"></figure>
     </div>
 
   </main>

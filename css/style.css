@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=56 ON EVERY FONT URL
+/* NOTE ON THE ?v=57 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=56') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=56') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=57') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=57') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=56') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=56') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=57') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=57') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -53,8 +53,8 @@
    get the browser's fake bold on top of the 700, which smears. */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Black.woff2?v=56') format('woff2'),
-       url('../fonts/EzekielHand-Black.ttf?v=56') format('truetype');
+  src: url('../fonts/EzekielHand-Black.woff2?v=57') format('woff2'),
+       url('../fonts/EzekielHand-Black.ttf?v=57') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -1304,6 +1304,15 @@ a {
   line-height: 1.1;
 }
 
+/* Same opt-out as the tile labels: the brand writes its own name in mixed
+   case, and the uppercasing above would turn it into "(B).STROY X
+   (B).USBY". It has to come AFTER that rule — the two are equally
+   specific, so order is the only thing deciding it, and sitting above it
+   this did nothing at all. */
+.gallery-title--asis {
+  text-transform: none;
+}
+
 /* Two across on a phone. Every frame is the same 2:3, so they tile with
    no cropping and no letterboxing.
 
@@ -1348,6 +1357,18 @@ a {
 @media (max-width: 47.999em) {
   .gallery:not(.gallery--mixed) .shot:nth-child(2n + 1):last-child {
     grid-column: 2 / span 2;   /* one on its own, centred */
+  }
+
+  /* On a phone a mixed gallery goes one photo per row. Two across only
+     works while the frames are interchangeable: a landscape takes the
+     whole width, so a portrait next to it has nothing to pair with and
+     ends the row half empty. Which photo lands where would then depend
+     on the ORDER they happen to be in, and the Mohawk set alternates
+     landscape and portrait — an order chosen for the desktop rows. One
+     per row is order-proof, and a phone is the one place a photo can
+     afford the full width. */
+  .gallery--mixed .shot {
+    grid-column: 1 / -1;
   }
 }
 

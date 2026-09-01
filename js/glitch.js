@@ -641,6 +641,47 @@
     return r.width ? r : el.getBoundingClientRect();
   }
 
+  // Which LINE each letter of a word sits on, and what is on it.
+  //
+  // Two things make this less trivial than it looks. A heading that
+  // WRAPS has more than one line box, and drawing its text as a single
+  // line into a canvas the size of both would put the letters nowhere
+  // near the ones on screen. And getClientRects() cannot be used to
+  // count lines: the Mohawk heading has nested <span>s for its (b)s, so
+  // it reports SEVEN rects for one visual line.
+  //
+  // So: walk the characters, measure each, and group them by where the
+  // top of the box is. Fragments share a top, wrapped lines do not.
+  // Costs one range measurement per character, on strings this short,
+  // once per hover.
+  function textLines(el) {
+    var walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false);
+    var range = document.createRange();
+    var lines = [];
+    var line = null;
+    var node;
+
+    while ((node = walker.nextNode())) {
+      for (var i = 0; i < node.length; i++) {
+        range.setStart(node, i);
+        range.setEnd(node, i + 1);
+        var r = range.getBoundingClientRect();
+        if (!r.width && !r.height) continue;      // collapsed whitespace
+
+        if (!line || Math.abs(r.top - line.top) > 2) {
+          line = { text: '', top: r.top, bottom: r.bottom,
+                   left: r.left, right: r.right };
+          lines.push(line);
+        }
+        line.text += node.data.charAt(i);
+        line.left = Math.min(line.left, r.left);
+        line.right = Math.max(line.right, r.right);
+        line.bottom = Math.max(line.bottom, r.bottom);
+      }
+    }
+    return lines;
+  }
+
   function paintedRect(el) {
     if (isText(el)) return inkRect(el);
     var r = el.getBoundingClientRect();
@@ -676,10 +717,8 @@
 
   function textTexture(el, rect, dpr) {
     var cs = getComputedStyle(el);
-    var text = el.textContent.trim();
-    if (cs.textTransform === 'uppercase') text = text.toUpperCase();
-    else if (cs.textTransform === 'lowercase') text = text.toLowerCase();
-    if (!text) return null;
+    var lines = textLines(el);
+    if (!lines.length) return null;
 
     var w = Math.max(1, Math.round(rect.width * dpr));
     var h = Math.max(1, Math.round(rect.height * dpr));
@@ -696,25 +735,44 @@
     }
     sctx.fillStyle = cs.color;
 
-    var m = sctx.measureText(text);
+    // text-transform is applied by the browser at paint time, so the DOM
+    // still holds the original — it has to be applied here too or the
+    // texture spells it in the wrong case.
+    var cased = function (t) {
+      if (cs.textTransform === 'uppercase') return t.toUpperCase();
+      if (cs.textTransform === 'lowercase') return t.toLowerCase();
+      return t;
+    };
 
-    // Sit the letters on the same baseline the browser used. A line box
-    // centres the font's own ascent+descent within itself — half-leading —
-    // so that is where the baseline goes, rather than guessing from the
-    // middle of the box.
-    var asc = m.fontBoundingBoxAscent, desc = m.fontBoundingBoxDescent;
-    var baseline = (asc && desc) ? (h - (asc + desc)) / 2 + asc : h * 0.72;
+    lines.forEach(function (ln) {
+      var text = cased(ln.text);
+      if (!text) return;
 
-    // Drawn to fill the measured box exactly. Matching canvas metrics to
-    // the DOM glyph-for-glyph is a losing game once tracking and this
-    // font's own side bearings are in play; scaling the drawing to the box
-    // the DOM reported absorbs whatever is left over, and at these sizes
-    // the distortion is invisible.
-    var natural = m.width || w;
-    sctx.save();
-    sctx.scale(w / natural, 1);
-    sctx.fillText(text, 0, baseline);
-    sctx.restore();
+      var lw = Math.max(1, (ln.right - ln.left) * dpr);
+      var lh = (ln.bottom - ln.top) * dpr;
+      var m = sctx.measureText(text);
+
+      // Sit the letters on the same baseline the browser used. A line box
+      // centres the font's own ascent+descent within itself — half-leading
+      // — so that is where the baseline goes, rather than guessing from
+      // the middle of the box.
+      var asc = m.fontBoundingBoxAscent, desc = m.fontBoundingBoxDescent;
+      var baseline = (asc && desc) ? (lh - (asc + desc)) / 2 + asc : lh * 0.72;
+
+      // Drawn to fill the measured line exactly. Matching canvas metrics
+      // to the DOM glyph-for-glyph is a losing game once tracking and this
+      // font's own side bearings are in play; scaling the drawing to the
+      // box the DOM reported absorbs whatever is left over, and at these
+      // sizes the distortion is invisible.
+      var natural = m.width || lw;
+
+      sctx.save();
+      sctx.translate((ln.left - rect.left) * dpr, (ln.top - rect.top) * dpr);
+      sctx.scale(lw / natural, 1);
+      sctx.fillText(text, 0, baseline);
+      sctx.restore();
+    });
+
     return scratch;
   }
 

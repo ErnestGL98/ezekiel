@@ -8,11 +8,11 @@
   <meta name="description" content="Ezekiel for Daveed Baptist, Soaring High SS26.">
   <meta name="theme-color" content="#F2EEE7">
 
-  <!-- The ?v=58 must match the one in style.css — see the note there. -->
-  <link rel="preload" href="fonts/EzekielHand.woff2?v=58" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=58" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/EzekielHand-Black.woff2?v=58" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/style.css?v=58">
+  <!-- The ?v=59 must match the one in style.css — see the note there. -->
+  <link rel="preload" href="fonts/EzekielHand.woff2?v=59" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=59" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/EzekielHand-Black.woff2?v=59" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/style.css?v=59">
 
   <!-- Same two before-first-paint jobs as the portfolio page: land at the
        top on a refresh, and arm the reveal styles early enough that the
@@ -72,12 +72,16 @@
     </div>
 
     <!-- ============================================================
-         THE SHOOT — six frames, all portrait, but not all one shape:
+         THE SHOOT — seven frames, all portrait, but not all one shape:
          they run 0.711 to 0.800. So no wide frames and no mixed-gallery
          handling, but the gallery does pick its own frame shape —
          gallery--4x5 rather than the default 2:3, which is much closer
-         to what these actually are. Six divides evenly across rows of
-         three, so there is no short row either.
+         to what these actually are.
+
+         Seven across rows of three leaves one over; the CSS centres it.
+         Numbering follows the shoot, so a photo added later goes in its
+         own place in the sequence rather than on the end — which is why
+         this was rebuilt whole rather than appended to.
 
          TO ADD ANOTHER GALLERY:
          1. python tools/build_gallery.py <slug> --newest N
@@ -95,6 +99,7 @@
       <figure class="shot"><img src="images/galleries/daveed-baptist-soaring-high-ss26/04.webp" alt="Daveed Baptist, Soaring High SS26, look 4" loading="lazy" decoding="async"></figure>
       <figure class="shot"><img src="images/galleries/daveed-baptist-soaring-high-ss26/05.webp" alt="Daveed Baptist, Soaring High SS26, look 5" loading="lazy" decoding="async"></figure>
       <figure class="shot"><img src="images/galleries/daveed-baptist-soaring-high-ss26/06.webp" alt="Daveed Baptist, Soaring High SS26, look 6" loading="lazy" decoding="async"></figure>
+      <figure class="shot"><img src="images/galleries/daveed-baptist-soaring-high-ss26/07.webp" alt="Daveed Baptist, Soaring High SS26, look 7" loading="lazy" decoding="async"></figure>
     </div>
 
   </main>
@@ -174,10 +179,10 @@
     </div>
   </div>
 
-  <script src="js/player.js?v=58" defer></script>
+  <script src="js/player.js?v=59" defer></script>
 
-  <script src="js/reveal.js?v=58" defer></script>
-  <script src="js/glitch.js?v=58" defer></script>
+  <script src="js/reveal.js?v=59" defer></script>
+  <script src="js/glitch.js?v=59" defer></script>
 
 </body>
 </html>

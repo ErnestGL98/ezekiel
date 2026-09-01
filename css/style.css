@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=57 ON EVERY FONT URL
+/* NOTE ON THE ?v=58 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=57') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=57') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=58') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=58') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=57') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=57') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=58') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=58') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -53,8 +53,8 @@
    get the browser's fake bold on top of the 700, which smears. */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Black.woff2?v=57') format('woff2'),
-       url('../fonts/EzekielHand-Black.ttf?v=57') format('truetype');
+  src: url('../fonts/EzekielHand-Black.woff2?v=58') format('woff2'),
+       url('../fonts/EzekielHand-Black.ttf?v=58') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -1321,10 +1321,19 @@ a {
    Two spans of 2 plus the gap between them come to exactly the same
    width as two plain columns, so nothing about the layout changes. */
 .gallery {
+  /* The shape every frame in THIS gallery takes. A gallery should pick
+     the one closest to its own photos, because the difference is what
+     shows up as matting: the Daveed Baptist set runs 0.711 to 0.800, and
+     in a 2:3 frame the widest of them would have carried 88px of empty
+     space above and below. At 4:5 they nearly fill it. */
+  --frame: 2 / 3;
+
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem 0.9rem;
 }
+
+.gallery--4x5 { --frame: 4 / 5; }
 
 /* Every frame is the same shape, and the photo is CONTAINED in it rather
    than cropped to it. The Skinfolk set is all 2:3 and fills its frames
@@ -1335,7 +1344,7 @@ a {
 .shot {
   margin: 0;
   grid-column: span 2;
-  aspect-ratio: 2 / 3;
+  aspect-ratio: var(--frame);
 }
 
 /* A LAST ROW THAT DOESN'T FILL.
@@ -1423,6 +1432,19 @@ a {
     top: 50%;
     transform: translateY(-50%);
     margin: 0;
+  }
+
+  /* ...which means a long title can run straight underneath it. The link
+     ends 130px in, so 9rem of reserve on each side clears it with room to
+     spare. Reserved on BOTH sides on purpose: symmetric, so the title
+     still centres on the page rather than on what's left of it. Longer
+     than that and it wraps, which is the right answer for a title too
+     long to sit on one line beside a link.
+
+     "Daveed Baptist - Soaring High SS26" was overlapping by 97px. */
+  .gallery-title {
+    max-width: calc(100% - 18rem);
+    margin-inline: auto;
   }
 }
 

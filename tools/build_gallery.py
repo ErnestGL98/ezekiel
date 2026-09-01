@@ -31,6 +31,11 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageOps
 
+# Campaign files run to 100 megapixels, past Pillow's decompression-bomb
+# guard. These come from the photographer, not the internet, so the guard
+# is only noise here.
+Image.MAX_IMAGE_PIXELS = None
+
 ROOT = Path(__file__).resolve().parent.parent
 SRC = Path.home() / 'Downloads'
 DEST_ROOT = ROOT / 'images' / 'galleries'

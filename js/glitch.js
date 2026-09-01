@@ -747,6 +747,15 @@
 
   function frame(now) {
     if (!active) return;
+
+    // Checked here as well as in enter(), because a tear already running
+    // when the lightbox opens would otherwise just carry on underneath
+    // it — refusing to START is not the same as stopping.
+    if (document.documentElement.classList.contains('is-lightbox')) {
+      leave();
+      return;
+    }
+
     if (!t0) t0 = now;
     size();
     gl.uniform1f(U.uTime, (now - t0) / 1000);
@@ -758,6 +767,11 @@
   }
 
   function enter(frameEl) {
+    // A photo filling the screen is the one place this has no business
+    // running: the lightbox is for looking at the picture, not at an
+    // effect over it. The class comes from js/lightbox.js.
+    if (document.documentElement.classList.contains('is-lightbox')) return;
+
     var text = isText(frameEl);
     var source;
 
@@ -793,6 +807,7 @@
     raf = requestAnimationFrame(frame);
   }
 
+  // Declared after frame() but hoisted, so the check up there can call it.
   function leave() {
     active = null;
     cancelAnimationFrame(raf);

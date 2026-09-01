@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=65 ON EVERY FONT URL
+/* NOTE ON THE ?v=66 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=65') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=65') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=66') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=66') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=65') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=65') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=66') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=66') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -53,8 +53,8 @@
    get the browser's fake bold on top of the 700, which smears. */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Black.woff2?v=65') format('woff2'),
-       url('../fonts/EzekielHand-Black.ttf?v=65') format('truetype');
+  src: url('../fonts/EzekielHand-Black.woff2?v=66') format('woff2'),
+       url('../fonts/EzekielHand-Black.ttf?v=66') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -1452,7 +1452,129 @@ a {
 
 
 /* ------------------------------------------------------------
-   10. THE SOFT REVEAL
+   10. THE LIGHTBOX
+   Click a photo in a gallery and it fills the screen. Built by
+   js/lightbox.js, which reads whatever is in .gallery.
+   ------------------------------------------------------------ */
+.shot {
+  cursor: zoom-in;
+}
+
+.shot:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;                /* over the glitch canvas at 40 and the
+                                  player at 60 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Ink rather than black: it is the page's own near-black, and a photo
+     shot on a white studio wall needs something dark behind it or its
+     edges disappear into the cream. */
+  background: rgba(26, 24, 21, 0.94);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.lightbox.is-on {
+  opacity: 1;
+}
+
+.lightbox[hidden] {
+  display: none;               /* beats the flex above */
+}
+
+/* Sized to the window rather than to the photo, so a tall frame and a
+   wide one both land inside it without the layout jumping between them.
+   The padding keeps it clear of the arrows and the counter. */
+.lightbox__img {
+  max-width: calc(100vw - 7rem);
+  max-height: calc(100vh - 6rem);
+  width: auto;
+  height: auto;
+  object-fit: contain;         /* never cropped, never stretched */
+}
+
+.lightbox__nav,
+.lightbox__close {
+  position: absolute;
+  display: inline-flex;
+  padding: 0.75rem;
+  background: none;
+  border: 0;
+  color: var(--white);
+  cursor: pointer;
+  opacity: 0.65;
+  transition: opacity 0.2s ease;
+}
+
+.lightbox__nav:hover,
+.lightbox__close:hover,
+.lightbox__nav:focus-visible,
+.lightbox__close:focus-visible {
+  opacity: 1;
+}
+
+.lightbox__nav:focus-visible,
+.lightbox__close:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 2px;
+}
+
+.lightbox__nav svg,
+.lightbox__close svg {
+  width: 1.75rem;
+  height: 1.75rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.lightbox__prev  { left: 0.25rem; }
+.lightbox__next  { right: 0.25rem; }
+.lightbox__close { top: 0.5rem; right: 0.5rem; }
+
+.lightbox__count {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: var(--white);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Stops the grid behind scrolling under the photo. */
+.is-lightbox,
+.is-lightbox body {
+  overflow: hidden;
+}
+
+@media (min-width: 48em) {
+  .lightbox__img {
+    max-width: calc(100vw - 12rem);
+    max-height: calc(100vh - 7rem);
+  }
+
+  .lightbox__prev  { left: 1.25rem; }
+  .lightbox__next  { right: 1.25rem; }
+  .lightbox__close { top: 1.25rem; right: 1.25rem; }
+}
+
+
+/* ------------------------------------------------------------
+   11. THE SOFT REVEAL
    Each photo fades up once, as it first comes into view. Driven by
    js/reveal.js, which hands out .is-in; the .js-reveal class on
    <html> comes from the inline script in the page head, early
@@ -1503,7 +1625,7 @@ a {
 
 
 /* ------------------------------------------------------------
-   11. REDUCED MOTION
+   12. REDUCED MOTION
    Some people set "reduce motion" in their OS for motion sickness.
    Respect it by switching animations off.
    ------------------------------------------------------------ */

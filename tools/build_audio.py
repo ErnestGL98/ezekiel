@@ -15,8 +15,9 @@ HOW TO RUN IT (from the project folder)
 THE PLAYLIST FILE
     tracks.json is the single source of truth for what the player plays,
     so adding a song means dropping a WAV in the folder and re-running
-    this — no HTML to edit. EmptyChildhood is pinned first because that is
-    the one that has to open the site; the player shuffles the rest.
+    this — no HTML to edit. The order here is only for reading: the
+    player shuffles all of them on every load, so nothing in this file
+    decides what opens the site.
 """
 import json
 import re
@@ -29,7 +30,6 @@ ROOT = Path(__file__).resolve().parent.parent
 SRC = Path.home() / 'Music' / 'Zeek Site'
 DEST = ROOT / 'audio'
 
-FIRST = 'EmptyChildhood'    # stem of the track that always opens the site
 QUALITY = '2'               # LAME VBR: 2 is ~190kbps, transparent enough
                             # for a browser and a third the size of V0
 
@@ -71,11 +71,10 @@ def main():
     if not wavs:
         raise SystemExit(f'no .wav files in {SRC}')
 
-    # the opener first, everything else alphabetical after it. The player
-    # shuffles from index 1 on, so this order only fixes the starting point.
-    wavs.sort(key=lambda p: (p.stem != FIRST, p.stem.lower()))
-    if wavs[0].stem != FIRST:
-        print(f'WARNING: {FIRST}.wav not found — "{wavs[0].stem}" opens instead')
+    # Alphabetical, purely so the file is readable and a re-run produces
+    # the same bytes. The player shuffles the whole list on every load, so
+    # this order has no effect on what anyone hears.
+    wavs.sort(key=lambda p: p.stem.lower())
 
     DEST.mkdir(parents=True, exist_ok=True)
     tracks = []
@@ -105,7 +104,7 @@ def main():
     total = sum(t['duration'] for t in tracks)
     size = sum((DEST / Path(t['src']).name).stat().st_size for t in tracks)
     print(f'\n{len(tracks)} tracks, {total/60:.1f} min, {size/1e6:.1f}MB total')
-    print(f'opens with: {tracks[0]["title"]}')
+    print('order here is alphabetical; the player shuffles all of them')
     print(f'wrote {(DEST / "tracks.json").relative_to(ROOT)}')
 
 

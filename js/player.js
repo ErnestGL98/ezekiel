@@ -3,8 +3,9 @@
    ============================================================
 
    WHAT IT DOES
-   Plays Ezekiel's own tracks. "Empty Childhood" always opens; the other
-   five are shuffled fresh on every load. Transport buttons, a scrubbable
+   Plays Ezekiel's own tracks, in a fresh random order every load. All
+   six are shuffled — nothing is pinned to the front, so which one opens
+   the site is a different answer each visit. Transport buttons, a scrubbable
    timeline, and the track name underneath it.
 
    IT RUNS ON THE PORTFOLIO AND ON EVERY GALLERY, and carries its queue
@@ -104,10 +105,9 @@
   }
 
   // Resume ONLY when this page was arrived at from elsewhere on the site.
-  // A refresh or a direct load starts the playlist over — that is what
-  // "the site opens with Empty Childhood" means — while following a link
-  // into a shoot and back is one continuous visit and shouldn't restart
-  // anything.
+  // A refresh or a direct load deals a new order and starts it over, while
+  // following a link into a shoot and back is one continuous visit and
+  // shouldn't restart anything.
   //
   // This used to ask document.referrer where the visitor came from, and
   // that was the bug behind the music cutting out on the way back to the
@@ -515,10 +515,14 @@
         load(carried.at, false);
         if (carried.playing) start(); else userPaused = true;
       } else {
-        // The first track is pinned by the build script and stays put;
-        // only the tail is shuffled, so a fresh visit opens on Empty
-        // Childhood and never repeats the same order after it.
-        queue = [tracks[0]].concat(shuffle(tracks.slice(1)));
+        // A fresh visit gets a fresh order, all six in play. Nothing is
+        // held at the front any more, so the track that opens the site is
+        // a different one each time.
+        //
+        // slice() first: shuffle sorts in place, and tracks is the array
+        // that came back from the fetch — shuffling it directly would be
+        // reordering someone else's data as a side effect.
+        queue = shuffle(tracks.slice());
         load(0, false);
         start();
       }

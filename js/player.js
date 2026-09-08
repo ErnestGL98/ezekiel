@@ -107,15 +107,29 @@
   // A refresh or a direct load starts the playlist over — that is what
   // "the site opens with Empty Childhood" means — while following a link
   // into a shoot and back is one continuous visit and shouldn't restart
-  // anything. performance's navigation type is what separates a reload
-  // from a real navigation; the referrer is what says it came from here.
+  // anything.
+  //
+  // This used to ask document.referrer where the visitor came from, and
+  // that was the bug behind the music cutting out on the way back to the
+  // portfolio: browsers are free not to send a referrer, and plenty
+  // don't — Safari, privacy settings, some extensions — even on an
+  // ordinary same-site link. With it missing this read as a cold open,
+  // so the playlist restarted from the top and the restart was then
+  // refused by the autoplay policy. Silence, on a page the visitor had
+  // already turned the sound on for.
+  //
+  // sessionStorage answers the real question better anyway. It is scoped
+  // to the tab: if the player has written anything into it, this tab has
+  // already been on the site, which is exactly what "arrived from here"
+  // means — and unlike the referrer, nothing suppresses it. A new tab
+  // gets a cold open because its storage is empty, and a reload still
+  // starts over because the navigation type says so.
   function arrivedFromTheSite() {
     try {
       var nav = performance.getEntriesByType &&
                 performance.getEntriesByType('navigation')[0];
       if (nav && nav.type === 'reload') return false;
-      if (!document.referrer) return false;
-      return new URL(document.referrer).origin === location.origin;
+      return !!sessionStorage.getItem(STORE);
     } catch (e) {
       return false;
     }

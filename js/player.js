@@ -446,6 +446,20 @@
   setInterval(function () { if (!audio.paused) save(); }, 2000);
   window.addEventListener('pagehide', save);
 
+  // The browser's own back button doesn't reload the page — it restores it
+  // from the back/forward cache, with this script's variables and the DOM
+  // exactly as they were. Which is why the header switch looks right after
+  // it and the music does not: the browser pauses audio on the way INTO
+  // that cache and does not start it again on the way out. Nothing here
+  // ran, so nothing noticed. This is the one notification that it happened.
+  window.addEventListener('pageshow', function (e) {
+    if (!e.persisted) return;
+    if (!userPaused && !pausedByVideo && audio.paused) start();
+    paintToggle();
+    paintMute();
+    paintVolume();
+  });
+
   // The speaker in the page header, when there is one. Browsers won't let
   // a page start audio on load, so that click is often the first moment
   // music is allowed to play at all — which is exactly why it drives it.

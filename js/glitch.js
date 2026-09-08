@@ -516,7 +516,31 @@
   // it was being tested on. Being asked again costs one click; being
   // ambushed by sound costs rather more. So the switch applies to the
   // visit you're in and nothing else.
+  // ...but "the visit you're in" has to mean the visit, not the page. This
+  // switch is the whole site's sound, and it used to be pinned to muted on
+  // every single load — so following a link reset it while the music,
+  // which restores itself, carried on playing. The speaker said off over a
+  // page that was audibly on.
+  //
+  // sessionStorage is the right scope for exactly the reason above: it
+  // lasts as long as the tab and no longer, so a new visit still arrives
+  // silent and nobody is ambushed by a choice they made yesterday. A
+  // refresh starts over too, which is the rule the music already follows.
+  var SOUND_STORE = 'ezekiel-sound-visit';
   var muted = true;
+
+  try {
+    var navEntry = performance.getEntriesByType &&
+                   performance.getEntriesByType('navigation')[0];
+    if (!(navEntry && navEntry.type === 'reload') &&
+        sessionStorage.getItem(SOUND_STORE) === 'on') {
+      muted = false;
+    }
+  } catch (e) {}
+
+  function rememberSound() {
+    try { sessionStorage.setItem(SOUND_STORE, muted ? 'off' : 'on'); } catch (e) {}
+  }
 
   // Clear the preference earlier versions saved, so a stale "on" left in
   // storage can't survive the change. localStorage throws outright in some
@@ -559,6 +583,7 @@
     toggle.addEventListener('click', function () {
       muted = !muted;
       paintToggle();
+      rememberSound();
 
       showHint(muted ? 'Sound off' : 'Sound on', 1800);
 
@@ -583,6 +608,23 @@
       window.dispatchEvent(new CustomEvent('ezekiel:sound', {
         detail: { on: !muted }
       }));
+    });
+  }
+
+  // Arriving with the sound already switched on, carried from the last
+  // page: the audio still cannot be built until the visitor touches this
+  // document, because that is the browser's rule and not ours. So arm the
+  // first gesture to do it, once, rather than leaving the speaker showing
+  // on over a page that stays silent until someone thinks to click it.
+  if (!muted) {
+    var unlockOnce = function () {
+      ['pointerdown', 'keydown', 'touchstart'].forEach(function (ev) {
+        window.removeEventListener(ev, unlockOnce);
+      });
+      Audio_.unlock();
+    };
+    ['pointerdown', 'keydown', 'touchstart'].forEach(function (ev) {
+      window.addEventListener(ev, unlockOnce, { passive: true, once: true });
     });
   }
 

@@ -49,11 +49,13 @@
     '<button class="lightbox__nav lightbox__next" type="button" aria-label="Next photo">' +
       '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4l8 8-8 8"/></svg>' +
     '</button>' +
-    '<p class="lightbox__count" aria-live="polite"></p>';
+    '<p class="lightbox__count" aria-live="polite"></p>' +
+    '<p class="lightbox__hint" aria-hidden="true"></p>';
   document.body.appendChild(box);
 
   var img = box.querySelector('.lightbox__img');
   var count = box.querySelector('.lightbox__count');
+  var hint = box.querySelector('.lightbox__hint');
   var closeBtn = box.querySelector('.lightbox__close');
   var prevBtn = box.querySelector('.lightbox__prev');
   var nextBtn = box.querySelector('.lightbox__next');
@@ -63,6 +65,43 @@
   if (shots.length < 2) {
     prevBtn.hidden = true;
     nextBtn.hidden = true;
+  }
+
+  /* ---------- the controls, said once ---------- */
+
+  // Nothing here is discoverable by looking at it, so it gets said — but a
+  // hint that keeps reappearing after you have understood it is just
+  // noise. It stops for the rest of the visit the moment the visitor
+  // actually zooms or pans, because at that point they have plainly got
+  // it. sessionStorage rather than local, for the same reason as the sound
+  // switch: this is about the visit, not about remembering anyone.
+  var LEARNT = 'ezekiel-lightbox-learnt';
+  var fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  var hintTimer = 0;
+
+  function learnt() {
+    try { return sessionStorage.getItem(LEARNT) === '1'; } catch (e) { return false; }
+  }
+
+  function nowTheyKnow() {
+    try { sessionStorage.setItem(LEARNT, '1'); } catch (e) {}
+    hint.classList.remove('is-visible');
+  }
+
+  function sayControls() {
+    if (learnt()) return;
+    // The words differ by what is actually in the visitor's hand. Telling
+    // someone on a phone to scroll and click is worse than saying nothing.
+    hint.textContent = fine
+      ? 'Scroll to zoom · Drag to move' +
+        (shots.length > 1 ? ' · ← → to flip' : '') + ' · Esc to close'
+      : 'Pinch to zoom · Drag to move' +
+        (shots.length > 1 ? ' · Swipe to flip' : '');
+    clearTimeout(hintTimer);
+    hint.classList.add('is-visible');
+    hintTimer = setTimeout(function () {
+      hint.classList.remove('is-visible');
+    }, 4200);
   }
 
   /* ---------- zoom and pan ---------- */
@@ -112,6 +151,7 @@
     if (scale === 1) { tx = 0; ty = 0; }   // snap back square when fully out
     clampPan();
     paint();
+    nowTheyKnow();
   }
 
   /* ---------- showing one ---------- */
@@ -146,9 +186,12 @@
     // Tells glitch.js to stand down, and stops the page behind scrolling.
     document.documentElement.classList.add('is-lightbox');
     closeBtn.focus();
+    sayControls();
   }
 
   function close() {
+    clearTimeout(hintTimer);
+    hint.classList.remove('is-visible');
     box.classList.remove('is-on');
     document.documentElement.classList.remove('is-lightbox');
     // Hide only once the fade is done, so it doesn't vanish mid-transition.
@@ -237,6 +280,7 @@
     ty = fromY + dy;
     clampPan();
     paint();
+    nowTheyKnow();
   });
 
   ['pointerup', 'pointercancel'].forEach(function (name) {

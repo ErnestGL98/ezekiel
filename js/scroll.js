@@ -37,10 +37,14 @@
 
   // Fraction of the REMAINING distance covered each frame. This is what
   // makes it decelerate on its own: the gap shrinks every frame, so the
-  // movement does too — no timers, no easing curve to pick. Lower is
-  // heavier. Below about 0.08 it starts to feel like lag rather than
-  // weight, above about 0.2 the weight disappears.
-  var EASE = 0.115;
+  // movement does too — no timers, no easing curve to pick.
+  //
+  // Lower is heavier and glides further. 0.085 settles in about 0.86s
+  // against 0.63s at the 0.115 this started at — noticeably more coast
+  // without crossing into lag, which is roughly where 0.07 and below
+  // start to feel like the page is answering late rather than gliding.
+  // Above about 0.2 the weight disappears entirely.
+  var EASE = 0.085;
 
   // A wheel notch in Firefox arrives as "3 lines" rather than a pixel
   // count, and full pages on some setups. Without normalising, the same

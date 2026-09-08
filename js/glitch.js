@@ -549,6 +549,13 @@
 
   var toggle = document.querySelector('.sound-toggle');
   var hint = document.querySelector('.sound-hint');
+
+  // The home page has the effect but no speaker to control it with. Since
+  // the switch is now remembered for the visit, someone who turned sound
+  // on in the portfolio and then clicked the wordmark home would arrive at
+  // a page that rumbles with nothing to stop it. So: no switch, no sound,
+  // whatever the stored preference says.
+  if (!toggle) muted = true;
   var hintTimer = 0;
 
   // "prompt" marks the loud arrival invitation, as opposed to the quiet

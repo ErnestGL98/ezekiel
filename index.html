@@ -17,12 +17,12 @@
 
   <!-- Start downloading the handwriting font immediately, in parallel with
        the stylesheet, instead of waiting for the CSS to be parsed first. -->
-  <!-- The ?v=73 must match the one in style.css — see the note there. -->
-  <link rel="preload" href="fonts/EzekielHand.woff2?v=73" as="font" type="font/woff2" crossorigin>
+  <!-- The ?v=74 must match the one in style.css — see the note there. -->
+  <link rel="preload" href="fonts/EzekielHand.woff2?v=74" as="font" type="font/woff2" crossorigin>
 
   <!-- Our own stylesheet. Versioned too, so a changed stylesheet also
        shows up straight away instead of after the 10-minute cache. -->
-  <link rel="stylesheet" href="css/style.css?v=73">
+  <link rel="stylesheet" href="css/style.css?v=74">
 </head>
 
 <body>
@@ -72,10 +72,16 @@
 
       <!-- It lives in the row BELOW the logo, so it hangs off the centre
            line without pushing the logo off-centre. -->
-      <a class="button" href="portfolio.html">View Portfolio</a>
+      <a class="button glitch-text" href="portfolio.html">View Portfolio</a>
     </div>
 
   </section>
+
+  <!-- The ONLY script on this page, and only for the button. No player, no
+       audio: the effect runs silent here because there is no speaker in
+       this header to turn it off with, and sound you cannot switch off is
+       worse than none. glitch.js checks for that itself. -->
+  <script src="js/glitch.js?v=74" defer></script>
 
 </body>
 </html>

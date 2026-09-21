@@ -490,7 +490,15 @@
     }
     paintProgress();
   });
-  audio.addEventListener('play', function () { paintToggle(); save(); });
+  audio.addEventListener('play', function () {
+    paintToggle();
+    save();
+    // Tell the header speaker the music is on, so it never shows "off"
+    // over a page that is audibly playing — whichever button started it.
+    // When the speaker itself started this it is already on, and
+    // glitch.js ignores the repeat.
+    window.dispatchEvent(new CustomEvent('ezekiel:music-on'));
+  });
   audio.addEventListener('pause', function () { paintToggle(); save(); });
   audio.addEventListener('ended', function () { load(at + 1, true); });
 

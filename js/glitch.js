@@ -616,6 +616,21 @@
         detail: { on: !muted }
       }));
     });
+
+    // The other direction: music started from the player's own play button
+    // (or skipping to the next track) switches the speaker on to match.
+    // Only ever ON. Pausing from the player leaves the speaker alone,
+    // because the speaker also drives the hover sound, and stopping a song
+    // is not the same as asking for silence everywhere.
+    window.addEventListener('ezekiel:music-on', function () {
+      if (!muted) return;
+      muted = false;
+      paintToggle();
+      rememberSound();
+      // Still inside the transient activation of the click that started
+      // the music, so the browser will let the hover audio be built now.
+      Audio_.unlock();
+    });
   }
 
   // Arriving with the sound already switched on, carried from the last

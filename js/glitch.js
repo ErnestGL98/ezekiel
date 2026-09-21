@@ -686,6 +686,17 @@
     return el.classList.contains('glitch-plate');
   }
 
+  // Tear the WHITE, not the ink. The home page is white type and a white
+  // button over a dark photograph, and there the tear should read as light
+  // coming apart rather than dark letters smearing. On a plated element
+  // that means the plate tears at full strength and the letters are cut
+  // OUT of it — so they stay crisp in the real button underneath, and the
+  // bands that fly off carry letter-shaped holes. On plain white type it
+  // is already the letters that are white, so nothing extra is needed.
+  function isLight(el) {
+    return el.classList.contains('glitch-light');
+  }
+
   // How much of the effect the plate gets, against 1.0 for the letters.
   // The shader keys text on the texture's own alpha and that mix is
   // continuous, so this really is a strength dial and not a switch: the
@@ -817,7 +828,7 @@
     // Its alpha is what makes it tear only lightly.
     if (isPlated(el)) {
       sctx.save();
-      sctx.globalAlpha = PLATE;
+      sctx.globalAlpha = isLight(el) ? 1 : PLATE;
       sctx.fillStyle = cs.backgroundColor;
       sctx.fillRect(0, 0, w, h);
       var bw = parseFloat(cs.borderTopWidth) || 0;
@@ -853,6 +864,11 @@
       var natural = m.width || lw;
 
       sctx.save();
+      // Light plated: punch the letters out of the plate instead of
+      // painting them on, so it is only the white that tears.
+      if (isPlated(el) && isLight(el)) {
+        sctx.globalCompositeOperation = 'destination-out';
+      }
       sctx.translate((ln.left - rect.left) * dpr, (ln.top - rect.top) * dpr);
       sctx.scale(lw / natural, 1);
       sctx.fillText(text, 0, baseline);

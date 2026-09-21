@@ -17,12 +17,12 @@
 
   <!-- Start downloading the handwriting font immediately, in parallel with
        the stylesheet, instead of waiting for the CSS to be parsed first. -->
-  <!-- The ?v=75 must match the one in style.css — see the note there. -->
-  <link rel="preload" href="fonts/EzekielHand.woff2?v=75" as="font" type="font/woff2" crossorigin>
+  <!-- The ?v=76 must match the one in style.css — see the note there. -->
+  <link rel="preload" href="fonts/EzekielHand.woff2?v=76" as="font" type="font/woff2" crossorigin>
 
   <!-- Our own stylesheet. Versioned too, so a changed stylesheet also
        shows up straight away instead of after the 10-minute cache. -->
-  <link rel="stylesheet" href="css/style.css?v=75">
+  <link rel="stylesheet" href="css/style.css?v=76">
 </head>
 
 <body>
@@ -68,20 +68,20 @@
            the keyboard, with middle-click, and with open-in-new-tab.
            "./" means "this folder's index page" — so on the home page it
            reloads, and from any future page it comes back here. -->
-      <h1 class="hero__logo"><a class="hero__logo-link" href="./">Ezekiel</a></h1>
+      <h1 class="hero__logo"><a class="hero__logo-link glitch-text glitch-light" href="./">Ezekiel</a></h1>
 
       <!-- It lives in the row BELOW the logo, so it hangs off the centre
            line without pushing the logo off-centre. -->
-      <a class="button glitch-text glitch-plate" href="portfolio.html">View Portfolio</a>
+      <a class="button glitch-text glitch-plate glitch-light" href="portfolio.html">View Portfolio</a>
     </div>
 
   </section>
 
-  <!-- The ONLY script on this page, and only for the button. No player, no
+  <!-- The ONLY script on this page, and only for the logo and button. No player, no
        audio: the effect runs silent here because there is no speaker in
        this header to turn it off with, and sound you cannot switch off is
        worse than none. glitch.js checks for that itself. -->
-  <script src="js/glitch.js?v=75" defer></script>
+  <script src="js/glitch.js?v=76" defer></script>
 
 </body>
 </html>

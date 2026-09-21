@@ -69,6 +69,13 @@
     });
   });
 
+  // These lines are set in the handwriting, which has letters and spaces
+  // and nothing else — no full stop, comma, apostrophe or dash. So they
+  // are worded with letters only, and a line break (the backslash-n in
+  // each message, shown by the CSS's pre-line) does the pausing that
+  // punctuation would have done.
+  // Keep any new message to letters and spaces too, or its punctuation
+  // will drop into Arial in the middle of the sentence.
   function say(text, kind) {
     status.textContent = text;
     status.className = 'contact-form__status' + (kind ? ' is-' + kind : '');
@@ -84,7 +91,7 @@
     // telling it why would only teach it.
     if (trap && trap.value) {
       form.reset();
-      say('Thank you — your message is on its way.', 'ok');
+      say('Thank you\nyour message is on its way', 'ok');
       return;
     }
 
@@ -92,7 +99,7 @@
     // be set or changed on the element without anything else caring.
     var endpoint = (form.getAttribute('data-endpoint') || '').trim();
     if (!endpoint) {
-      say('This form isn’t connected yet, so nothing was sent.', 'error');
+      say('This form is not connected yet\nso nothing was sent', 'error');
       return;
     }
 
@@ -107,11 +114,11 @@
     }).then(function (r) {
       if (!r.ok) throw new Error('status ' + r.status);
       form.reset();
-      say('Thank you — your message is on its way.', 'ok');
+      say('Thank you\nyour message is on its way', 'ok');
     }).catch(function () {
       // Keep what they wrote: a failed send must never cost them the
       // message they just typed.
-      say('Sorry, that didn’t send. Please try again in a moment.', 'error');
+      say('Sorry that did not send\nplease try again in a moment', 'error');
     }).then(function () {
       send.disabled = false;
       send.textContent = 'Send';

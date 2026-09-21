@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=84 ON EVERY FONT URL
+/* NOTE ON THE ?v=86 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=84') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=84') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=86') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=86') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=84') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=84') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=86') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=86') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -53,8 +53,8 @@
    get the browser's fake bold on top of the 700, which smears. */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Black.woff2?v=84') format('woff2'),
-       url('../fonts/EzekielHand-Black.ttf?v=84') format('truetype');
+  src: url('../fonts/EzekielHand-Black.woff2?v=86') format('woff2'),
+       url('../fonts/EzekielHand-Black.ttf?v=86') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -1691,8 +1691,10 @@ a {
    Your email, a subject, a message. The labels are in the handwriting;
    what people TYPE is not. The handwriting has no @, no full stop and no
    digits, so an email address typed in it would come out half
-   handwriting and half Arial. The error and status lines are plain for
-   the same reason — they are full of apostrophes and full stops.
+   handwriting and half Arial. The warnings under each box are plain for
+   the same reason — they are full of apostrophes and full stops. The
+   message after sending IS in the handwriting: it is worded with letters
+   only (see js/contact.js).
    ------------------------------------------------------------ */
 :root {
   --plain: 'Helvetica Neue', Arial, sans-serif;
@@ -1852,10 +1854,25 @@ a {
 }
 
 .contact-form__status {
-  margin: 1.2rem 0 0;
+  margin: 1.4rem 0 0;
   min-height: 1.4em;
-  font-family: var(--plain);
-  font-size: 0.95rem;
+  font-size: 1rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  line-height: 1.5;
+  white-space: pre-line;       /* honours the line break in each message */
+}
+
+/* Over the photo the message would sit straight on the stripes, so it
+   gets the same near-solid backing as the boxes — but only while there
+   is a message, or an empty cream patch would sit under the button. */
+.contact-page .contact-form__status:not(:empty) {
+  display: table;              /* hugs the text like inline-block, but
+                                  keeps its own line under the button
+                                  instead of sitting beside it */
+  padding: 0.6rem 0.9rem;
+  background-color: rgba(247, 245, 240, 0.9);
 }
 
 .contact-form__status.is-error {

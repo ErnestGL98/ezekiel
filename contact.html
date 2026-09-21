@@ -51,17 +51,25 @@
          THE FORM — your email, a subject, a message.
 
          WHERE THE MESSAGES GO. GitHub Pages only serves files; it cannot
-         receive anything. So the form posts to a form-delivery service
-         that emails each message on. That service's address goes in
-         data-endpoint below — nothing else in this file or in
-         js/contact.js needs to change. Empty means not connected yet,
-         and the form says so rather than pretending to send.
+         receive anything. So the form posts to Formspree, which emails
+         each message on. Its address is in BOTH action and data-endpoint
+         below; to move to another form or service, change both and
+         nothing else. (Empty would mean not connected, and the form says
+         so rather than pretending to send.)
+
+         THE EMAIL'S SUBJECT LINE. Formspree takes it from a field named
+         exactly "subject" — so the visitor's own box is named "topic",
+         and a hidden "subject" field builds the real one around it:
+         "Email for Ezekiel: <whatever they typed>". That way every one of
+         these is easy to spot and filter in the inbox. The SENDER name
+         cannot be changed on Formspree's free plan (Business plan only),
+         so the prefix does that job instead.
 
          Also works with JavaScript off: then it is an ordinary form post
          to the same address (the action attribute), so the message still
          arrives — the visitor just sees the service's own thank-you page.
          ============================================================ -->
-    <form class="contact-form" method="POST" action="" data-endpoint="" novalidate>
+    <form class="contact-form" method="POST" action="https://formspree.io/f/mnpnddgd" data-endpoint="https://formspree.io/f/mnpnddgd" novalidate>
 
       <div class="field">
         <label class="field__label" for="c-email">Your email</label>
@@ -72,7 +80,7 @@
 
       <div class="field">
         <label class="field__label" for="c-subject">Subject</label>
-        <input class="field__input" id="c-subject" name="subject" type="text"
+        <input class="field__input" id="c-subject" name="topic" type="text"
                required maxlength="150">
         <p class="field__error" id="c-subject-error" aria-live="polite"></p>
       </div>
@@ -83,6 +91,9 @@
                   rows="7" required maxlength="5000"></textarea>
         <p class="field__error" id="c-message-error" aria-live="polite"></p>
       </div>
+
+      <!-- Formspree fills {{ topic }} in with the visitor's own subject. -->
+      <input type="hidden" name="subject" value="Email for Ezekiel: {{ topic }}">
 
       <!-- A spam trap. Hidden from people (and from screen readers, and
            skipped by Tab), but bots fill in every box they find. Anything

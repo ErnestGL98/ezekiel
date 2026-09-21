@@ -23,6 +23,32 @@
   <!-- Our own stylesheet. Versioned too, so a changed stylesheet also
        shows up straight away instead of after the 10-minute cache. -->
   <link rel="stylesheet" href="css/style.css?v=78">
+
+  <!-- REFRESHING THE HOME PAGE STARTS THE WHOLE VISIT OVER.
+       The rest of the site remembers things for the length of a visit —
+       where the music was, whether the speaker is on, whether the photo
+       controls have been explained. A refresh here wipes all of it, so
+       the portfolio after it is a fresh visit: a new song order, the
+       speaker off, the hint shown again.
+
+       Only on a REFRESH. Arriving here by clicking the wordmark is still
+       the same visit and keeps everything.
+
+       Only this site's own entries, by their ezekiel- prefix, never
+       sessionStorage.clear(): every site under ernestgl98.github.io shares
+       this storage, and clearing it would wipe theirs too. -->
+  <script>
+    (function () {
+      try {
+        var nav = performance.getEntriesByType('navigation')[0];
+        if (!nav || nav.type !== 'reload') return;
+        for (var i = sessionStorage.length - 1; i >= 0; i--) {
+          var k = sessionStorage.key(i);
+          if (k && k.indexOf('ezekiel-') === 0) sessionStorage.removeItem(k);
+        }
+      } catch (e) {}
+    })();
+  </script>
 </head>
 
 <body>

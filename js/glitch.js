@@ -679,6 +679,23 @@
     return el.classList.contains('glitch-text');
   }
 
+  // A word whose BOX should tear as well as its letters — the button on
+  // the home page, which is a white plate with words in it rather than
+  // words on their own.
+  function isPlated(el) {
+    return el.classList.contains('glitch-plate');
+  }
+
+  // How much of the effect the plate gets, against 1.0 for the letters.
+  // The shader keys text on the texture's own alpha and that mix is
+  // continuous, so this really is a strength dial and not a switch: the
+  // box is drawn faint, the letters solid, and the same pass gives them
+  // different amounts of the same tear. Low enough that the words stay
+  // the subject. 0.22 was tried first and barely registered: a white
+  // plate torn over a white button only shows where a band crosses the
+  // edge, so it needs more strength than its size suggests.
+  var PLATE = 0.4;
+
   // Where a WORD's ink actually sits. The element's own box is no use: the
   // banner title is a full-width flex container and the nav links carry
   // padding for their tap targets, so both are far wider than the letters.
@@ -732,6 +749,9 @@
   }
 
   function paintedRect(el) {
+    // A plated word is measured by its BOX: that is the thing being torn,
+    // and the letters are positioned inside it.
+    if (isText(el) && isPlated(el)) return el.getBoundingClientRect();
     if (isText(el)) return inkRect(el);
     var r = el.getBoundingClientRect();
     var img = el.querySelector('img');
@@ -792,6 +812,23 @@
       if (cs.textTransform === 'lowercase') return t.toLowerCase();
       return t;
     };
+
+    // The plate first, so the letters sit on top of it at full strength.
+    // Its alpha is what makes it tear only lightly.
+    if (isPlated(el)) {
+      sctx.save();
+      sctx.globalAlpha = PLATE;
+      sctx.fillStyle = cs.backgroundColor;
+      sctx.fillRect(0, 0, w, h);
+      var bw = parseFloat(cs.borderTopWidth) || 0;
+      if (bw > 0) {
+        sctx.strokeStyle = cs.borderTopColor;
+        sctx.lineWidth = bw * dpr;
+        sctx.strokeRect(bw * dpr / 2, bw * dpr / 2,
+                        w - bw * dpr, h - bw * dpr);
+      }
+      sctx.restore();
+    }
 
     lines.forEach(function (ln) {
       var text = cased(ln.text);

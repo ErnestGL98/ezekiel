@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=79 ON EVERY FONT URL
+/* NOTE ON THE ?v=80 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=79') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=79') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=80') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=80') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=79') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=79') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=80') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=80') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -53,8 +53,8 @@
    get the browser's fake bold on top of the 700, which smears. */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Black.woff2?v=79') format('woff2'),
-       url('../fonts/EzekielHand-Black.ttf?v=79') format('truetype');
+  src: url('../fonts/EzekielHand-Black.woff2?v=80') format('woff2'),
+       url('../fonts/EzekielHand-Black.ttf?v=80') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -1699,9 +1699,53 @@ a {
   --error: #9A3324;            /* a brick red that sits with the cream */
 }
 
+/* The photo behind the whole page. Fixed, so the form scrolls over it
+   rather than the picture scrolling away. Negative z-index puts it
+   behind everything on the page but still in front of the page colour.
+
+   Cover-cropped and anchored high, on his face and the top of the
+   jacket: the file is portrait, so on a wide screen most of its height
+   has to go, and the head is the part worth keeping. */
+.contact-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+}
+
+.contact-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 14%;
+}
+
+/* A cream wash over the photo. Without it the ink labels and the title
+   sit straight on a striped shirt and a face, and the page stops being
+   readable; with it the photo stays clearly there but steps back. */
+.contact-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(242, 238, 231, 0.55);
+}
+
 .contact-form {
   max-width: 34rem;
   margin: 0 auto;
+}
+
+/* Over the photo the boxes need to be nearly solid, or the stripes show
+   through behind whatever is being typed. */
+.contact-page .field__input,
+.contact-page .contact-form__send {
+  background-color: rgba(247, 245, 240, 0.9);
+}
+
+/* Restated, because the rule above is more specific than the button's
+   own hover and would otherwise keep it pale under the pointer. */
+.contact-page .contact-form__send:hover,
+.contact-page .contact-form__send:focus-visible {
+  background-color: var(--ink);
 }
 
 .field {

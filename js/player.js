@@ -13,8 +13,9 @@
    playlist. A refresh or a direct load DOES start over — see
    arrivedFromTheSite() for how the two are told apart.
 
-   THE HOME PAGE DELIBERATELY HAS NONE OF THIS. No player, no script, no
-   audio — it does not even load this file.
+   THE HOME PAGE DELIBERATELY HAS NONE OF THIS. No player and no music —
+   it does not load this file. (It does load glitch.js, for its logo and
+   button, which runs silent there.)
 
    TWO THINGS WORTH KNOWING BEFORE CHANGING ANYTHING
 
@@ -22,10 +23,13 @@
       tools/build_audio.py. Adding a song means dropping a WAV in
       Music/Zeek Site and re-running that script — no code to edit.
 
-   2. Browsers refuse to let a page make a sound before the visitor has
-      interacted with it. So this tries to play on load, and if it's
-      turned down, it waits and starts on the first click or key press —
-      including the speaker in the header, which drives it deliberately.
+   2. A fresh visit does NOT start the music on its own. It waits for the
+      speaker in the header: that click is the visitor choosing sound, and
+      it is also the gesture the browser needs before any page may make a
+      noise. (It used to try on load and then start on the first click
+      anywhere, which meant clicking a cover to open a shoot could set the
+      music going by accident.) Once sound is on, it carries between pages
+      for the rest of the visit.
       Everything is built up front either way, so the player is on screen
       and pausable from the very first frame; nobody should hear a sound
       they can't immediately find the source of.
@@ -524,7 +528,9 @@
         // reordering someone else's data as a side effect.
         queue = shuffle(tracks.slice());
         load(0, false);
-        start();
+        // Deliberately not start(): the speaker in the header starts it,
+        // through the 'ezekiel:sound' event below. The player itself is
+        // still on screen and its own play button still works.
       }
 
       paintToggle();

@@ -3,44 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Essx Spring Summer | EZEKIEL</title>
-  <meta name="description" content="Ezekiel for the Essx Spring Summer campaign.">
+  <title>Contact | EZEKIEL</title>
+  <meta name="description" content="Get in touch with Ezekiel.">
   <meta name="theme-color" content="#F2EEE7">
-
   <!-- The ?v=79 must match the one in style.css — see the note there. -->
   <link rel="preload" href="fonts/EzekielHand.woff2?v=79" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="fonts/EzekielHand-Bold.woff2?v=79" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="fonts/EzekielHand-Black.woff2?v=79" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="css/style.css?v=79">
-
-  <!-- Same two before-first-paint jobs as the portfolio page: land at the
-       top on a refresh, and arm the reveal styles early enough that the
-       photos are never painted and then hidden. See portfolio.html for
-       the long version. -->
   <script>
+    // Land at the top on a refresh, same as every other page.
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-    if (window.IntersectionObserver &&
-        !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      document.documentElement.classList.add('js-reveal');
-      setTimeout(function () {
-        if (!window.__revealReady) {
-          document.documentElement.classList.remove('js-reveal');
-        }
-      }, 5000);
-    }
   </script>
 </head>
-
 <body>
 
-  <!-- The same header as the portfolio page, so moving between the two
-       doesn't shift anything. The speaker still switches the hover sound;
-       there is no music player on a gallery — see the note by the grid. -->
+  <!-- The same header as the portfolio and the galleries, so moving
+       between them doesn't shift anything. -->
   <header class="page-header">
     <div class="page-header__left">
       <a class="page-header__mark glitch-text" href="./">Ezekiel</a>
-
       <button class="sound-toggle" type="button" aria-pressed="true"
               aria-label="Turn sound off">
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -51,70 +32,74 @@
           </g>
         </svg>
       </button>
-
       <span class="sound-hint" aria-hidden="true"></span>
     </div>
-
     <nav class="nav" aria-label="Main navigation">
-      <a class="glitch-text" href="contact.html">Contact</a>
+      <a class="glitch-text" href="contact.html" aria-current="page">Contact</a>
     </nav>
   </header>
 
   <main class="page-main">
-
     <div class="gallery-head">
-      <!-- Left of the title rather than above it, so the title stays on the
-           page's centre line the way the section headings do. -->
       <a class="back-link" href="portfolio.html">
         <span aria-hidden="true">&#8592;</span> Portfolio
       </a>
-      <h1 class="gallery-title glitch-text">Essx Spring Summer</h1>
+      <h1 class="gallery-title glitch-text">Contact</h1>
     </div>
 
     <!-- ============================================================
-         THE SHOOT — seven frames, all portrait, but not all one shape:
-         they run 0.711 to 0.800. So no wide frames and no mixed-gallery
-         handling, but the gallery does pick its own frame shape —
-         gallery--4x5 rather than the default 2:3, which is much closer
-         to what these actually are.
+         THE FORM — your email, a subject, a message.
 
-         Seven across rows of three leaves one over; the CSS centres it.
-         Numbering follows the shoot, so a photo added later goes in its
-         own place in the sequence rather than on the end — which is why
-         this was rebuilt whole rather than appended to.
+         WHERE THE MESSAGES GO. GitHub Pages only serves files; it cannot
+         receive anything. So the form posts to a form-delivery service
+         that emails each message on. That service's address goes in
+         data-endpoint below — nothing else in this file or in
+         js/contact.js needs to change. Empty means not connected yet,
+         and the form says so rather than pretending to send.
 
-         TO ADD ANOTHER GALLERY:
-         1. python tools/build_gallery.py <slug> --newest N
-         2. Copy this file, change the title and the folder in the src
-         3. Point that shoot's tile in portfolio.html at the new file
-
-         The music follows you in here: the player carries its queue and
-         position across a link, so opening a shoot does not restart the
-         playlist. See the note at the top of js/player.js.
+         Also works with JavaScript off: then it is an ordinary form post
+         to the same address (the action attribute), so the message still
+         arrives — the visitor just sees the service's own thank-you page.
          ============================================================ -->
-    <div class="gallery gallery--3x4">
-      <figure class="shot"><img src="images/galleries/essx-spring-summer/01.webp" alt="Essx Spring Summer campaign, look 1" width="1200" height="1600" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/essx-spring-summer/02.webp" alt="Essx Spring Summer campaign, look 2" width="1200" height="1600" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/essx-spring-summer/03.webp" alt="Essx Spring Summer campaign, look 3" width="1200" height="1600" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/essx-spring-summer/04.webp" alt="Essx Spring Summer campaign, look 4" width="1200" height="1600" loading="lazy" decoding="async"></figure>
-      <figure class="shot"><img src="images/galleries/essx-spring-summer/05.webp" alt="Essx Spring Summer campaign, look 5" width="1200" height="1600" loading="lazy" decoding="async"></figure>
-    </div>
+    <form class="contact-form" method="POST" action="" data-endpoint="" novalidate>
 
+      <div class="field">
+        <label class="field__label" for="c-email">Your email</label>
+        <input class="field__input" id="c-email" name="email" type="email"
+               autocomplete="email" required maxlength="254">
+        <p class="field__error" id="c-email-error" aria-live="polite"></p>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="c-subject">Subject</label>
+        <input class="field__input" id="c-subject" name="subject" type="text"
+               required maxlength="150">
+        <p class="field__error" id="c-subject-error" aria-live="polite"></p>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="c-message">Message</label>
+        <textarea class="field__input field__input--area" id="c-message" name="message"
+                  rows="7" required maxlength="5000"></textarea>
+        <p class="field__error" id="c-message-error" aria-live="polite"></p>
+      </div>
+
+      <!-- A spam trap. Hidden from people (and from screen readers, and
+           skipped by Tab), but bots fill in every box they find. Anything
+           in it and the message is quietly dropped. The name _gotcha is
+           the one the common form services already look for. -->
+      <div class="contact-form__trap" aria-hidden="true">
+        <label for="c-gotcha">Leave this empty</label>
+        <input id="c-gotcha" name="_gotcha" type="text" tabindex="-1" autocomplete="off">
+      </div>
+
+      <button class="contact-form__send" type="submit">Send</button>
+      <p class="contact-form__status" role="status" aria-live="polite"></p>
+    </form>
   </main>
 
-  <!-- ============================================================
-       MUSIC PLAYER — fixed bottom-left. This page only: the home
-       page has no player, no script and no audio at all.
-
-       Starts hidden and is revealed by the script once the playlist has
-       actually loaded, so a browser with JavaScript off gets a clean page
-       rather than a dead row of buttons.
-
-       The track list lives in audio/tracks.json, written by
-       tools/build_audio.py. TO ADD A SONG: drop a WAV into the
-       "Zeek Site" folder in Music and re-run that script. Nothing in this
-       file needs to change.
-       ============================================================ -->
+  <!-- MUSIC PLAYER — the same one as the portfolio and galleries, so the
+       music carries in here and back out. -->
   <div class="player" hidden>
     <div class="player__controls">
       <button class="player__btn player__prev" type="button" aria-label="Previous track">
@@ -126,8 +111,6 @@
       <button class="player__btn player__toggle" type="button"
               aria-pressed="false" aria-label="Play">
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <!-- both states live in the DOM; the CSS shows one at a time, so
-               nothing has to be redrawn on every press -->
           <path class="player__icon-play" d="M7 4v16l13-8z"/>
           <path class="player__icon-pause" d="M7 4h4v16H7zM14 4h4v16h-4z"/>
         </svg>
@@ -155,17 +138,12 @@
         </svg>
       </button>
 
-      <!-- Sits beside the mute button because they are the same decision at
-           two resolutions: the button is the shortcut, this is the detail.
-           A real slider like the timeline, so arrows nudge it. -->
       <div class="player__volume" role="slider" tabindex="0" aria-label="Volume"
            aria-valuemin="0" aria-valuemax="100" aria-valuenow="45">
         <div class="player__volume-fill"></div>
       </div>
     </div>
 
-    <!-- A real slider, not a decorated div: arrows nudge, Home/End jump,
-         and a screen reader announces the position. -->
     <div class="player__bar" role="slider" tabindex="0" aria-label="Seek"
          aria-valuemin="0" aria-valuemax="0" aria-valuenow="0">
       <div class="player__fill"></div>
@@ -178,9 +156,7 @@
   </div>
 
   <script src="js/player.js?v=79" defer></script>
-
-  <script src="js/lightbox.js?v=79" defer></script>
-  <script src="js/reveal.js?v=79" defer></script>
+  <script src="js/contact.js?v=79" defer></script>
   <script src="js/scroll.js?v=79" defer></script>
   <script src="js/glitch.js?v=79" defer></script>
 

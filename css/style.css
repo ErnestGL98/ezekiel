@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=78 ON EVERY FONT URL
+/* NOTE ON THE ?v=79 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=78') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=78') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=79') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=79') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=78') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=78') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=79') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=79') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -53,8 +53,8 @@
    get the browser's fake bold on top of the 700, which smears. */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Black.woff2?v=78') format('woff2'),
-       url('../fonts/EzekielHand-Black.ttf?v=78') format('truetype');
+  src: url('../fonts/EzekielHand-Black.woff2?v=79') format('woff2'),
+       url('../fonts/EzekielHand-Black.ttf?v=79') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -566,8 +566,15 @@ a {
   /* Caps the line length on big monitors so the grid doesn't sprawl */
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 var(--gutter) 5rem;
-  padding-bottom: max(5rem, calc(4rem + env(safe-area-inset-bottom)));
+  /* Room at the bottom for the music player, which is fixed in the
+     bottom-left corner and about 90px tall with its offset. It used to be
+     5rem (80px), which is LESS than the player — so on a phone, scrolled
+     to the end, the player sat over the last thing on the page: 48px of
+     the last clip on the portfolio, the edge of the last photos in a
+     gallery, and the Send button on the contact page. 8rem clears it with
+     a gap to spare. */
+  padding: 0 var(--gutter) 8rem;
+  padding-bottom: max(8rem, calc(7rem + env(safe-area-inset-bottom)));
 }
 
 /* --- the portfolio banner strip --- */
@@ -1680,7 +1687,137 @@ a {
 
 
 /* ------------------------------------------------------------
-   12. REDUCED MOTION
+   12. THE CONTACT PAGE
+   Your email, a subject, a message. The labels are in the handwriting;
+   what people TYPE is not. The handwriting has no @, no full stop and no
+   digits, so an email address typed in it would come out half
+   handwriting and half Arial. The error and status lines are plain for
+   the same reason — they are full of apostrophes and full stops.
+   ------------------------------------------------------------ */
+:root {
+  --plain: 'Helvetica Neue', Arial, sans-serif;
+  --error: #9A3324;            /* a brick red that sits with the cream */
+}
+
+.contact-form {
+  max-width: 34rem;
+  margin: 0 auto;
+}
+
+.field {
+  margin-bottom: 1.6rem;
+}
+
+.field__label {
+  display: block;
+  margin-bottom: 0.55rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.field__input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.8rem 0.9rem;
+  /* 16px, not smaller: below that iOS zooms the whole page in the moment
+     a box is tapped, and does not zoom back out. */
+  font-family: var(--plain);
+  font-size: 1rem;
+  color: var(--ink);
+  background-color: rgba(255, 255, 255, 0.4);
+  border: 1px solid var(--ink-soft);
+  border-radius: 0;            /* iOS rounds inputs unless told not to */
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* A clear focus ring rather than just a darker border: someone moving
+   through the form with Tab has to be able to see where they are. */
+.field__input:focus {
+  outline: none;
+  border-color: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+
+.field__input--area {
+  min-height: 10rem;
+  resize: vertical;            /* taller is useful; wider breaks the column */
+  line-height: 1.5;
+}
+
+.field__input[aria-invalid="true"] {
+  border-color: var(--error);
+  box-shadow: 0 0 0 1px var(--error);
+}
+
+.field__error {
+  margin: 0.45rem 0 0;
+  min-height: 1em;             /* reserves the line, so nothing jumps */
+  font-family: var(--plain);
+  font-size: 0.82rem;
+  color: var(--error);
+}
+
+/* The spam trap: moved off-screen rather than display:none, because some
+   bots skip boxes they can tell are hidden. */
+.contact-form__trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* The home page's outlined button, in ink for a cream page. */
+.contact-form__send {
+  min-height: 3rem;
+  padding: 0.9rem 2.4rem;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font-family: inherit;        /* buttons do not inherit the font otherwise */
+  font-size: 0.8rem;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  text-indent: 0.22em;
+  cursor: pointer;
+}
+
+.contact-form__send:hover,
+.contact-form__send:focus-visible {
+  background-color: var(--ink);
+  color: var(--cream);
+}
+
+.contact-form__send:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.contact-form__send:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.contact-form__status {
+  margin: 1.2rem 0 0;
+  min-height: 1.4em;
+  font-family: var(--plain);
+  font-size: 0.95rem;
+}
+
+.contact-form__status.is-error {
+  color: var(--error);
+}
+
+
+/* ------------------------------------------------------------
+   13. REDUCED MOTION
    Some people set "reduce motion" in their OS for motion sickness.
    Respect it by switching animations off.
    ------------------------------------------------------------ */

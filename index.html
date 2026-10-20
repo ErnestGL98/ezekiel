@@ -17,12 +17,12 @@
 
   <!-- Start downloading the handwriting font immediately, in parallel with
        the stylesheet, instead of waiting for the CSS to be parsed first. -->
-  <!-- The ?v=86 must match the one in style.css — see the note there. -->
-  <link rel="preload" href="fonts/EzekielHand.woff2?v=86" as="font" type="font/woff2" crossorigin>
+  <!-- The ?v=87 must match the one in style.css — see the note there. -->
+  <link rel="preload" href="fonts/OldEnglish.woff2?v=87" as="font" type="font/woff2" crossorigin>
 
   <!-- Our own stylesheet. Versioned too, so a changed stylesheet also
        shows up straight away instead of after the 10-minute cache. -->
-  <link rel="stylesheet" href="css/style.css?v=86">
+  <link rel="stylesheet" href="css/style.css?v=87">
 
   <!-- REFRESHING THE HOME PAGE STARTS THE WHOLE VISIT OVER.
        The rest of the site remembers things for the length of a visit —
@@ -51,21 +51,14 @@
   </script>
 </head>
 
-<body>
+<body class="home">
 
   <!-- ============================================================
-       HEADER — small nav that floats on top of the hero image.
-       The link goes to contact.html.
-       ============================================================ -->
-  <header class="site-header">
-    <nav class="nav" aria-label="Main navigation">
-      <a href="contact.html">Contact</a>
-    </nav>
-  </header>
-
-  <!-- ============================================================
-       HERO — full-screen photo with the name centered on top.
-       The <h1> IS the logo, exactly as requested.
+       THE HOME PAGE IS NOW ONE ROW OF FOUR.
+       Ezekiel, Portfolio, Contact, Instagram — all peers, spread
+       evenly across the full width and sitting on the page's vertical
+       centre line. There is no separate header nav and no logo above
+       the row any more: "Ezekiel" IS the first of the four.
        ============================================================ -->
   <section class="hero">
 
@@ -83,31 +76,38 @@
          Purely so the white text stays readable on the light parts. -->
     <div class="hero__scrim" aria-hidden="true"></div>
 
-    <!-- The content that sits ON TOP of the photo.
-         This is a 3-row grid (see the CSS): an empty stretchy row,
-         the logo, then another empty stretchy row. The two equal
-         stretchy rows are what pin the logo to the exact centre. -->
-    <div class="hero__content">
-      <!-- The name doubles as the logo and as the home link. A real <a>
-           rather than a JavaScript click handler, so it still works with
-           the keyboard, with middle-click, and with open-in-new-tab.
-           "./" means "this folder's index page" — so on the home page it
-           reloads, and from any future page it comes back here. -->
-      <h1 class="hero__logo"><a class="hero__logo-link glitch-text glitch-light" href="./">Ezekiel</a></h1>
+    <!-- FOUR EQUAL COLUMNS, each word centred in its own share of the
+         width — which is what spreads them evenly rather than just
+         pushing the outer two to the edges.
 
-      <!-- It lives in the row BELOW the logo, so it hangs off the centre
-           line without pushing the logo off-centre. -->
-      <a class="button glitch-text glitch-plate glitch-light" href="portfolio.html">View Portfolio</a>
-    </div>
+         It is a <nav> because that is what it now is. "Ezekiel" keeps
+         the <h1> so the page still has a heading for search engines and
+         screen readers, and still links home with a real <a>: the
+         keyboard, middle-click and open-in-new-tab all keep working. -->
+    <nav class="hero__nav" aria-label="Main navigation">
+      <h1 class="hero__name">
+        <a class="hero__link glitch-text glitch-light" href="./">Ezekiel</a>
+      </h1>
+      <a class="hero__link glitch-text glitch-light" href="portfolio.html">Portfolio</a>
+      <a class="hero__link glitch-text glitch-light" href="contact.html">Contact</a>
+      <!-- INSTAGRAM: not clickable until the handle is in. Rendered as a
+           <span> rather than an <a href="#">, so it cannot be tabbed to
+           or clicked into a dead end. To finish it, swap this one line
+           for:
+             <a class="hero__link glitch-text glitch-light"
+                href="https://www.instagram.com/HANDLE/"
+                target="_blank" rel="noopener">Instagram</a> -->
+      <span class="hero__link hero__link--waiting glitch-text glitch-light">Instagram</span>
+    </nav>
 
   </section>
 
   <!-- The only script FILE on this page (the small one in the head just
-       resets the visit on a refresh), and only for the logo and button.
+       resets the visit on a refresh), and only for the four words.
        No player, no audio: the effect runs silent here because there is no speaker in
        this header to turn it off with, and sound you cannot switch off is
        worse than none. glitch.js checks for that itself. -->
-  <script src="js/glitch.js?v=86" defer></script>
+  <script src="js/glitch.js?v=87" defer></script>
 
 </body>
 </html>

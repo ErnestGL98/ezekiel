@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=86 ON EVERY FONT URL
+/* NOTE ON THE ?v=87 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=86') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=86') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=87') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=87') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=86') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=86') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=87') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=87') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -53,9 +53,25 @@
    get the browser's fake bold on top of the 700, which smears. */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Black.woff2?v=86') format('woff2'),
-       url('../fonts/EzekielHand-Black.ttf?v=86') format('truetype');
+  src: url('../fonts/EzekielHand-Black.woff2?v=87') format('woff2'),
+       url('../fonts/EzekielHand-Black.ttf?v=87') format('truetype');
   font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+/* The Old English the HOME PAGE is set in — UnifrakturMaguntia, the
+   classic dense blackletter. Self-hosted like the handwriting rather
+   than loaded from Google, so the page has no third-party request and
+   cannot be slowed by one. Licensed under the SIL Open Font License
+   1.1; the licence travels with the file as fonts/OldEnglish-OFL.txt,
+   which is what the OFL asks for when the font is redistributed — and
+   putting it in a public repo counts as redistributing it. */
+@font-face {
+  font-family: 'Old English';
+  src: url('../fonts/OldEnglish.woff2?v=87') format('woff2');
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
@@ -75,6 +91,11 @@
 
   /* The handwriting, with plain fallbacks if the font file fails. */
   --font-display: 'Ezekiel Hand', 'Helvetica Neue', Arial, sans-serif;
+
+  /* The home page only. Georgia is the fallback because it is the most
+     serif-like face present on every machine — if the blackletter fails
+     to load, the page should not drop to a plain sans. */
+  --font-old: 'Old English', Georgia, 'Times New Roman', serif;
 
   /* Consistent page side-padding, used by every section */
   --gutter: 1.5rem;
@@ -1877,6 +1898,99 @@ a {
 
 .contact-form__status.is-error {
   color: var(--error);
+}
+
+
+/* ------------------------------------------------------------
+   13. THE HOME PAGE — four words across the middle
+   Everything here is scoped to body.home, so the rest of the site keeps
+   the handwriting.
+   ------------------------------------------------------------ */
+.home {
+  font-family: var(--font-old);
+}
+
+/* The row sits ON the vertical centre line of the photo. place-items
+   centre does the vertical half; the four equal columns below do the
+   horizontal. */
+.hero__nav {
+  position: absolute;
+  inset: 0;
+  z-index: 2;                  /* above the photo and the scrim */
+  display: grid;
+  /* FOUR EQUAL COLUMNS, each word centred in its own share. Even
+     spacing has to come from equal columns, not from space-between,
+     which only pushes the outer two to the edges and leaves the gaps
+     between the words uneven because the words are different lengths.
+     minmax(0, 1fr) rather than 1fr so a long word can never widen its
+     own column and unbalance the others. */
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: center;
+  padding: 0 var(--gutter);
+  padding-top: max(0px, env(safe-area-inset-top));
+}
+
+.hero__name {
+  margin: 0;                   /* an h1 brings its own margins */
+  font-size: inherit;          /* and its own size — not wanted here */
+  font-weight: inherit;
+}
+
+.hero__link {
+  display: block;
+  text-align: center;
+  color: var(--white);
+  /* Fluid, and deliberately modest at the small end: four blackletter
+     words across a phone is the tight case, and this font is wide. */
+  font-size: clamp(1.05rem, 3.6vw, 2.6rem);
+  font-weight: 400;
+  line-height: 1.1;
+  /* No letter-spacing. Blackletter is drawn to sit tight, and opening it
+     up reads as broken rather than editorial. */
+  letter-spacing: 0;
+  /* The same faint shadow the old nav had, so white type survives the
+     light parts of the photo. */
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
+  transition: opacity 0.25s ease;
+}
+
+a.hero__link:hover,
+a.hero__link:focus-visible {
+  opacity: 0.6;
+}
+
+a.hero__link:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 0.15em;
+}
+
+/* Instagram, until the handle arrives: visibly there, plainly not yet
+   clickable. Dimmed rather than hidden, so the row still reads as four. */
+.hero__link--waiting {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* THE SHADE HAD TO MOVE WITH THE WORDS.
+   The hero's own scrim is an oval in the middle of the photo, drawn for
+   a name centred there — and the four words now run the whole width, so
+   the outer two sat on the pale wall at barely any contrast. This adds a
+   band of shade along the centre line instead, strongest exactly where
+   the row is and gone within a couple of hundred pixels above and
+   below, so most of the photograph is untouched. */
+.home .hero__scrim {
+  background:
+    linear-gradient(to bottom,
+      rgba(0, 0, 0, 0.00) calc(50% - 10rem),
+      rgba(0, 0, 0, 0.30) calc(50% - 2.5rem),
+      rgba(0, 0, 0, 0.38) 50%,
+      rgba(0, 0, 0, 0.30) calc(50% + 2.5rem),
+      rgba(0, 0, 0, 0.00) calc(50% + 10rem)),
+    linear-gradient(to bottom,
+      rgba(0, 0, 0, 0.22) 0%,
+      rgba(0, 0, 0, 0.06) 22%,
+      rgba(0, 0, 0, 0.06) 78%,
+      rgba(0, 0, 0, 0.30) 100%);
 }
 
 

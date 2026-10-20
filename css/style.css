@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=91 ON EVERY FONT URL
+/* NOTE ON THE ?v=92 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=91') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=91') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=92') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=92') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=91') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=91') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=92') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=92') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -53,8 +53,8 @@
    get the browser's fake bold on top of the 700, which smears. */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Black.woff2?v=91') format('woff2'),
-       url('../fonts/EzekielHand-Black.ttf?v=91') format('truetype');
+  src: url('../fonts/EzekielHand-Black.woff2?v=92') format('woff2'),
+       url('../fonts/EzekielHand-Black.ttf?v=92') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -74,7 +74,7 @@
    putting it in a public repo counts as redistributing it. */
 @font-face {
   font-family: 'Old English';
-  src: url('../fonts/OldEnglish.woff2?v=91') format('woff2');
+  src: url('../fonts/OldEnglish.woff2?v=92') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -2008,26 +2008,17 @@ a.hero__link:focus-visible {
   cursor: default;
 }
 
-/* THE SHADE HAD TO MOVE WITH THE WORDS.
-   The hero's own scrim is an oval in the middle of the photo, drawn for
-   a name centred there — and the four words now run the whole width, so
-   the outer two sat on the pale wall at barely any contrast. This adds a
-   band of shade along the centre line instead, strongest exactly where
-   the row is and gone within a couple of hundred pixels above and
-   below, so most of the photograph is untouched. */
+/* NO SHADE BEHIND THE WORDS.
+   The hero's own scrim — an oval in the middle plus darkened top and
+   bottom edges — was drawn for a name centred there, and a band along
+   the centre line replaced it when the words spread out. Both are off
+   here: the photograph is shown as it is.
+
+   What keeps the words legible instead is the drop-shadow on the
+   outlines themselves (see .wordmark), which follows the letter shapes
+   rather than sitting behind them as a rectangle. */
 .home .hero__scrim {
-  background:
-    linear-gradient(to bottom,
-      rgba(0, 0, 0, 0.00) calc(50% - 10rem),
-      rgba(0, 0, 0, 0.30) calc(50% - 2.5rem),
-      rgba(0, 0, 0, 0.38) 50%,
-      rgba(0, 0, 0, 0.30) calc(50% + 2.5rem),
-      rgba(0, 0, 0, 0.00) calc(50% + 10rem)),
-    linear-gradient(to bottom,
-      rgba(0, 0, 0, 0.22) 0%,
-      rgba(0, 0, 0, 0.06) 22%,
-      rgba(0, 0, 0, 0.06) 78%,
-      rgba(0, 0, 0, 0.30) 100%);
+  background: none;
 }
 
 

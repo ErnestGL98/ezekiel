@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=88 ON EVERY FONT URL
+/* NOTE ON THE ?v=91 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -25,8 +25,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=88') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=88') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=91') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=91') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +41,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=88') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=88') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=91') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=91') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -53,8 +53,8 @@
    get the browser's fake bold on top of the 700, which smears. */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Black.woff2?v=88') format('woff2'),
-       url('../fonts/EzekielHand-Black.ttf?v=88') format('truetype');
+  src: url('../fonts/EzekielHand-Black.woff2?v=91') format('woff2'),
+       url('../fonts/EzekielHand-Black.ttf?v=91') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -74,7 +74,7 @@
    putting it in a public repo counts as redistributing it. */
 @font-face {
   font-family: 'Old English';
-  src: url('../fonts/OldEnglish.woff2?v=88') format('woff2');
+  src: url('../fonts/OldEnglish.woff2?v=91') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -1930,8 +1930,28 @@ a {
      own column and unbalance the others. */
   grid-template-columns: repeat(4, minmax(0, 1fr));
   align-items: center;
+  justify-items: center;
+  /* Rows hug their content and the BLOCK of them is centred. Without
+     this the grid is the full height of the hero, so on a phone its two
+     rows each took half of it and the words ended up 434px apart instead
+     of stacked. */
+  align-content: center;
   padding: 0 var(--gutter);
   padding-top: max(0px, env(safe-area-inset-top));
+}
+
+/* PHONES GET TWO ROWS OF TWO.
+   "Ezekiel Scott" is two words long, and four across a phone leaves each
+   about 80px. Measured at 360px wide the words overlapped by 4px and at
+   320px by 19px — they simply do not fit in one row at a readable size.
+   Two by two keeps every word whole and legible, and the columns are
+   still equal, so it is still spread evenly. One row of four returns at
+   28em, where the measured gap is a comfortable 30px. */
+@media (max-width: 27.99em) {
+  .hero__nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 1.6rem;
+  }
 }
 
 .hero__name {
@@ -1943,6 +1963,9 @@ a {
 .hero__link {
   display: block;
   text-align: center;
+  /* The words are SVG now, so the line box would add its own leading
+     under them; this keeps the box to the artwork. */
+  line-height: 0;
   color: var(--white);
   /* Fluid, and deliberately modest at the small end: four blackletter
      words across a phone is the tight case, and this font is wide. */
@@ -1952,9 +1975,6 @@ a {
   /* No letter-spacing. Blackletter is drawn to sit tight, and opening it
      up reads as broken rather than editorial. */
   letter-spacing: 0;
-  /* The same faint shadow the old nav had, so white type survives the
-     light parts of the photo. */
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
   transition: opacity 0.25s ease;
 }
 
@@ -1966,6 +1986,19 @@ a.hero__link:focus-visible {
 a.hero__link:focus-visible {
   outline: 2px solid var(--white);
   outline-offset: 0.15em;
+}
+
+/* The outlines themselves. Width is set per word in the markup, in em,
+   so the four keep their true relative widths; the height follows from
+   the shared viewBox, which is what holds their baselines together.
+   The drop-shadow does the job text-shadow used to, since that only
+   applies to text — this follows the actual letter shapes, so the glow
+   hugs the strokes instead of sitting behind a rectangle. */
+.wordmark {
+  display: block;
+  height: auto;
+  margin: 0 auto;
+  filter: drop-shadow(0 1px 10px rgba(0, 0, 0, 0.55));
 }
 
 /* Instagram, until the handle arrives: visibly there, plainly not yet

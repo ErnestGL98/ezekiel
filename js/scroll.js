@@ -159,7 +159,7 @@
     target = Math.min(target, limit());
   });
 
-  // In the same spirit as ezekielAudio() and ezekielMusic(): a way to ask
+  // In the same spirit as ezekielAudio(): a way to ask
   // the page what this is actually doing, since "the scroll feels wrong"
   // has several causes that look identical from outside.
   // Run  ezekielScroll()  in the console.

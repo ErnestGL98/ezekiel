@@ -518,14 +518,13 @@
   // visit you're in and nothing else.
   // ...but "the visit you're in" has to mean the visit, not the page. This
   // switch is the whole site's sound, and it used to be pinned to muted on
-  // every single load — so following a link reset it while the music,
-  // which restores itself, carried on playing. The speaker said off over a
-  // page that was audibly on.
+  // every single load — so following a link reset a choice the visitor had
+  // already made, on every hop inside one visit.
   //
   // sessionStorage is the right scope for exactly the reason above: it
   // lasts as long as the tab and no longer, so a new visit still arrives
   // silent and nobody is ambushed by a choice they made yesterday. A
-  // refresh starts over too, which is the rule the music already follows.
+  // refresh starts over too.
   var SOUND_STORE = 'ezekiel-sound-visit';
   var muted = true;
 
@@ -580,7 +579,7 @@
   function paintToggle() {
     if (!toggle) return;
     toggle.setAttribute('aria-pressed', muted ? 'false' : 'true');
-    // "sound", not "hover sound": this switch drives the music too now.
+    // "sound" rather than "hover sound": it is the only sound here now.
     toggle.setAttribute('aria-label', muted ? 'Turn sound on'
                                             : 'Turn sound off');
   }
@@ -603,33 +602,13 @@
       if (active) Audio_.to(muted ? 0 : CONFIG.volume, 0.12);
       else if (muted) Audio_.to(0, 0.12);
 
-      // Tell the rest of the page. The music player listens for this, so
-      // the one speaker in the header switches the whole site's sound
-      // rather than only the hover effect — and because this click is a
-      // real gesture, it's also a moment the browser will let music
-      // start, which it refuses to do on page load.
-      //
-      // An event rather than calling the player directly: these two
-      // scripts don't otherwise know about each other, and the home page
-      // loads the player without this file at all.
+      // Announced for anything else on the page that cares. The music
+      // player used to listen for this and has been removed; the event is
+      // kept because it costs nothing and is the honest way for this
+      // script to say what the visitor just chose.
       window.dispatchEvent(new CustomEvent('ezekiel:sound', {
         detail: { on: !muted }
       }));
-    });
-
-    // The other direction: music started from the player's own play button
-    // (or skipping to the next track) switches the speaker on to match.
-    // Only ever ON. Pausing from the player leaves the speaker alone,
-    // because the speaker also drives the hover sound, and stopping a song
-    // is not the same as asking for silence everywhere.
-    window.addEventListener('ezekiel:music-on', function () {
-      if (!muted) return;
-      muted = false;
-      paintToggle();
-      rememberSound();
-      // Still inside the transient activation of the click that started
-      // the music, so the browser will let the hover audio be built now.
-      Audio_.unlock();
     });
   }
 

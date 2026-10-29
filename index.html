@@ -17,17 +17,17 @@
 
   <!-- Start downloading the handwriting font immediately, in parallel with
        the stylesheet, instead of waiting for the CSS to be parsed first. -->
-  <!-- The ?v=101 must match the one in style.css — see the note there. -->
-  <link rel="preload" href="fonts/OldEnglish.woff2?v=101" as="font" type="font/woff2" crossorigin>
+  <!-- The ?v=102 must match the one in style.css — see the note there. -->
+  <link rel="preload" href="fonts/OldEnglish.woff2?v=102" as="font" type="font/woff2" crossorigin>
 
   <!-- Our own stylesheet. Versioned too, so a changed stylesheet also
        shows up straight away instead of after the 10-minute cache. -->
-  <link rel="stylesheet" href="css/style.css?v=101">
+  <link rel="stylesheet" href="css/style.css?v=102">
 
   <!-- REFRESHING THE HOME PAGE STARTS THE WHOLE VISIT OVER.
        The rest of the site remembers things for the length of a visit —
-       where the music was, whether the speaker is on, whether the photo
-       controls have been explained. A refresh here wipes all of it, so
+       whether the speaker is on, whether the photo controls have been
+       explained. A refresh here wipes all of it, so
        the portfolio after it is a fresh visit: a new song order, the
        speaker off, the hint shown again.
 
@@ -67,7 +67,7 @@
          is the most important image on the page, load it first. -->
     <img
       class="hero__image"
-      src="images/home.jpg?v=101"
+      src="images/home.jpg?v=102"
       alt="Ezekiel in a hooded jacket and beanie, sitting in an opening in a concrete wall"
       fetchpriority="high"
       decoding="async">
@@ -164,12 +164,15 @@
 
   </section>
 
-  <!-- The only script FILE on this page (the small one in the head just
-       resets the visit on a refresh), and only for the four words.
-       No player, no audio: the effect runs silent here because there is no speaker in
-       this header to turn it off with, and sound you cannot switch off is
-       worse than none. glitch.js checks for that itself. -->
-  <script src="js/glitch.js?v=101" defer></script>
+  <!-- NO SCRIPT FILES HERE. The small one in the head resets the visit
+       on a refresh and that is all this page needs.
+
+       It used to load glitch.js for the tear on the logo and the button.
+       Since those four words became vector outlines rather than text,
+       the effect has had nothing to act on — it binds to text and to
+       photographs, and this page now has neither — so it was being
+       downloaded and run to do nothing on the first page every visitor
+       sees. -->
 
 </body>
 </html>

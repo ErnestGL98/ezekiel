@@ -6,8 +6,8 @@
   <title>Contact | EZEKIEL</title>
   <meta name="description" content="Get in touch with Ezekiel.">
   <meta name="theme-color" content="#F2EEE7">
-  <!-- The ?v=101 must match the one in style.css — see the note there. -->
-  <link rel="stylesheet" href="css/style.css?v=101">
+  <!-- The ?v=102 must match the one in style.css — see the note there. -->
+  <link rel="stylesheet" href="css/style.css?v=102">
   <script>
     // Land at the top on a refresh, same as every other page.
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
@@ -116,67 +116,11 @@
     </form>
   </main>
 
-  <!-- MUSIC PLAYER — the same one as the portfolio and galleries, so the
-       music carries in here and back out. -->
-  <div class="player" hidden>
-    <div class="player__controls">
-      <button class="player__btn player__prev" type="button" aria-label="Previous track">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M7 5v14H5V5z"/><path d="M20 5v14l-11-7z"/>
-        </svg>
-      </button>
-
-      <button class="player__btn player__toggle" type="button"
-              aria-pressed="false" aria-label="Play">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path class="player__icon-play" d="M7 4v16l13-8z"/>
-          <path class="player__icon-pause" d="M7 4h4v16H7zM14 4h4v16h-4z"/>
-        </svg>
-      </button>
-
-      <button class="player__btn player__next" type="button" aria-label="Next track">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M17 5v14h2V5z"/><path d="M4 5v14l11-7z"/>
-        </svg>
-      </button>
-
-      <button class="player__btn player__mute" type="button"
-              aria-pressed="true" aria-label="Mute music">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M3 9v6h4l5 4V5L7 9H3z"/>
-          <g class="player__icon-waves" fill="none" stroke="currentColor"
-             stroke-width="1.7" stroke-linecap="round">
-            <path d="M15.5 9a4.5 4.5 0 0 1 0 6"/>
-            <path d="M18.2 6.6a8 8 0 0 1 0 10.8"/>
-          </g>
-          <g class="player__icon-cross" fill="none" stroke="currentColor"
-             stroke-width="1.9" stroke-linecap="round">
-            <path d="M15.5 9.5l5 5M20.5 9.5l-5 5"/>
-          </g>
-        </svg>
-      </button>
-
-      <div class="player__volume" role="slider" tabindex="0" aria-label="Volume"
-           aria-valuemin="0" aria-valuemax="100" aria-valuenow="45">
-        <div class="player__volume-fill"></div>
-      </div>
-    </div>
-
-    <div class="player__bar" role="slider" tabindex="0" aria-label="Seek"
-         aria-valuemin="0" aria-valuemax="0" aria-valuenow="0">
-      <div class="player__fill"></div>
-    </div>
-
-    <div class="player__meta">
-      <span class="player__title"></span>
-      <span class="player__time">0:00 / 0:00</span>
-    </div>
   </div>
 
-  <script src="js/player.js?v=101" defer></script>
-  <script src="js/contact.js?v=101" defer></script>
-  <script src="js/scroll.js?v=101" defer></script>
-  <script src="js/glitch.js?v=101" defer></script>
+  <script src="js/contact.js?v=102" defer></script>
+  <script src="js/scroll.js?v=102" defer></script>
+  <script src="js/glitch.js?v=102" defer></script>
 
 </body>
 </html>

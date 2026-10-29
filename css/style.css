@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=101 ON EVERY FONT URL
+/* NOTE ON THE ?v=102 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -27,8 +27,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=101') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=101') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=102') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=102') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -43,8 +43,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=101') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=101') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=102') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=102') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -55,8 +55,8 @@
    get the browser's fake bold on top of the 700, which smears. */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Black.woff2?v=101') format('woff2'),
-       url('../fonts/EzekielHand-Black.ttf?v=101') format('truetype');
+  src: url('../fonts/EzekielHand-Black.woff2?v=102') format('woff2'),
+       url('../fonts/EzekielHand-Black.ttf?v=102') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -76,7 +76,7 @@
    putting it in a public repo counts as redistributing it. */
 @font-face {
   font-family: 'Old English';
-  src: url('../fonts/OldEnglish.woff2?v=101') format('woff2');
+  src: url('../fonts/OldEnglish.woff2?v=102') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -608,15 +608,11 @@ a {
   /* Caps the line length on big monitors so the grid doesn't sprawl */
   max-width: 1200px;
   margin: 0 auto;
-  /* Room at the bottom for the music player, which is fixed in the
-     bottom-left corner and about 90px tall with its offset. It used to be
-     5rem (80px), which is LESS than the player — so on a phone, scrolled
-     to the end, the player sat over the last thing on the page: 48px of
-     the last clip on the portfolio, the edge of the last photos in a
-     gallery, and the Send button on the contact page. 8rem clears it with
-     a gap to spare. */
-  padding: 0 var(--gutter) 8rem;
-  padding-bottom: max(8rem, calc(7rem + env(safe-area-inset-bottom)));
+  /* Back to 5rem. This was 8rem to clear the music player, which was
+     fixed in the bottom-left corner and covered the end of every page on
+     a phone; with the player gone that is just empty space. */
+  padding: 0 var(--gutter) 5rem;
+  padding-bottom: max(5rem, calc(4rem + env(safe-area-inset-bottom)));
 }
 
 /* --- the portfolio banner strip --- */
@@ -1149,255 +1145,7 @@ a {
 
 
 /* ------------------------------------------------------------
-   8. THE MUSIC PLAYER
-   Fixed to the bottom-left corner, so it stays put while the page
-   scrolls under it and is reachable from anywhere without hunting.
-   ------------------------------------------------------------ */
-.player {
-  position: fixed;
-  /* Tucked further in than the page gutter, so it reads as sitting in the
-     corner rather than lining up with the content. Its own number, not
-     var(--gutter), precisely so it can differ from the grid. */
-  left: 1rem;
-  /* clear of the iPhone home indicator, which sits over the bottom edge */
-  bottom: max(1rem, env(safe-area-inset-bottom));
-  z-index: 60;                 /* over the glitch canvas, which is 40 —
-                                  otherwise a tear could paint across the
-                                  controls */
-  width: min(16.5rem, calc(100vw - 2rem));
-  color: var(--ink);
-  user-select: none;
-  /* No panel behind it — the controls sit straight on the page.
-     Something still has to keep them readable where a photo scrolls
-     underneath, though, and near-black ink on a dark photograph is
-     invisible. So: a cream halo instead of a box. drop-shadow follows
-     the actual shape of the glyphs and icons, where box-shadow would
-     just put the panel back. */
-  filter: drop-shadow(0 0 3px rgba(242, 238, 231, 0.95))
-          drop-shadow(0 0 9px rgba(242, 238, 231, 0.85));
-}
-
-/* [hidden] alone loses to the display below, so it has to be said again
-   with at least the same weight. The script drops the attribute once the
-   playlist has loaded. */
-.player[hidden] {
-  display: none;
-}
-
-.player__controls {
-  display: flex;
-  align-items: center;
-  gap: 0.1rem;
-  margin-bottom: 0.45rem;
-}
-
-.player__btn {
-  display: inline-flex;
-  padding: 0.3rem;
-  background: none;
-  border: 0;
-  color: var(--ink);
-  cursor: pointer;
-  line-height: 0;
-  opacity: 0.72;
-  transition: opacity 0.18s ease;
-}
-
-.player__btn:hover,
-.player__btn:focus-visible {
-  opacity: 1;
-}
-
-.player__btn:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 1px;
-  border-radius: 3px;
-}
-
-.player__btn svg {
-  width: 1rem;
-  height: 1rem;
-  fill: currentColor;
-}
-
-/* The play/pause button is the one you reach for most, so it is bigger
-   than the others and always at full strength. */
-.player__toggle svg {
-  width: 1.3rem;
-  height: 1.3rem;
-}
-
-.player__toggle {
-  opacity: 1;
-}
-
-/* Mute and the volume slider sit apart from the transport, hard right. */
-.player__mute {
-  margin-left: auto;
-}
-
-/* --- the volume slider ---
-   Same construction as the timeline below: a 3px line with the hit area
-   padded out so it can actually be grabbed, and content-box so the 3px
-   is the line rather than the line plus its padding. */
-.player__volume {
-  position: relative;
-  box-sizing: content-box;
-  flex: none;
-  width: 3.4rem;
-  height: 3px;
-  padding: 6px 0;
-  margin-left: 0.45rem;
-  background: rgba(26, 24, 21, 0.16);
-  background-clip: content-box;
-  cursor: pointer;
-  touch-action: none;
-}
-
-.player__volume-fill {
-  position: absolute;
-  left: 0;
-  top: 6px;
-  height: 3px;
-  width: 45%;
-  background: var(--ink);
-}
-
-/* Smaller handle than the timeline's — this is the smaller control, and
-   at the timeline's size the dot would swallow the whole track. */
-.player__volume-fill::after {
-  content: '';
-  position: absolute;
-  right: -3px;
-  top: 50%;
-  width: 7px;
-  height: 7px;
-  margin-top: -3.5px;
-  border-radius: 50%;
-  background: var(--ink);
-}
-
-.player__volume:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 4px;
-}
-
-/* One icon at a time. Both are in the DOM so nothing is redrawn on a
-   press — only which one is displayed changes. */
-.player__icon-pause,
-.player.is-playing .player__icon-play {
-  display: none;
-}
-
-.player.is-playing .player__icon-pause {
-  display: block;
-}
-
-.player__icon-cross {
-  display: none;
-}
-
-.player.is-muted .player__icon-waves {
-  display: none;
-}
-
-.player.is-muted .player__icon-cross {
-  display: block;
-}
-
-.player.is-muted .player__mute {
-  opacity: 1;                  /* muted is a state worth noticing */
-}
-
-/* --- the timeline ---
-   The visible bar is 3px, but the hit area is padded out to 14px so it
-   can actually be grabbed. Background-clip keeps the tint off the
-   padding, so the bar still LOOKS 3px tall. */
-.player__bar {
-  position: relative;
-  /* content-box on purpose, against the border-box default at the top of
-     this file. With border-box the 3px height would INCLUDE the 12px of
-     padding, collapsing the content box to nothing — and since the track
-     is painted with background-clip: content-box, it simply vanished.
-     Here 3px is the line and the padding is added around it. */
-  box-sizing: content-box;
-  height: 3px;
-  padding: 6px 0;
-  background: rgba(26, 24, 21, 0.16);
-  background-clip: content-box;
-  cursor: pointer;
-  touch-action: none;          /* let a drag scrub instead of scrolling */
-}
-
-.player__fill {
-  position: absolute;
-  left: 0;
-  top: 6px;
-  height: 3px;
-  width: 0;
-  background: var(--ink);
-}
-
-/* The playhead itself — drawn on the end of the fill rather than as its
-   own element, so there is nothing to keep in sync. */
-.player__fill::after {
-  content: '';
-  position: absolute;
-  right: -3.5px;
-  top: 50%;
-  width: 8px;
-  height: 8px;
-  margin-top: -4px;
-  border-radius: 50%;
-  background: var(--ink);
-}
-
-.player__bar:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 4px;
-}
-
-/* --- the name, under the timeline --- */
-.player__meta {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.6rem;
-  margin-top: 0.35rem;
-  font-size: 0.66rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.player__title {
-  font-weight: 700;
-  /* a long title shortens rather than widening the player or wrapping */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.player__time {
-  flex: none;
-  color: var(--ink-soft);
-  font-variant-numeric: tabular-nums;   /* stops the digits jittering */
-}
-
-@media (min-width: 48em) {
-  .player {
-    left: 1.25rem;
-    bottom: max(1.25rem, env(safe-area-inset-bottom));
-    width: 18.5rem;              /* the volume slider needs the room */
-  }
-
-  .player__meta {
-    font-size: 0.7rem;
-  }
-}
-
-
-/* ------------------------------------------------------------
-   9. A SHOOT'S OWN PAGE
+   8. A SHOOT'S OWN PAGE
    One gallery per shoot, reached from its cover on the portfolio.
    ------------------------------------------------------------ */
 .gallery-head {
@@ -1581,7 +1329,7 @@ a {
 
 
 /* ------------------------------------------------------------
-   10. THE LIGHTBOX
+   9. THE LIGHTBOX
    Click a photo in a gallery and it fills the screen. Built by
    js/lightbox.js, which reads whatever is in .gallery.
    ------------------------------------------------------------ */
@@ -1750,7 +1498,7 @@ a {
 
 
 /* ------------------------------------------------------------
-   11. THE SOFT REVEAL
+   10. THE SOFT REVEAL
    Each photo fades up once, as it first comes into view. Driven by
    js/reveal.js, which hands out .is-in; the .js-reveal class on
    <html> comes from the inline script in the page head, early
@@ -1801,7 +1549,7 @@ a {
 
 
 /* ------------------------------------------------------------
-   12. THE CONTACT PAGE
+   11. THE CONTACT PAGE
    Your email, a subject, a message. The labels are in the handwriting;
    what people TYPE is not. The handwriting has no @, no full stop and no
    digits, so an email address typed in it would come out half
@@ -1998,7 +1746,7 @@ a {
 
 
 /* ------------------------------------------------------------
-   13. THE HOME PAGE — four words across the middle
+   12. THE HOME PAGE — four words across the middle
    Everything here is scoped to body.home, so the rest of the site keeps
    the handwriting.
    ------------------------------------------------------------ */

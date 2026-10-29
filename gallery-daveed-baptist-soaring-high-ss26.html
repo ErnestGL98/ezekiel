@@ -8,8 +8,8 @@
   <meta name="description" content="Ezekiel for Daveed Baptist, Soaring High SS26.">
   <meta name="theme-color" content="#F2EEE7">
 
-  <!-- The ?v=101 must match the one in style.css — see the note there. -->
-  <link rel="stylesheet" href="css/style.css?v=101">
+  <!-- The ?v=102 must match the one in style.css — see the note there. -->
+  <link rel="stylesheet" href="css/style.css?v=102">
 
   <!-- Same two before-first-paint jobs as the portfolio page: land at the
        top on a refresh, and arm the reveal styles early enough that the
@@ -32,8 +32,7 @@
 <body>
 
   <!-- The same header as the portfolio page, so moving between the two
-       doesn't shift anything. The speaker still switches the hover sound;
-       there is no music player on a gallery — see the note by the grid. -->
+       doesn't shift anything. The speaker switches the hover sound. -->
   <header class="page-header">
     <div class="page-header__left">
       <a class="page-header__mark glitch-text" href="./">Ezekiel</a>
@@ -85,9 +84,6 @@
          2. Copy this file, change the title and the folder in the src
          3. Point that shoot's tile in portfolio.html at the new file
 
-         The music follows you in here: the player carries its queue and
-         position across a link, so opening a shoot does not restart the
-         playlist. See the note at the top of js/player.js.
          ============================================================ -->
     <div class="gallery gallery--4x5">
       <figure class="shot"><img src="images/galleries/daveed-baptist-soaring-high-ss26/01.webp" alt="Daveed Baptist, Soaring High SS26, look 1" decoding="async"></figure>
@@ -101,87 +97,12 @@
 
   </main>
 
-  <!-- ============================================================
-       MUSIC PLAYER — fixed bottom-left. This page only: the home
-       page has no player, no script and no audio at all.
-
-       Starts hidden and is revealed by the script once the playlist has
-       actually loaded, so a browser with JavaScript off gets a clean page
-       rather than a dead row of buttons.
-
-       The track list lives in audio/tracks.json, written by
-       tools/build_audio.py. TO ADD A SONG: drop a WAV into the
-       "Zeek Site" folder in Music and re-run that script. Nothing in this
-       file needs to change.
-       ============================================================ -->
-  <div class="player" hidden>
-    <div class="player__controls">
-      <button class="player__btn player__prev" type="button" aria-label="Previous track">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M7 5v14H5V5z"/><path d="M20 5v14l-11-7z"/>
-        </svg>
-      </button>
-
-      <button class="player__btn player__toggle" type="button"
-              aria-pressed="false" aria-label="Play">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <!-- both states live in the DOM; the CSS shows one at a time, so
-               nothing has to be redrawn on every press -->
-          <path class="player__icon-play" d="M7 4v16l13-8z"/>
-          <path class="player__icon-pause" d="M7 4h4v16H7zM14 4h4v16h-4z"/>
-        </svg>
-      </button>
-
-      <button class="player__btn player__next" type="button" aria-label="Next track">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M17 5v14h2V5z"/><path d="M4 5v14l11-7z"/>
-        </svg>
-      </button>
-
-      <button class="player__btn player__mute" type="button"
-              aria-pressed="true" aria-label="Mute music">
-        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M3 9v6h4l5 4V5L7 9H3z"/>
-          <g class="player__icon-waves" fill="none" stroke="currentColor"
-             stroke-width="1.7" stroke-linecap="round">
-            <path d="M15.5 9a4.5 4.5 0 0 1 0 6"/>
-            <path d="M18.2 6.6a8 8 0 0 1 0 10.8"/>
-          </g>
-          <g class="player__icon-cross" fill="none" stroke="currentColor"
-             stroke-width="1.9" stroke-linecap="round">
-            <path d="M15.5 9.5l5 5M20.5 9.5l-5 5"/>
-          </g>
-        </svg>
-      </button>
-
-      <!-- Sits beside the mute button because they are the same decision at
-           two resolutions: the button is the shortcut, this is the detail.
-           A real slider like the timeline, so arrows nudge it. -->
-      <div class="player__volume" role="slider" tabindex="0" aria-label="Volume"
-           aria-valuemin="0" aria-valuemax="100" aria-valuenow="45">
-        <div class="player__volume-fill"></div>
-      </div>
-    </div>
-
-    <!-- A real slider, not a decorated div: arrows nudge, Home/End jump,
-         and a screen reader announces the position. -->
-    <div class="player__bar" role="slider" tabindex="0" aria-label="Seek"
-         aria-valuemin="0" aria-valuemax="0" aria-valuenow="0">
-      <div class="player__fill"></div>
-    </div>
-
-    <div class="player__meta">
-      <span class="player__title"></span>
-      <span class="player__time">0:00 / 0:00</span>
-    </div>
   </div>
 
-  <script src="js/player.js?v=101" defer></script>
-
-  <script src="js/lightbox.js?v=101" defer></script>
-  <script src="js/reveal.js?v=101" defer></script>
-  <script src="js/scroll.js?v=101" defer></script>
-  <script src="js/glitch.js?v=101" defer></script>
+  <script src="js/lightbox.js?v=102" defer></script>
+  <script src="js/reveal.js?v=102" defer></script>
+  <script src="js/scroll.js?v=102" defer></script>
+  <script src="js/glitch.js?v=102" defer></script>
 
 </body>
 </html>

@@ -13,20 +13,22 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=98 ON EVERY FONT URL
+/* NOTE ON THE ?v=99 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
    so the change shows up immediately.
 
-   IF YOU EVER CHANGE THE FONTS: bump the number here AND in the
-   <link rel="preload"> tags in index.html and portfolio.html. All four
-   must match, or the browser downloads the font twice. */
+   IF YOU EVER CHANGE THE FONTS: bump the number here AND in any
+   <link rel="preload"> that names the same file. Only index.html has one
+   now — it preloads the Old English the home page is set in. The
+   handwriting below is declared but unused, so nothing preloads it and
+   nothing downloads it. */
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=98') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=98') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=99') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=99') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -41,8 +43,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=98') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=98') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=99') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=99') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -53,8 +55,8 @@
    get the browser's fake bold on top of the 700, which smears. */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Black.woff2?v=98') format('woff2'),
-       url('../fonts/EzekielHand-Black.ttf?v=98') format('truetype');
+  src: url('../fonts/EzekielHand-Black.woff2?v=99') format('woff2'),
+       url('../fonts/EzekielHand-Black.ttf?v=99') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -74,7 +76,7 @@
    putting it in a public repo counts as redistributing it. */
 @font-face {
   font-family: 'Old English';
-  src: url('../fonts/OldEnglish.woff2?v=98') format('woff2');
+  src: url('../fonts/OldEnglish.woff2?v=99') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -94,7 +96,16 @@
   --white:        #FFFFFF;
 
   /* The handwriting, with plain fallbacks if the font file fails. */
-  --font-display: 'Ezekiel Hand', 'Helvetica Neue', Arial, sans-serif;
+  /* A PLAIN SANS, not the handwriting. The traced handwriting is still
+     in fonts/ and its @font-face blocks are still declared above, so
+     putting it back is one line here — but nothing asks for it now, and
+     a font nothing asks for is never downloaded.
+
+     Worth knowing what this also fixed: the handwriting has no digits
+     and no punctuation, so AW22, SS24, FW 23 and the (b). brackets were
+     falling back to Arial mid-word. A basic face has the lot, so those
+     read in one typeface for the first time. */
+  --font-display: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 
   /* The home page only. Georgia is the fallback because it is the most
      serif-like face present on every machine — if the blackletter fails
@@ -1794,7 +1805,10 @@ a {
    only (see js/contact.js).
    ------------------------------------------------------------ */
 :root {
-  --plain: 'Helvetica Neue', Arial, sans-serif;
+  /* Was a second stack, for the bits the handwriting could not spell.
+     Now that the whole site is a plain sans it is the same face — kept
+     as its own name so those rules still say WHY they opt out. */
+  --plain: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --error: #9A3324;            /* a brick red that sits with the cream */
 }
 

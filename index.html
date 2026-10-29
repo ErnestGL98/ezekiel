@@ -17,12 +17,12 @@
 
   <!-- Start downloading the handwriting font immediately, in parallel with
        the stylesheet, instead of waiting for the CSS to be parsed first. -->
-  <!-- The ?v=102 must match the one in style.css — see the note there. -->
-  <link rel="preload" href="fonts/OldEnglish.woff2?v=102" as="font" type="font/woff2" crossorigin>
+  <!-- The ?v=106 must match the one in style.css — see the note there. -->
+  <link rel="preload" href="fonts/OldEnglish.woff2?v=106" as="font" type="font/woff2" crossorigin>
 
   <!-- Our own stylesheet. Versioned too, so a changed stylesheet also
        shows up straight away instead of after the 10-minute cache. -->
-  <link rel="stylesheet" href="css/style.css?v=102">
+  <link rel="stylesheet" href="css/style.css?v=106">
 
   <!-- REFRESHING THE HOME PAGE STARTS THE WHOLE VISIT OVER.
        The rest of the site remembers things for the length of a visit —
@@ -67,7 +67,7 @@
          is the most important image on the page, load it first. -->
     <img
       class="hero__image"
-      src="images/home.jpg?v=102"
+      src="images/home.jpg?v=106"
       alt="Ezekiel in a hooded jacket and beanie, sitting in an opening in a concrete wall"
       fetchpriority="high"
       decoding="async">

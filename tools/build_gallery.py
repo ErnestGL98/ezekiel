@@ -92,8 +92,13 @@ def main():
     if rest[0] == '--newest':
         sources = newest(int(rest[1]))
     else:
-        sources = sorted((SRC / f if not Path(f).is_absolute() else Path(f))
-                         for f in rest)
+        # Named files keep the order they were NAMED in. They used to be
+        # sorted, which quietly reordered them: Ball_1, Ball_10, Ball_16,
+        # Ball_2 ... is alphabetical, not the shoot's order, and the
+        # numbering on these pages is meant to follow the shoot. If you
+        # want them sorted, pass them sorted.
+        sources = [(SRC / f if not Path(f).is_absolute() else Path(f))
+                   for f in rest]
 
     missing = [p for p in sources if not p.exists()]
     if missing:

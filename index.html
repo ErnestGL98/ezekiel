@@ -17,12 +17,12 @@
 
   <!-- Start downloading the handwriting font immediately, in parallel with
        the stylesheet, instead of waiting for the CSS to be parsed first. -->
-  <!-- The ?v=100 must match the one in style.css — see the note there. -->
-  <link rel="preload" href="fonts/OldEnglish.woff2?v=100" as="font" type="font/woff2" crossorigin>
+  <!-- The ?v=101 must match the one in style.css — see the note there. -->
+  <link rel="preload" href="fonts/OldEnglish.woff2?v=101" as="font" type="font/woff2" crossorigin>
 
   <!-- Our own stylesheet. Versioned too, so a changed stylesheet also
        shows up straight away instead of after the 10-minute cache. -->
-  <link rel="stylesheet" href="css/style.css?v=100">
+  <link rel="stylesheet" href="css/style.css?v=101">
 
   <!-- REFRESHING THE HOME PAGE STARTS THE WHOLE VISIT OVER.
        The rest of the site remembers things for the length of a visit —
@@ -67,8 +67,8 @@
          is the most important image on the page, load it first. -->
     <img
       class="hero__image"
-      src="images/Home_page_compressed.jpg"
-      alt="Ezekiel wearing an embroidered tan workwear jacket and trousers"
+      src="images/home.jpg?v=101"
+      alt="Ezekiel in a hooded jacket and beanie, sitting in an opening in a concrete wall"
       fetchpriority="high"
       decoding="async">
 
@@ -169,7 +169,7 @@
        No player, no audio: the effect runs silent here because there is no speaker in
        this header to turn it off with, and sound you cannot switch off is
        worse than none. glitch.js checks for that itself. -->
-  <script src="js/glitch.js?v=100" defer></script>
+  <script src="js/glitch.js?v=101" defer></script>
 
 </body>
 </html>

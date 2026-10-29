@@ -13,7 +13,7 @@
    Source photo kept at fonts/source-handwriting.jpg if it ever
    needs rebuilding.
    ------------------------------------------------------------ */
-/* NOTE ON THE ?v=100 ON EVERY FONT URL
+/* NOTE ON THE ?v=101 ON EVERY FONT URL
    Browsers cache font files for 10 minutes, so after a change you can
    refresh and still be shown the OLD font. Sticking a version number on
    the URL makes it look like a brand new file, which no cache can match,
@@ -27,8 +27,8 @@
 @font-face {
   font-family: 'Ezekiel Hand';
   /* woff2 first (6KB, every modern browser); ttf is the fallback */
-  src: url('../fonts/EzekielHand.woff2?v=100') format('woff2'),
-       url('../fonts/EzekielHand.ttf?v=100') format('truetype');
+  src: url('../fonts/EzekielHand.woff2?v=101') format('woff2'),
+       url('../fonts/EzekielHand.ttf?v=101') format('truetype');
   font-weight: 400;
   font-style: normal;
   /* swap = show fallback text immediately, then swap the handwriting
@@ -43,8 +43,8 @@
    sideways to fake it (which looks awful on handwriting). */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Bold.woff2?v=100') format('woff2'),
-       url('../fonts/EzekielHand-Bold.ttf?v=100') format('truetype');
+  src: url('../fonts/EzekielHand-Bold.woff2?v=101') format('woff2'),
+       url('../fonts/EzekielHand-Bold.ttf?v=101') format('truetype');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -55,8 +55,8 @@
    get the browser's fake bold on top of the 700, which smears. */
 @font-face {
   font-family: 'Ezekiel Hand';
-  src: url('../fonts/EzekielHand-Black.woff2?v=100') format('woff2'),
-       url('../fonts/EzekielHand-Black.ttf?v=100') format('truetype');
+  src: url('../fonts/EzekielHand-Black.woff2?v=101') format('woff2'),
+       url('../fonts/EzekielHand-Black.ttf?v=101') format('truetype');
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -76,7 +76,7 @@
    putting it in a public repo counts as redistributing it. */
 @font-face {
   font-family: 'Old English';
-  src: url('../fonts/OldEnglish.woff2?v=100') format('woff2');
+  src: url('../fonts/OldEnglish.woff2?v=101') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -230,10 +230,16 @@ a {
   /* cover = fill the box completely, cropping the overflow.
      Without this the photo would stretch and distort. */
   object-fit: cover;
-  /* Which part to keep when cropping. 50% across, 30% down keeps
-     his face in frame on tall phone screens. Tune this number if
-     the crop looks off on your device. */
-  object-position: 50% 30%;
+  /* Which part to keep when cropping. This is the PHONE rule — the
+     larger-screen override is in the media block further down.
+
+     30% across, not centred. The photo is taller than a phone screen is
+     wide, so it is the sides that get cropped and this X is the only
+     thing that can move what sits behind the words. Centred put
+     "Contact" straight on the yellow glove at 2.33:1, under the 3:1
+     large text wants; at 30% the worst of the four is 5.91:1. Measured
+     at seven positions from 20% to 80%. */
+  object-position: 30% 30%;
 }
 
 .hero__scrim {

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Famous Nobodys | EZEKIEL</title>
+  <meta name="description" content="Ezekiel for Famous Nobodys.">
+  <meta name="theme-color" content="#F2EEE7">
+
+  <!-- The ?v=100 must match the one in style.css — see the note there. -->
+  <link rel="stylesheet" href="css/style.css?v=100">
+
+  <!-- Same two before-first-paint jobs as the portfolio page: land at the
+       top on a refresh, and arm the reveal styles early enough that the
+       photos are never painted and then hidden. See portfolio.html for
+       the long version. -->
+  <script>
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    if (window.IntersectionObserver &&
+        !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('js-reveal');
+      setTimeout(function () {
+        if (!window.__revealReady) {
+          document.documentElement.classList.remove('js-reveal');
+        }
+      }, 5000);
+    }
+  </script>
+</head>
+
+<body>
+
+  <!-- The same header as the portfolio page, so moving between the two
+       doesn't shift anything. The speaker still switches the hover sound;
+       there is no music player on a gallery — see the note by the grid. -->
+  <header class="page-header">
+    <div class="page-header__left">
+      <a class="page-header__mark glitch-text" href="./">Ezekiel</a>
+
+      <button class="sound-toggle" type="button" aria-pressed="true"
+              aria-label="Turn sound off">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path class="sound-toggle__cone" d="M 12.21 20.09 L 11.85 19.94 L 11.67 18.63 L 10.72 17.88 L 9.98 17.66 L 9.32 16.82 L 8.42 16.31 L 7.83 16.48 L 6.48 16.18 L 5.90 16.45 L 2.59 16.75 L 1.22 16.71 L 0.99 16.39 L 1.77 15.93 L 1.70 11.23 L 1.35 10.44 L 1.64 10.17 L 2.12 8.39 L 2.60 8.55 L 2.77 9.88 L 5.90 9.79 L 7.53 9.47 L 10.58 6.01 L 12.93 3.94 L 13.09 4.34 L 11.99 5.66 L 12.26 6.04 L 12.02 6.67 L 12.32 9.82 L 12.14 13.58 L 12.55 15.87 L 12.38 16.71 L 12.92 18.40 L 12.39 18.94 Z"/>
+          <g class="sound-toggle__waves">
+            <path d="M 14.20 15.87 L 13.86 15.81 L 13.84 15.45 L 15.08 13.74 L 15.39 11.93 L 15.07 10.88 L 14.54 10.65 L 13.72 9.70 L 13.65 9.24 L 13.86 9.07 L 16.19 10.37 L 16.96 11.99 L 16.64 14.30 L 15.39 15.43 Z"/>
+            <path d="M 18.36 19.25 L 17.63 19.10 L 17.46 18.50 L 18.60 18.01 L 20.80 15.67 L 21.48 12.05 L 21.11 9.36 L 20.51 7.77 L 19.22 6.53 L 18.68 5.65 L 18.44 5.95 L 18.40 5.48 L 17.41 5.15 L 17.55 4.72 L 17.33 4.32 L 17.54 4.07 L 18.40 4.48 L 19.28 4.56 L 21.34 6.24 L 22.80 9.24 L 23.05 11.99 L 22.08 15.95 L 21.64 16.71 L 21.00 17.60 Z"/>
+          </g>
+        </svg>
+      </button>
+
+      <span class="sound-hint" aria-hidden="true"></span>
+    </div>
+
+    <nav class="nav" aria-label="Main navigation">
+      <a class="glitch-text" href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <main class="page-main">
+
+    <div class="gallery-head">
+      <!-- Left of the title rather than above it, so the title stays on the
+           page's centre line the way the section headings do. -->
+      <a class="back-link" href="portfolio.html">
+        <span aria-hidden="true">&#8592;</span> Portfolio
+      </a>
+      <h1 class="gallery-title glitch-text">Famous Nobodys</h1>
+    </div>
+
+    <!-- ============================================================
+         THE SHOOT — one photograph and one clip, which is why this page
+         uses .pair rather than the .gallery grid every other shoot uses.
+
+         The two are not the same shape as each other (3:4 and 9:16), so
+         a grid would have had to crop one of them. The pair gives them a
+         shared height, lets each keep its own width, and centres them —
+         the same arrangement they had at the foot of the portfolio,
+         moved here whole.
+         ============================================================ -->
+    <div class="pair">
+      <figure class="pair__item pair__still">
+        <img src="images/looks/famous-nobodys.jpg"
+             alt="Famous Nobodys — Hall of Fame varsity jacket, Red Hook"
+             decoding="async">
+      </figure>
+
+      <figure class="pair__item pair__clip">
+        <!-- muted + autoplay together on purpose: browsers only allow a
+             clip to start on its own if it's silent. "controls" is what
+             lets someone unmute it themselves — and the music player
+             stands down when they do, see js/player.js. -->
+        <video src="video/famous-nobodys.mp4" poster="video/famous-nobodys-poster.jpg"
+               muted autoplay loop playsinline controls preload="metadata"></video>
+      </figure>
+    </div>
+
+  </main>
+
+  <!-- ============================================================
+       MUSIC PLAYER — fixed bottom-left. This page only: the home
+       page has no player, no script and no audio at all.
+
+       Starts hidden and is revealed by the script once the playlist has
+       actually loaded, so a browser with JavaScript off gets a clean page
+       rather than a dead row of buttons.
+
+       The track list lives in audio/tracks.json, written by
+       tools/build_audio.py. TO ADD A SONG: drop a WAV into the
+       "Zeek Site" folder in Music and re-run that script. Nothing in this
+       file needs to change.
+       ============================================================ -->
+  <div class="player" hidden>
+    <div class="player__controls">
+      <button class="player__btn player__prev" type="button" aria-label="Previous track">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M7 5v14H5V5z"/><path d="M20 5v14l-11-7z"/>
+        </svg>
+      </button>
+
+      <button class="player__btn player__toggle" type="button"
+              aria-pressed="false" aria-label="Play">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <!-- both states live in the DOM; the CSS shows one at a time, so
+               nothing has to be redrawn on every press -->
+          <path class="player__icon-play" d="M7 4v16l13-8z"/>
+          <path class="player__icon-pause" d="M7 4h4v16H7zM14 4h4v16h-4z"/>
+        </svg>
+      </button>
+
+      <button class="player__btn player__next" type="button" aria-label="Next track">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M17 5v14h2V5z"/><path d="M4 5v14l11-7z"/>
+        </svg>
+      </button>
+
+      <button class="player__btn player__mute" type="button"
+              aria-pressed="true" aria-label="Mute music">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M3 9v6h4l5 4V5L7 9H3z"/>
+          <g class="player__icon-waves" fill="none" stroke="currentColor"
+             stroke-width="1.7" stroke-linecap="round">
+            <path d="M15.5 9a4.5 4.5 0 0 1 0 6"/>
+            <path d="M18.2 6.6a8 8 0 0 1 0 10.8"/>
+          </g>
+          <g class="player__icon-cross" fill="none" stroke="currentColor"
+             stroke-width="1.9" stroke-linecap="round">
+            <path d="M15.5 9.5l5 5M20.5 9.5l-5 5"/>
+          </g>
+        </svg>
+      </button>
+
+      <!-- Sits beside the mute button because they are the same decision at
+           two resolutions: the button is the shortcut, this is the detail.
+           A real slider like the timeline, so arrows nudge it. -->
+      <div class="player__volume" role="slider" tabindex="0" aria-label="Volume"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="45">
+        <div class="player__volume-fill"></div>
+      </div>
+    </div>
+
+    <!-- A real slider, not a decorated div: arrows nudge, Home/End jump,
+         and a screen reader announces the position. -->
+    <div class="player__bar" role="slider" tabindex="0" aria-label="Seek"
+         aria-valuemin="0" aria-valuemax="0" aria-valuenow="0">
+      <div class="player__fill"></div>
+    </div>
+
+    <div class="player__meta">
+      <span class="player__title"></span>
+      <span class="player__time">0:00 / 0:00</span>
+    </div>
+  </div>
+
+  <script src="js/player.js?v=100" defer></script>
+
+  <script src="js/reveal.js?v=100" defer></script>
+  <script src="js/scroll.js?v=100" defer></script>
+  <script src="js/glitch.js?v=100" defer></script>
+
+</body>
+</html>
